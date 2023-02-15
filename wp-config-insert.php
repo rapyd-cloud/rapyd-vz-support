@@ -1,4 +1,4 @@
-define( 'WP_CACHE', true );//## BB Hosted - Do not remove ##//
+define('WP_CACHE',true); //## BB Hosted - Do not remove ##//
 
 /////////////////////////////////////////////////////
 //// Start Buddyboss Hosted wp-config defaults ////
