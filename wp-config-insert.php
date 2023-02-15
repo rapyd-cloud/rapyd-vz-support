@@ -1,4 +1,3 @@
-define('WP_CACHE',true); //## BB Hosted - Do not remove ##//
 
 /////////////////////////////////////////////////////
 //// Start Buddyboss Hosted wp-config defaults ////
@@ -52,4 +51,3 @@ define('FS_CHMOD_FILE', (0664 & ~ umask()));
 
 //// End Buddyboss Hosted wp-config defaults ////
 ////////////////////////////////////////////////////
-
