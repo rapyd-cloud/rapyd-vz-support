@@ -34,6 +34,8 @@ define( 'WP_REDIS_IGNORED_GROUPS',
 ] 
 );
 
+
+
 /* define php memory limits */
 define( 'WP_MEMORY_LIMIT', '384M' );
 define( 'WP_MAX_MEMORY_LIMIT', '512M' );
