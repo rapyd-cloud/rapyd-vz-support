@@ -1,3 +1,4 @@
+define( 'WP_CACHE', true );
 
 /////////////////////////////////////////////////////
 //// Start Buddyboss Hosted wp-config defaults ////
