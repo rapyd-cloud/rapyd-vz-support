@@ -1,4 +1,4 @@
-# buddyboss-hosted-vz-support
+# Rapiyd Hosting Virtuozzo Support
 
-This repository provides resources that support the initial pre-configuration and onboarding tasks for interal websites for BuddyBoss hosted on virtuozzo infrastructure.
+This repository provides resources that support the initial pre-configuration and onboarding tasks for interal websites for Rapiyd Hosting on Virtuozzo infrastructure.
 
