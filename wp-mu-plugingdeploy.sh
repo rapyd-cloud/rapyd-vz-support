@@ -1,11 +1,18 @@
 #!/bin/bash
-# Set variables
+# Set variables  
+
+# Pass in true or false also 
+# from crontab pass in "false"
+# from virtuosso - pass in "true" for FORCE UPDATE - pass in "false" for CHECK FOR UPDATES
+
+FORCE=$1
+
 INSTALL_DIR="/var/www/webroot/rapyd-wp-files"
 VERSION_FILE="$INSTALL_DIR/version"
 DOWNLOAD_URL="https://github.com/rapyd-cloud/rapyd-wp-files/releases/latest/download/rapyd-wp-files.zip"
 MU_PLUGINS_DIR="/var/www/webroot/ROOT/wp-content/mu-plugins"
 # GitHub API authentication
-AUTH_TOKEN="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"
+AUTH_TOKEN="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"
 OWNER="rapyd-cloud"
 REPO="rapyd-wp-files"
 API_URL="https://api.github.com/repos/$OWNER/$REPO"
