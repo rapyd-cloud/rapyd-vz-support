@@ -7,7 +7,6 @@ DOWNLOAD_URL="https://github.com/rapyd-cloud/rapyd-wp-files/releases/latest/down
 MU_PLUGINS_DIR="/var/www/webroot/ROOT/wp-content/mu-plugins"
 
 # GitHub API authentication
-#AUTH_TOKEN="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"
 AUTH_TOKEN="$RAPYDGITPAK1"
 OWNER="rapyd-cloud"
 REPO="rapyd-wp-files"
