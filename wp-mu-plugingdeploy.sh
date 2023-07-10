@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#load parameter
+FORCE=$1
+
 # Set variables
 INSTALL_DIR="/var/www/webroot/rapyd-wp-files"
 VERSION_FILE="$INSTALL_DIR/version"
