@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/bash
+
+source /etc/profile
 
 #load parameter
 FORCE=$1
