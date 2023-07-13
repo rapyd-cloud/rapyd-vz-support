@@ -10,6 +10,7 @@ INSTALL_DIR="/var/www/webroot/rapyd-wp-files"
 VERSION_FILE="$INSTALL_DIR/version"
 DOWNLOAD_URL="https://github.com/rapyd-cloud/rapyd-wp-files/releases/latest/download/rapyd-wp-files.zip"
 MU_PLUGINS_DIR="/var/www/webroot/ROOT/wp-content/mu-plugins"
+FILE_NAME="rapyd-wp-files.zip"
 
 # GitHub API authentication
 AUTH_TOKEN="$RAPYDGITPAK1"
