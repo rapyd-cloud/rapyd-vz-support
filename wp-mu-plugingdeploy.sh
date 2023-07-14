@@ -5,6 +5,8 @@ source /etc/profile
 echo "$RAPYDGITPAK1"
 echo "$1"
 
+exit 0
+
 #load parameter
 FORCE=$1
 
