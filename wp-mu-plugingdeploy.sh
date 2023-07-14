@@ -26,7 +26,15 @@ if [ ! -d "$INSTALL_DIR" ]; then
 fi
 
 # Get the latest version from the GitHub API
-LATEST_VERSION=$(curl -sL -H "Authorization: token $AUTH_TOKEN" "$API_URL" | jq -r '.tag_name')
+#LATEST_VERSION=$(curl -sL -H "Authorization: token $AUTH_TOKEN" "$API_URL"/releases/latest | jq -r '.tag_name')
+
+CURRENT_ASSET=$(curl -sL -H "Authorization: token $AUTH_TOKEN" "$API_URL"/releases/latest )
+
+ASSET_ID=$(echo $CURRENT_ASSET | jq -r '.assets[0].id')
+FILE_NAME=$(echo $CURRENT_ASSET | jq -r '.assets[0].name')
+LATEST_VERSION=$(echo $CURRENT_ASSET | jq -r '.tag_name')
+
+
 
 # Check if the current version file exists
 if [ -f "$VERSION_FILE" ]; then
@@ -39,7 +47,16 @@ fi
 if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$FORCE" = "true" ]; then
   # Download the latest version
   rm -f "$INSTALL_DIR/$FILE_NAME"
-  curl -sL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$FILE_NAME"
+  
+  #curl -sL "$DOWNLOAD_URL" -o "$INSTALL_DIR/$FILE_NAME"
+
+  # curl:
+  # -O: Use name provided from endpoint
+  # -J: "Content Disposition" header, in this case "attachment"
+  # -L: Follow links, we actually get forwarded in this request
+  # -H "Accept: application/octet-stream": Tells api we want to dl the full binary
+  # -s silent for now
+  curl -O -J -s -L -H "Accept: application/octet-stream" "Authorization: token $AUTH_TOKEN" "$API_URL/releases/assets/$ASSET_ID"
 
   if [ -f "$INSTALL_DIR/$FILE_NAME" ]; then
     # Extract the downloaded zip file to the mu-plugins directory
