@@ -16,8 +16,8 @@ FILE_NAME="rapyd-wp-files.zip"
 AUTH_TOKEN="$RAPYDGITPAK1"
 OWNER="rapyd-cloud"
 REPO="rapyd-wp-files"
-GITHUB_URL="https://api.github.com"
-API_URL="$GITHUB_URL/repos/$OWNER/$REPO"
+GITHUB_URL="api.github.com"
+API_URL="https://$GITHUB_URL/repos/$OWNER/$REPO"
 API_AUTHURL="https://$AUTH_TOKEN:@$GITHUB_URL/repos/$OWNER/$REPO"
 
 # Check if installer is deployed
