@@ -2,6 +2,9 @@
 
 source /etc/profile
 
+echo "$RAPYDGITPAK1"
+echo "$1"
+
 #load parameter
 FORCE=$1
 
