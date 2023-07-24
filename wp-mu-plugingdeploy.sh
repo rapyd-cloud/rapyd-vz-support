@@ -6,7 +6,7 @@ source /etc/profile
 FORCE=$1
 
 # Set variables
-INSTALL_DIR="/var/www/webroot/rapyd-wp-files"
+INSTALL_DIR="/usr/local/rapyd-wp-files"
 VERSION_FILE="$INSTALL_DIR/version"
 DOWNLOAD_URL="https://github.com/rapyd-cloud/rapyd-wp-files/releases/latest/download/rapyd-wp-files.zip"
 MU_PLUGINS_DIR="/var/www/webroot/ROOT/wp-content/mu-plugins"
