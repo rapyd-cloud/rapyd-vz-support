@@ -92,3 +92,5 @@ if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$FORCE" = "true" ]; then
 else
   echo "Plugin is already up to date."
 fi
+
+#end of script
