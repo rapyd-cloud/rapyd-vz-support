@@ -87,6 +87,7 @@ if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$FORCE" = "true" ]; then
     echo "Plugin deployed successfully."
   else
     echo "Failed to download the plugin."
+    exit 999
   fi
 else
   echo "Plugin is already up to date."
