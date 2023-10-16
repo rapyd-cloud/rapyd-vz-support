@@ -28,6 +28,9 @@ if [ ! -d "$INSTALL_DIR" ]; then
   FORCE="true"
 fi
 
+# change to installer directory 
+cd $INSTALL_DIR
+
 # Get the latest version from the GitHub API
 #LATEST_VERSION=$(curl -sL -H "Authorization: token $AUTH_TOKEN" "$API_URL"/releases/latest | jq -r '.tag_name')
 
@@ -36,6 +39,17 @@ CURRENT_ASSET=$(curl -sL -H "Authorization: token $AUTH_TOKEN" "$API_URL"/releas
 ASSET_ID=$(echo $CURRENT_ASSET | jq -r '.assets[0].id')
 FILE_NAME=$(echo $CURRENT_ASSET | jq -r '.assets[0].name')
 LATEST_VERSION=$(echo $CURRENT_ASSET | jq -r '.tag_name')
+
+#echo $ASSET_ID
+#echo $FILE_NAME
+#echo $LATEST_VERSION
+#echo $API_URL
+#echo $API_AUTHURL
+
+rm -f "$INSTALL_DIR/$FILE_NAME"
+
+# create final url
+FINALURL="$API_AUTHURL/releases/assets/$ASSET_ID"
 
 # Check if the current version file exists
 if [ -f "$VERSION_FILE" ]; then
@@ -58,7 +72,8 @@ if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$FORCE" = "true" ]; then
   # -H "Accept: application/octet-stream": Tells api we want to dl the full binary
   # -s silent for now
   #curl -O -J -s -L -H "Accept: application/octet-stream" "Authorization: token $AUTH_TOKEN" "$API_URL/releases/assets/$ASSET_ID"
-  curl -O -J -s -L -H "Accept: application/octet-stream" "$API_AUTHURL/releases/assets/$ASSET_ID"
+
+    curl -O -J -s -L -H "Accept: application/octet-stream" "$FINALURL"
 
   if [ -f "$INSTALL_DIR/$FILE_NAME" ]; then
     # Extract the downloaded zip file to the mu-plugins directory
