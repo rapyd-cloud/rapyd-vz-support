@@ -14,6 +14,7 @@ if [[ $param == "stop" ]]; then
     exit; 0;
 fi
 
+# Never allow to run duplicate instance of this script.
 if [ -e "$lock_file" ]; 
 then
   echo "Another instance of the script is already running."
@@ -23,7 +24,7 @@ else
 fi;
 
 
-# Function to handle Ctrl+C
+# Captures the CTRL+C and close the script gracefully. :)
 ctrl_c_handler() {
   echo "..Stopping the watcher...";
   rm "$lock_file";
