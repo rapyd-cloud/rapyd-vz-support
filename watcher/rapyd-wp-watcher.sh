@@ -149,16 +149,16 @@ while true; do
     get_notify=$((get_notify));
 
     if [ "$RAPYD_CALL_COUNT" -ge "$max_in_min" ] && [ "$get_notify" -eq 1 ]; then
-        echo "Max call limit reach within 1 min";
+        echo "Max call reached for 1min.";
     fi;
 
     if [ "$max_in_min" -gt "$RAPYD_CALL_COUNT" ] && [ "$get_notify" -eq 1 ]; then
         echo "0" > "/dev/shm/RAPYD_WATCHER/SENT_NOTIFY_FLAG";
-        echo "Send Bash";
+        echo "Notifying..";
         bash "$script_dir/notify-core.sh" & # send to background.
         increase_call_count;
     else 
-        echo "max $max_in_min , call count = $RAPYD_CALL_COUNT , flag - $get_notify nothing to do";
+        echo "Nothing to do $RAPYD_CALL_COUNT out of $max_in_min left.";
     fi
 
 
