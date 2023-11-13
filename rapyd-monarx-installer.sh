@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# must be run as sudo su - 
+# must pass in vzenvironmentname , vzuid , vznodeid
+
 #load parameters
 VZENVNAME=$1
 VZUID=$2
