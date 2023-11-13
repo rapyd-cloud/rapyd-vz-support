@@ -23,8 +23,7 @@ if [ -L "$MONARX_LINKED" ]; then
 fi
 ln -sf "$MONARX_SOPATH/$MONARX_SO" "$MONARX_EXT_DIR"
 
-# clean up and existing php.ini file and then create new one 
-
+# clean up any existing monarxprotect.ini file and then create new one 
 if [ -f "$MONARX_INI_FILEPATH" ]; then
   rm -f "$MONARX_INI_FILEPATH"
 fi
