@@ -1,5 +1,7 @@
 #! /bin/bash
 
+source /etc/profile
+
 # must be run as sudo su - 
 # must pass in vzenvironmentname , vzuid , vznodeid
 
@@ -47,6 +49,16 @@ echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
 
 if [[ "$VZENVNAME" == *"-staging"* ]]; then
     echo "tags=staging" >> monarx-agent.conf
+fi
+
+if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]; then
+    echo "tags=staging" >> monarx-agent.conf
+    echo "tags=testing" >> monarx-agent.conf
+fi
+
+if [[ "$HOSTNAME" == *"developbb.dev"* ]]; then
+    echo "tags=staging" >> monarx-agent.conf
+    echo "tags=developbb" >> monarx-agent.conf
 fi
 
 totalk=$(awk '/MemTotal:/{print $2}' /proc/meminfo)
