@@ -11,25 +11,34 @@
 # VERSION=7.88.1
 VERSION=8.4.0
 
-cd ~
+if grep -a 'AlmaLinux' /etc/system-release ; then
+  # work out what we need to do here for AlmaLinux 
 
-sudo yum update -y
-sudo yum install wget gcc openssl-devel make -y
+else
+  # assume this is the current Centos 7 based platform install
 
-wget https://curl.haxx.se/download/curl-${VERSION}.tar.gz
-tar -xzvf curl-${VERSION}.tar.gz 
-sudo rm -f curl-${VERSION}.tar.gz
-cd curl-${VERSION}
-./configure --prefix=/usr/local --with-ssl
-sudo make clean
-sudo make
-sudo make install
-
-sudo ln -sf /usr/local/lib/libcurl.so.4 /usr/lib/libcurl.so.4
-
-sudo ldconfig
-
-cd ~
-rm -rf curl-${VERSION}
+  # this is a raw make clear && make && make install = very inefficient  
+  # convert to an RPM package 
+  cd ~
+  
+  sudo yum update -y
+  sudo yum install wget gcc openssl-devel make -y
+  
+  wget https://curl.haxx.se/download/curl-${VERSION}.tar.gz
+  tar -xzvf curl-${VERSION}.tar.gz 
+  sudo rm -f curl-${VERSION}.tar.gz
+  cd curl-${VERSION}
+  ./configure --prefix=/usr/local --with-ssl
+  sudo make clean
+  sudo make
+  sudo make install
+  
+  sudo ln -sf /usr/local/lib/libcurl.so.4 /usr/lib/libcurl.so.4
+  
+  sudo ldconfig
+  
+  cd ~
+  rm -rf curl-${VERSION}
+fi
 
 # end of script
