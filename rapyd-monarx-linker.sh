@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# must be run as litespeed user 
+
 cd ~ 
 
 # define logic variables to determine which monarx linked so file we should deploy
