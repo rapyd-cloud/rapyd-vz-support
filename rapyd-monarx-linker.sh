@@ -17,7 +17,7 @@ MONARX_SO="monarxprotect-php$MONARX_PHPSTRIPPED.so"
 MONARX_INI_FILEPATH="$MONARX_INI_DIR/monarxprotect.ini"
 MONARX_LINKED="$MONARX_EXT_DIR/$MONARX_SO"
 
-# clean up and existing linked file and then link so
+# clean up any existing linked file and then link so
 if [ -L "$MONARX_LINKED" ]; then
   rm -f "$MONARX_LINKED"
 fi
