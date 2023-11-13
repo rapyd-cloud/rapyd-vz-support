@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# must be run as litespeed user 
+# must be run as root user 
 
 cd ~ 
 
@@ -29,5 +29,6 @@ if [ -f "$MONARX_INI_FILEPATH" ]; then
   rm -f "$MONARX_INI_FILEPATH"
 fi
 echo "extension=$MONARX_SO" > "$MONARX_INI_FILEPATH"
+chown litespeed:litespeed "$MONARX_INI_FILEPATH"
 
 # end of monarx linker logic
