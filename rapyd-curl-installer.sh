@@ -13,7 +13,8 @@ VERSION=8.4.0
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
-
+  cd ~
+  
 else
   # assume this is the current Centos 7 based platform install
 
