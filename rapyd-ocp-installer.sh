@@ -94,4 +94,6 @@ wp redis enable --force
 
 wp cache flush
 
+wp redis flush
+
 # End of Object Cache Pro deployment
