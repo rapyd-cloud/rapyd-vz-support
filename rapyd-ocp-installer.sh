@@ -1,9 +1,7 @@
-#! /bin/bash
-
-source /etc/profile
+#!/usr/bin/bash
 
 # must be run as litespeed
-# must pass in  OCP_TOKEN , vzuid , vznodeid
+# must pass in  OCP_TOKEN 
 
 ##################################################################################
 #load parameters
@@ -43,7 +41,7 @@ fi
 ##################################################################################
 # REMOVE any existing versions of object cache pro
 
-cd $WP_ROOT
+cd "$WP_ROOT"
 
 rm -f "$WP_ROOT/wp-content/advanced-cache.php"
 rm -f "$WP_ROOT/wp-content/object-cache.php"
@@ -58,12 +56,17 @@ set -e
 ## INSTALL OCP
 ##################################################################################
 
-cd $WP_ROOT
+cd "$WP_ROOT"
+PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT")
+
+echo "$PLUGIN_PATH"
 
 PLUGIN=$(mktemp)
 curl -sSL -o $PLUGIN "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
-unzip $PLUGIN -d "$(wp plugin path --allow-root --path=$WP_ROOT)" 
+unzip -o $PLUGIN -d "$PLUGIN_PATH" 
 rm $PLUGIN
+
+cd "$WP_ROOT"
 
 OCP_CONFIG=$(cat <<EOF
 [
@@ -88,6 +91,8 @@ OCP_CONFIG=$(cat <<EOF
 ]
 EOF
 )
+
+cd "$WP_ROOT"
 
 wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}"
 
