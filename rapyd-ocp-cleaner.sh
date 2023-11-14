@@ -2,6 +2,8 @@
 
 cd /var/www/webroot/ROOT/
 
+# if installed clean up gracefully 
+
 wp plugin is-installed object-cache-pro
 
 if [ "$?" -eq 0 ]
