@@ -38,16 +38,6 @@ then
     fi
 fi
 
-##################################################################################
-# REMOVE any existing versions of object cache pro
-
-cd "$WP_ROOT"
-
-rm -f "$WP_ROOT/wp-content/advanced-cache.php"
-rm -f "$WP_ROOT/wp-content/object-cache.php"
-rm -f "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro.php"
-rm -rf "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro"
-
 # deploy new version of object cache pro
 
 set -e
