@@ -10,13 +10,6 @@ if [ -z "$RELAY_KEY" ]
   exit 9991
 fi
 
-
-# inject some dependencies for Centos7
-sudo yum install -y openssl11-libs
-
-
-
-
 RELAY_VERSION="v0.6.3"                         # https://builds.r2.relay.so/meta/latest
 RELAY_PHP=$(php-config --version | cut -c -3)  # 8.1
 RELAY_INI_DIR=$(php-config --ini-dir)          # /etc/php/8.1/cli/conf.d/
