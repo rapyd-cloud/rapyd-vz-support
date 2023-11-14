@@ -23,6 +23,8 @@ fi
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
 
+cd $WP_ROOT
+
 wp plugin is-installed litespeed-cache
 
 if [ "$?" -eq 0 ]
@@ -56,6 +58,7 @@ set -e
 ## INSTALL OCP
 ##################################################################################
 
+cd $WP_ROOT
 
 PLUGIN=$(mktemp)
 curl -sSL -o $PLUGIN "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
@@ -97,5 +100,3 @@ wp redis enable --force
 wp cache flush
 
 # End of Object Cache Pro deployment
-
-
