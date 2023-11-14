@@ -11,6 +11,13 @@ WP_ROOT="/var/www/webroot/ROOT"
 
 REDIS_CLIENT="phpredis"   #  can be switched to relay when its ready
 
+RELAY_EXT_DIR=$(php-config --extension-dir)
+RELAY_SO=$RELAY_EXT_DIR/relay.so
+
+if [ -f "$RELAY_SO" ]; then
+  REDIS_CLIENT="relay"
+fi
+
 REDIS_DATABASE=0
 
 if [ -z "$OCP_TOKEN" ]
