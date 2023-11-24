@@ -48,36 +48,58 @@ echo "tags=$VZNODEID" >> monarx-agent.conf
 echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
 
 IS_STAGING=false
+IS_DEVELOPER=false
 
-if [[ "$RAPYD_PLAN" == *"STAGING"* ]]; then
+if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
+  then
     IS_STAGING=true
 fi
 
-if [[ "$VZENVNAME" == *"-staging"* ]]; then
+if [[ "$VZENVNAME" == *"-staging"* ]] 
+  then
     IS_STAGING=true
 fi
 
-if [[ "$VZENVNAME" == "stg-"* ]]; then
+if [[ "$VZENVNAME" == "stg-"* ]]
+  then
     IS_STAGING=true
 fi
 
-if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]; then
+if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]
+  then
     IS_STAGING=true
     echo "tags=testing" >> monarx-agent.conf
 fi
 
-if [[ "$HOSTNAME" == *"developbb.dev"* ]]; then
+if [[ "$HOSTNAME" == *"developbb.dev"* ]] 
+  then
     IS_STAGING=true
-    echo "tags=developbb" >> monarx-agent.conf
-fi
-
-if [[ "$IS_STAGING" = true ]]; then
-    echo "tags=staging" >> monarx-agent.conf
+    IS_DEVELOPER=true
 fi
 
 totalk=$(awk '/MemTotal:/{print $2}' /proc/meminfo)
 devmemlimit=2100000 
 if [[ $totalk -lt $devmemlimit ]]
+  then
+    IS_DEVELOPER=true
+fi
+
+if [[ "$RAPYD_PLAN" == *"DEVELOPER"* ]]
+  then
+    IS_DEVELOPER=true
+fi
+
+if [[ "$RAPYD_PLAN" == "DEV"* ]]
+  then
+    IS_DEVELOPER=true
+fi
+
+if [[ "$IS_STAGING" = true ]]
+  then
+    echo "tags=staging" >> monarx-agent.conf
+fi
+
+if [[ "$IS_DEVELOPER" = true ]] 
   then
     echo "tags=dev" >> monarx-agent.conf
     echo "tags=developer" >> monarx-agent.conf
@@ -85,6 +107,7 @@ fi
 
 now=$(date)
 echo "# deployed: $now"  >> monarx-agent.conf
+
 echo "#########################################################################" >> monarx-agent.conf
 
 # install the repository repo and pgp key
