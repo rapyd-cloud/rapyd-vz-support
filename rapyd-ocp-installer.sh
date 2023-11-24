@@ -14,6 +14,7 @@ fi
 
 #################################################################################
 WP_ROOT="/var/www/webroot/ROOT"
+
 REDIS_CLIENT="phpredis"   #  can be switched to relay when its ready
 REDIS_DATABASE=0
 
@@ -33,7 +34,7 @@ fi
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
 
-cd $WP_ROOT
+cd "$WP_ROOT"
 
 wp plugin is-installed litespeed-cache
 
