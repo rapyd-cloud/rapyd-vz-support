@@ -47,18 +47,32 @@ echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
 echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
 
+IS_STAGING=false
+
+if [[ "$RAPYD_PLAN" == *"STAGING"* ]]; then
+    IS_STAGING=true
+fi
+
 if [[ "$VZENVNAME" == *"-staging"* ]]; then
-    echo "tags=staging" >> monarx-agent.conf
+    IS_STAGING=true
+fi
+
+if [[ "$VZENVNAME" == "stg-"* ]]; then
+    IS_STAGING=true
 fi
 
 if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]; then
-    echo "tags=staging" >> monarx-agent.conf
+    IS_STAGING=true
     echo "tags=testing" >> monarx-agent.conf
 fi
 
 if [[ "$HOSTNAME" == *"developbb.dev"* ]]; then
-    echo "tags=staging" >> monarx-agent.conf
+    IS_STAGING=true
     echo "tags=developbb" >> monarx-agent.conf
+fi
+
+if [[ "$IS_STAGING" = true ]]; then
+    echo "tags=staging" >> monarx-agent.conf
 fi
 
 totalk=$(awk '/MemTotal:/{print $2}' /proc/meminfo)
