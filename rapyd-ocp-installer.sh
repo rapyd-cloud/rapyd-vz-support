@@ -33,7 +33,7 @@ fi
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
 
-cd $WP_ROOT
+cd "$WP_ROOT"
 
 wp plugin is-installed litespeed-cache --quiet
 
@@ -58,16 +58,13 @@ set -e
 ## INSTALL OCP
 ##################################################################################
 
-cd "$WP_ROOT"
+cd "/tmp"
 PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet)
+OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
 
-echo "$PLUGIN_PATH"
-
-OCP_TMP=$(mktemp ocp.XXXXXXXX)
-
-curl -sSL -o "$OCP_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
-unzip -o "$OCP_TMP" -d "$PLUGIN_PATH" 
-rm "$OCP_TMP"
+curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
+unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
+rm "$OOCP_PLUGIN_TMP"
 
 cd "$WP_ROOT"
 
