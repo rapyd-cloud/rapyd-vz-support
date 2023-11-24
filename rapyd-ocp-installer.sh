@@ -35,17 +35,17 @@ fi
 
 cd $WP_ROOT
 
-wp plugin is-installed litespeed-cache
+wp plugin is-installed litespeed-cache --quiet
 
 if [ "$?" -eq 0 ]
 then
-   wp plugin is-active litespeed-cache
+   wp plugin is-active litespeed-cache --quiet
 
    if [ "$?" -eq 0 ]
      then
 
        ## disable the ls object cache before doing any other actions
-       wp litespeed-option set object false   
+       wp litespeed-option set object false --quiet   
      
     fi
 fi
@@ -59,7 +59,7 @@ set -e
 ##################################################################################
 
 cd "$WP_ROOT"
-PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT")
+PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet)
 
 echo "$PLUGIN_PATH"
 
@@ -97,16 +97,16 @@ EOF
 
 cd "$WP_ROOT"
 
-wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}"
+wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
-wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false"
+wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
 
-wp plugin activate object-cache-pro
+wp plugin activate object-cache-pro --quiet
 
-wp redis enable --force
+wp redis enable --force --quiet
 
-wp cache flush
+wp cache flush --quiet
 
-wp redis flush
+wp redis flush --quiet
 
 # End of Object Cache Pro deployment
