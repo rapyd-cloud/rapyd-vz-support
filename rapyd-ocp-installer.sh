@@ -64,7 +64,7 @@ OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
 
 curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
 unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
-rm "$OOCP_PLUGIN_TMP"
+rm "$OCP_PLUGIN_TMP"
 
 cd "$WP_ROOT"
 
