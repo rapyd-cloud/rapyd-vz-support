@@ -63,10 +63,11 @@ PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT")
 
 echo "$PLUGIN_PATH"
 
-PLUGIN=$(mktemp)
-curl -sSL -o $PLUGIN "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
-unzip -o $PLUGIN -d "$PLUGIN_PATH" 
-rm $PLUGIN
+OCP_TMP=$(mktemp ocp.XXXXXXXX)
+
+curl -sSL -o "$OCP_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
+unzip -o "$OCP_TMP" -d "$PLUGIN_PATH" 
+rm "$OCP_TMP"
 
 cd "$WP_ROOT"
 
