@@ -105,8 +105,7 @@ if [ "$?" -ne 0 ]
     [
      'non_persistent_groups' => [
             'wc_session_id',
-        ],
-    
+        ]
     ]
     EOF
     )
