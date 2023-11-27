@@ -12,3 +12,9 @@ else
   sudo yum install -y openssl11-libs
 
 fi
+
+# install relay required so library updates
+cd /usr/local/lsws/lsphp/etc/php.d
+      
+wget https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/996-rapyd-relay.ini
+chown litespeed:litespeed 996-rapyd-relay.ini
