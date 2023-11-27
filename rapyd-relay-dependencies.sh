@@ -18,3 +18,5 @@ cd /usr/local/lsws/lsphp/etc/php.d
       
 wget https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/996-rapyd-relay.ini
 chown litespeed:litespeed 996-rapyd-relay.ini
+
+#end relay dependencies deployment
