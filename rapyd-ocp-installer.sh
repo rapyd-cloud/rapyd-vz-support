@@ -106,12 +106,12 @@ OCP_MERGE=$(cat << EOF
 EOF
 )
 
-#wp config has "OBJECTCACHE_MERGE" --quiet
+wp config has "OBJECTCACHE_MERGE" --quiet
 
-#if [ "$?" -ne 0 ]
-#  then
+if [ "$?" -ne 0 ]
+  then
     wp config set --raw OBJECTCACHE_MERGE "${OCP_MERGE}" --quiet
-#fi
+fi
 
 ##################################################################################
 ## DISABLE OTHER REDIS TOOLS PER GUIDE
