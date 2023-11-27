@@ -50,21 +50,16 @@ then
     fi
 fi
 
-# deploy new version of object cache pro
+
+##################################################################################
+## deploy new version of object cache pro
+##################################################################################
 
 set -e
 
 ##################################################################################
-## INSTALL OCP
+## SETUP OCP CONFIG
 ##################################################################################
-
-cd "/tmp"
-PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet)
-OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
-
-curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
-unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
-rm "$OCP_PLUGIN_TMP"
 
 cd "$WP_ROOT"
 
@@ -97,6 +92,22 @@ cd "$WP_ROOT"
 wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
+
+##################################################################################
+## INSTALL OCP
+##################################################################################
+
+cd "/tmp"
+PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet)
+OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
+
+curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
+unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
+rm "$OCP_PLUGIN_TMP"
+
+##################################################################################
+## ACTIVATE OCP and enable redis
+##################################################################################
 
 wp plugin activate object-cache-pro --quiet
 
