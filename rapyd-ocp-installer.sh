@@ -7,7 +7,7 @@
 #load parameters
 OCP_TOKEN=$1
 
-
+##################################################################################
 
 if [ -z "$OCP_TOKEN" ]
   then
@@ -103,6 +103,8 @@ cd "$WPOCP_ROOT"
 ##################################################################################
 ## DISABLE OTHER REDIS TOOLS PER GUIDE
 ##################################################################################
+
+cd "$WPOCP_ROOT"
 
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
 
