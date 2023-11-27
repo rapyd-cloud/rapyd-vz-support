@@ -101,9 +101,9 @@ cd "$WP_ROOT"
 
 OCP_MERGE=$(cat <<EOF
 [
- 'non_persistent_groups' => [
-   'wc_session_id', 
-   ],
+'non_persistent_groups' => [
+'wc_session_id',
+],
 ]
 EOF
 )
