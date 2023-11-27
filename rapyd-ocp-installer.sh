@@ -96,6 +96,8 @@ wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 ## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
 ##################################################################################
 
+cd "$WP_ROOT"
+
 wp config has OBJECTCACHE_MERGE  --quiet
 
 if [ "$?" -ne 0 ]
