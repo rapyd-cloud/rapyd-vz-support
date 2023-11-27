@@ -51,7 +51,6 @@ then
     fi
 fi
 
-
 ##################################################################################
 ## deploy new version of object cache pro
 ##################################################################################
@@ -64,7 +63,7 @@ set -e
 
 cd "$WP_ROOT"
 
-OCP_CONFIG=$(cat <<EOF
+OCP_CONFIG=$(cat << EOF
 [
 'token' => '${OCP_TOKEN}',
 'host' => '/var/run/redis/redis.sock',
@@ -98,8 +97,7 @@ wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
 cd "$WP_ROOT"
 
-
-OCP_MERGE=$(cat <<EOF
+OCP_MERGE=$(cat << EOF
 [
 'non_persistent_groups' => [
 'wc_session_id',
@@ -150,4 +148,3 @@ wp cache flush --quiet
 wp redis flush --quiet
 
 # End of Object Cache Pro deployment
-
