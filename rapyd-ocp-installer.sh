@@ -115,7 +115,7 @@ if [ "$?" -ne 0 ]
 fi
 
 ##################################################################################
-## DISABLE OTHER REDIS TOOLS 
+## DISABLE OTHER REDIS TOOLS PER GUIDE
 ##################################################################################
 
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
