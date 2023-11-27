@@ -92,6 +92,33 @@ cd "$WP_ROOT"
 
 wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
+##################################################################################
+## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
+##################################################################################
+
+wp config has OBJECTCACHE_MERGE  --quiet
+
+if [ "$?" -ne 0 ]
+  then
+
+    OCP_MERGE=$(cat <<EOF
+    [
+     'non_persistent_groups' => [
+            'wc_session_id',
+        ],
+    
+    ]
+    EOF
+    )
+
+    wp config set --raw OBJECTCACHE_MERGE "${OCP_MERGE}" --quiet
+
+fi
+
+##################################################################################
+## DISABLE OTHER REDIS TOOLS 
+##################################################################################
+
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
 
 ##################################################################################
