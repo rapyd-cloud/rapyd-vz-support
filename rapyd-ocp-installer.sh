@@ -13,8 +13,9 @@ if [ -z "$OCP_TOKEN" ]
 fi
 
 #################################################################################
-WP_ROOT="/var/www/webroot/ROOT"
-REDIS_CLIENT="phpredis"   #  can be switched to relay when its ready
+WP_ROOT="/var/www/webroot/ROOT"   
+
+REDIS_CLIENT="phpredis"           #  can be switched to relay when its ready
 REDIS_DATABASE=0
 
 #################################################################################
@@ -108,6 +109,8 @@ rm "$OCP_PLUGIN_TMP"
 ##################################################################################
 ## ACTIVATE OCP and enable redis
 ##################################################################################
+
+cd "$WP_ROOT"
 
 wp plugin activate object-cache-pro --quiet
 
