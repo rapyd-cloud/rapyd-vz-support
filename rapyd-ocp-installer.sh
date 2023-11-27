@@ -98,23 +98,7 @@ wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
 cd "$WP_ROOT"
 
-wp config has OBJECTCACHE_MERGE --quiet
 
-if [ "$?" -ne 0 ]
-  then
-
-    OCP_MERGE=$(cat <<EOF
-    [
-     'non_persistent_groups' => [
-            'wc_session_id',
-        ]
-    ]
-    EOF
-    )
-
-    wp config set --raw OBJECTCACHE_MERGE "${OCP_MERGE}" --quiet
-
-fi
 
 ##################################################################################
 ## DISABLE OTHER REDIS TOOLS PER GUIDE
