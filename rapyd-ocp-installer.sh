@@ -37,17 +37,17 @@ fi
 # force deactivation of litespeed object cache pro if it is enabled
 
 cd "$WPOCP_ROOT"
-wp plugin is-installed litespeed-cache --quiet
+wp plugin is-installed litespeed-cache --quiet 2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
-   wp plugin is-active litespeed-cache --quiet
+   wp plugin is-active litespeed-cache --quiet 2>/dev/null
 
    if [ "$?" -eq 0 ]
      then
 
        ## disable the ls object cache before doing any other actions
-       wp litespeed-option set object false --quiet   
+       wp litespeed-option set object false --quiet 2>/dev/null
      
     fi
 fi
@@ -88,7 +88,7 @@ EOF
 )
 
 cd "$WPOCP_ROOT"
-wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
+wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet 2>/dev/null
 
 ##################################################################################
 ## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
@@ -102,14 +102,14 @@ cd "$WPOCP_ROOT"
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
+wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet 2>/dev/null
 
 ##################################################################################
 ## INSTALL OCP
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-PLUGIN_PATH=$(wp plugin path --allow-root --path="$WPOCP_ROOT" --quiet)
+PLUGIN_PATH=$(wp plugin path --allow-root --path="$WPOCP_ROOT" --quiet 2>/dev/null)
 
 cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
@@ -123,16 +123,16 @@ rm "$OCP_PLUGIN_TMP"
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-wp plugin activate object-cache-pro --quiet
+wp plugin activate object-cache-pro --quiet 2>/dev/null
 
 cd "$WPOCP_ROOT"
-wp redis enable --force --quiet
+wp redis enable --force --quiet 2>/dev/null
 
 cd "$WPOCP_ROOT"
-wp cache flush --quiet
+wp cache flush --quiet 2>/dev/null
 
 cd "$WPOCP_ROOT"
-wp redis flush --quiet
+wp redis flush --quiet 2>/dev/null
 
 # End of Object Cache Pro deployment
 ##################################################################################
