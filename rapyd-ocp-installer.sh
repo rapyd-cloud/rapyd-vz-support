@@ -123,20 +123,16 @@ rm "$OCP_PLUGIN_TMP"
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-
 wp plugin activate object-cache-pro --quiet
 
 cd "$WPOCP_ROOT"
-
 wp redis enable --force --quiet
 
 cd "$WPOCP_ROOT"
-
 wp cache flush --quiet
 
 cd "$WPOCP_ROOT"
-
 wp redis flush --quiet
 
 # End of Object Cache Pro deployment
-
+##################################################################################
