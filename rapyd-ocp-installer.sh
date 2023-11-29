@@ -37,7 +37,6 @@ fi
 # force deactivation of litespeed object cache pro if it is enabled
 
 cd "$WPOCP_ROOT"
-
 wp plugin is-installed litespeed-cache --quiet
 
 if [ "$?" -eq 0 ]
@@ -64,7 +63,6 @@ set -e
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-
 OCP_CONFIG=$(cat << EOF
 [
 'token' => '${OCP_TOKEN}',
@@ -90,7 +88,6 @@ EOF
 )
 
 cd "$WPOCP_ROOT"
-
 wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 
 ##################################################################################
@@ -98,22 +95,23 @@ wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-
+## TODO - talk further with Till on this 
 
 ##################################################################################
 ## DISABLE OTHER REDIS TOOLS PER GUIDE
 ##################################################################################
 
 cd "$WPOCP_ROOT"
-
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet
 
 ##################################################################################
 ## INSTALL OCP
 ##################################################################################
 
-cd "/tmp"
+cd "$WPOCP_ROOT"
 PLUGIN_PATH=$(wp plugin path --allow-root --path="$WPOCP_ROOT" --quiet)
+
+cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
 
 curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
@@ -141,5 +139,4 @@ cd "$WPOCP_ROOT"
 wp redis flush --quiet
 
 # End of Object Cache Pro deployment
-
 
