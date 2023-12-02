@@ -8,9 +8,11 @@
 # start of script
 
 # 7.80.0 seems to be minimum viable version that doesnt lead to conflicts with php and openssl 
-VERSION=7.80.0
+# 8.4.0 is the current release - it contains a serious vulnerability patch 
+# currently we have no evidence that is has any observed issues with centos 7
+# VERSION=7.80.0
 # VERSION=7.88.1
-#VERSION=8.4.0
+VERSION=8.4.0
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
