@@ -11,7 +11,7 @@
 
 # 7.80.0 seems to be minimum viable version that doesnt lead to conflicts with php and openssl 
 # VERSION=7.80.0
-# 7.88.1 is last version documented in centos wiki
+# 7.88.0 is last version documented in centos wiki
 # VERSION=7.88.0
 # VERSION=7.88.1
 VERSION=8.4.0
