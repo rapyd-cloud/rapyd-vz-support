@@ -20,7 +20,7 @@ else
   # assume this is the current Centos 7 based platform install
 
   # this is a raw make clear && make && make install = very inefficient  
-  # convert to an RPM package 
+  # todo: convert to an RPM package 
   cd ~
 
   # dont update platform at this point - it seems to cause issues with php8.2.5 being partially updated to php8.2.12
