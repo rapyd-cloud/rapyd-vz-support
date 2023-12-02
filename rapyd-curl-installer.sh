@@ -7,9 +7,10 @@
 
 # start of script
 
-# VERSION=7.80.0
+# 7.80.0 seems to be minimum viable version that doesnt lead to conflicts with php and openssl 
+VERSION=7.80.0
 # VERSION=7.88.1
-VERSION=8.4.0
+#VERSION=8.4.0
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
@@ -21,8 +22,9 @@ else
   # this is a raw make clear && make && make install = very inefficient  
   # convert to an RPM package 
   cd ~
-  
-  sudo yum update -y
+
+  # dont update platform at this point - it seems to cause issues with php8.2.5 being partially updated to php8.2.12
+  #sudo yum update -y
   sudo yum install wget gcc openssl-devel make -y
   
   wget https://curl.haxx.se/download/curl-${VERSION}.tar.gz
