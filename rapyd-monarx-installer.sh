@@ -55,6 +55,7 @@ echo "tags=$VZENVNAME" >> monarx-agent.conf
 echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
 echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
+echo "tags=$HOSTNAME" >> monarx-agent.conf
 
 if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
   then
