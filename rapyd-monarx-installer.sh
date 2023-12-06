@@ -75,8 +75,6 @@ fi
 if [[ "$HOSTNAME" == *"rapydapps.cloud"* ]]
   then
     echo "tags=rapydapps.cloud" >> monarx-agent.conf  
-    IS_STAGING=true
-    IS_TESTING=true
 fi
 
 if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]
