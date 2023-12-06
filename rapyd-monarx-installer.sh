@@ -25,7 +25,6 @@ if [ -z "$VZNODEID" ]
 fi
 
 # setup defaults
-
 IS_TESTING=false
 IS_STAGING=false
 IS_DEVELOPER=false
@@ -39,23 +38,24 @@ echo "#########################################################################"
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
 echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
 echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
+
 echo "host_id=$VZNODEID-$VZENVNAME" >> monarx-agent.conf
+
 echo "exclude_dirs=/virtfs" >> monarx-agent.conf
 echo "exclude_dirs=/(clam_|\.)?quarantine" >> monarx-agent.conf
 echo "exclude_users=^virtfs$" >> monarx-agent.conf
+
 echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
 echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
 echo "user_base=/tmp/" >> monarx-agent.conf
 echo "user_base=/home/litespeed/" >> monarx-agent.conf
-echo "tags=vz" >> monarx-agent.conf
-echo "tags=litespeed" >> monarx-agent.conf
-echo "tags=rapydapps" >> monarx-agent.conf
-echo "tags=UID:$VZUID" >> monarx-agent.conf
-echo "tags=$VZENVNAME" >> monarx-agent.conf
-echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
-echo "tags=$VZNODEID" >> monarx-agent.conf
-echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
+
 echo "tags=$HOSTNAME" >> monarx-agent.conf
+echo "tags=$VZNODEID" >> monarx-agent.conf
+echo "tags=$VZENVNAME" >> monarx-agent.conf
+echo "tags=UID:$VZUID" >> monarx-agent.conf
+echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
+echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
 
 if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
   then
@@ -72,14 +72,23 @@ if [[ "$VZENVNAME" == "stg-"* ]]
     IS_STAGING=true
 fi
 
+if [[ "$HOSTNAME" == *"rapydapps.cloud"* ]]
+  then
+    echo "tags=rapydapps.cloud" >> monarx-agent.conf  
+    IS_STAGING=true
+    IS_TESTING=true
+fi
+
 if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]
   then
+    echo "tags=rapyd.cloud" >> monarx-agent.conf  
     IS_STAGING=true
     IS_TESTING=true
 fi
 
 if [[ "$HOSTNAME" == *"developbb.dev"* ]] 
   then
+    echo "tags=developbb.dev" >> monarx-agent.conf  
     IS_STAGING=true
     IS_DEVELOPER=true
 fi
@@ -117,6 +126,9 @@ if [[ "$IS_DEVELOPER" = true ]]
     echo "tags=dev" >> monarx-agent.conf
     echo "tags=developer" >> monarx-agent.conf
 fi
+
+echo "tags=litespeed" >> monarx-agent.conf
+echo "tags=vz" >> monarx-agent.conf
 
 now=$(date)
 echo "# deployed: $now"  >> monarx-agent.conf
