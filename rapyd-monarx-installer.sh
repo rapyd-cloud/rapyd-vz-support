@@ -36,6 +36,8 @@ rm -f monarx-agent.conf
 # create monarx-agent configuration file 
 echo "#########################################################################" > monarx-agent.conf
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
+echo "#########################################################################" > monarx-agent.conf
+
 echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
 echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
 
@@ -127,6 +129,8 @@ fi
 
 echo "tags=litespeed" >> monarx-agent.conf
 echo "tags=vz" >> monarx-agent.conf
+
+echo "#########################################################################" >> monarx-agent.conf
 
 now=$(date)
 echo "# deployed: $now"  >> monarx-agent.conf
