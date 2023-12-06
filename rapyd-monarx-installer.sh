@@ -39,13 +39,14 @@ echo "#########################################################################"
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
 echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
 echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
+echo "host_id=$VZNODEID-$VZENVNAME" >> monarx-agent.conf
 echo "exclude_dirs=/virtfs" >> monarx-agent.conf
 echo "exclude_dirs=/(clam_|\.)?quarantine" >> monarx-agent.conf
+echo "exclude_users=^virtfs$" >> monarx-agent.conf
 echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
 echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
 echo "user_base=/tmp/" >> monarx-agent.conf
 echo "user_base=/home/litespeed/" >> monarx-agent.conf
-echo "exclude_users=^virtfs$" >> monarx-agent.conf
 echo "tags=vz" >> monarx-agent.conf
 echo "tags=litespeed" >> monarx-agent.conf
 echo "tags=rapydapps" >> monarx-agent.conf
@@ -54,8 +55,6 @@ echo "tags=$VZENVNAME" >> monarx-agent.conf
 echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
 echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
-echo "host_id=$VZNODEID:$VZENVNAME" >> monarx-agent.conf
-
 
 if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
   then
