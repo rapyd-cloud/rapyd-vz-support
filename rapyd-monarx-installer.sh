@@ -24,12 +24,17 @@ if [ -z "$VZNODEID" ]
   exit 99993
 fi
 
+# setup defaults
+
+IS_TESTING=false
+IS_STAGING=false
+IS_DEVELOPER=false
+
+# remove any old monarx-agent configuration file
 cd /etc/
-
-# create monarx-agent configuration file 
-
 rm -f monarx-agent.conf
 
+# create monarx-agent configuration file 
 echo "#########################################################################" > monarx-agent.conf
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
 echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
@@ -37,6 +42,9 @@ echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
 echo "exclude_dirs=/virtfs" >> monarx-agent.conf
 echo "exclude_dirs=/(clam_|\.)?quarantine" >> monarx-agent.conf
 echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
+echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
+echo "user_base=/tmp/" >> monarx-agent.conf
+echo "user_base=/home/litespeed/" >> monarx-agent.conf
 echo "exclude_users=^virtfs$" >> monarx-agent.conf
 echo "tags=vz" >> monarx-agent.conf
 echo "tags=litespeed" >> monarx-agent.conf
@@ -46,9 +54,8 @@ echo "tags=$VZENVNAME" >> monarx-agent.conf
 echo "tags=ENVNAME:$VZENVNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
 echo "tags=NODEID:$VZNODEID" >> monarx-agent.conf
+echo "host_id=$VZNODEID:$VZENVNAME" >> monarx-agent.conf
 
-IS_STAGING=false
-IS_DEVELOPER=false
 
 if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
   then
@@ -68,7 +75,7 @@ fi
 if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]
   then
     IS_STAGING=true
-    echo "tags=testing" >> monarx-agent.conf
+    IS_TESTING=true
 fi
 
 if [[ "$HOSTNAME" == *"developbb.dev"* ]] 
@@ -94,6 +101,12 @@ if [[ "$RAPYD_PLAN" == "DEV"* ]]
     IS_DEVELOPER=true
 fi
 
+if [[ "$IS_TESTING" = true ]]
+  then
+    echo "tags=testing" >> monarx-agent.conf
+    echo "tags=testing" >> monarx-agent.conf    
+fi
+
 if [[ "$IS_STAGING" = true ]]
   then
     echo "tags=staging" >> monarx-agent.conf
@@ -116,7 +129,12 @@ sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/reposito
 rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
 
 # install monarx
-sudo yum install monarx-protect-autodetect
+sudo yum install monarx-protect-autodetect -y
+
+# force update monarx
+sudo yum update monarx-agent -y
+
+# force restart 
+sudo systemctl restart monarx-agent
 
 # end of monarx main deployer
-
