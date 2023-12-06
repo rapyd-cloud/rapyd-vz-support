@@ -30,8 +30,14 @@ rm -f  /etc/monarx-agent.conf
 
 # remove monarx if possible
 yum remove monarx-protect-autodetect -y
+yum remove monarx-protect -y
+yum remove monarx-agent -y
 
+mkdir -p /usr/local/rapyd/
 mkdir -p /usr/local/rapyd/rapyd-monarx-files
+chown litespeed:litespeed /usr/local/rapyd
+chown litespeed:litespeed /usr/local/rapyd/rapyd-monarx-files
+
 cd /usr/local/rapyd/rapyd-monarx-files
 
 rm -f rapyd-monarx-installer.sh
