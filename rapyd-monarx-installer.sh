@@ -103,7 +103,7 @@ fi
 
 if [[ "$IS_TESTING" = true ]]
   then
-    echo "tags=testing" >> monarx-agent.conf
+    echo "tags=test" >> monarx-agent.conf
     echo "tags=testing" >> monarx-agent.conf    
 fi
 
