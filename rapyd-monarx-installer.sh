@@ -145,6 +145,9 @@ rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub
 # install monarx
 sudo yum install monarx-protect-autodetect -y
 
+# force stop monarx
+sudo systemctl stop monarx-agent
+
 # force update monarx
 sudo yum update monarx-agent -y
 
