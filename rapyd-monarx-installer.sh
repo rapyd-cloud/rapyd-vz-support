@@ -137,6 +137,9 @@ echo "# deployed: $now"  >> monarx-agent.conf
 
 echo "#########################################################################" >> monarx-agent.conf
 
+# force stop monarx  if it happens to be running 
+sudo systemctl stop monarx-agent
+
 # install the repository repo and pgp key
 cd /tmp
 sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/7/x86_64/monarx.repo
@@ -145,7 +148,7 @@ rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub
 # install monarx
 sudo yum install monarx-protect-autodetect -y
 
-# force stop monarx
+# force stop monarx  if it happens to be running 
 sudo systemctl stop monarx-agent
 
 # force update monarx
