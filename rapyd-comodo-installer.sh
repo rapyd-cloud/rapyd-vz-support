@@ -33,7 +33,9 @@ if [ ! -f "00_Rapyd_Customer_Excludes.conf" ]; then
 fi
 
 # add rapyd exclude rules to the master ruleset conf
-grep -c 00_Rapyd_Customer_Excludes rules.conf || sed -i "1i \Include 00_Rapyd_Customer_Excludes.conf" rules.conf
-grep -c 00_Rapyd_Excludes rules.conf || sed -i "1i \Include 00_Rapyd_Excludes.conf" rules.conf
+if [ -f "rules.conf" ]; then
+  grep -c 00_Rapyd_Customer_Excludes rules.conf || sed -i "1i \Include 00_Rapyd_Customer_Excludes.conf" rules.conf
+  grep -c 00_Rapyd_Excludes rules.conf || sed -i "1i \Include 00_Rapyd_Excludes.conf" rules.conf
+fi
 
 ######################################################################################################################
