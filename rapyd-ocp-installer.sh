@@ -109,14 +109,33 @@ wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --q
 ##################################################################################
 
 cd "$WPOCP_ROOT"
+
+# attempt to work out plugin path
 PLUGIN_PATH=$(wp plugin path --allow-root --path="$WPOCP_ROOT" --quiet 2>/dev/null)
 
+if [ ! -d "$PLUGIN_PATH" ]
+ then
+  echo "$PLUGIN_PATH does not exist - removing special characters"
+  PLUGIN_PATH=$(echo -e "$PLUGIN_PATH" | sed -z 's/[" \t\n\r]//g')
+  echo "$PLUGIN_PATH"
+fi
+
+if [ ! -d "$PLUGIN_PATH" ]
+ then
+  echo "$PLUGIN_PATH does not exist - forcing default"
+  PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
+  echo "$PLUGIN_PATH"
+fi
+
+
+# attempt to install plugin to path
 cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
 
 curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
 unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
 rm "$OCP_PLUGIN_TMP"
+
 
 ##################################################################################
 ## ACTIVATE OCP and enable redis
