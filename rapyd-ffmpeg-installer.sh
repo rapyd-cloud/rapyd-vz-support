@@ -22,9 +22,9 @@ else
   cd ~
   echo "Installing ffmpeg for Centos"
 
-  yum install epel-release -y
-  yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm -y
-  yum install ffmpeg ffmpeg-devel -y
+  sudo yum install epel-release -y
+  sudo yum localinstall --nogpgcheck https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm -y
+  sudo yum install ffmpeg ffmpeg-devel -y
 
 fi
 
