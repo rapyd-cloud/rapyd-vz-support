@@ -18,6 +18,11 @@ VERSION=8.4.0
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
+
+  # for now AlmaLinux is at least 7.76.1  
+  # this should fix the serious wordpress timeout issue - but need to investigate further next week
+  # possibly install the city-fan 8.5 binary 
+  # https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/
   cd ~
   
 else
