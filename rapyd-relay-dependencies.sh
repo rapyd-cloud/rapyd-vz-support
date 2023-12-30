@@ -5,6 +5,8 @@
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
   cd ~
+
+  sudo yum install -y compat-openssl11
   
 else
   cd ~
