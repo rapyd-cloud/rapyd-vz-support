@@ -137,24 +137,67 @@ echo "# deployed: $now"  >> monarx-agent.conf
 
 echo "#########################################################################" >> monarx-agent.conf
 
-# force stop monarx  if it happens to be running 
-sudo systemctl stop monarx-agent
 
-# install the repository repo and pgp key
-cd /tmp
-sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/7/x86_64/monarx.repo
-rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
 
-# install monarx
-sudo yum install monarx-protect-autodetect -y
+if grep -a 'AlmaLinux' /etc/system-release ; then
+  # work out what we need to do here for AlmaLinux 
+  cd ~
+  
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
 
-# force stop monarx  if it happens to be running 
-sudo systemctl stop monarx-agent
+  # install the repository repo and pgp key
+  cd /tmp
+  sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/9/x86_64/monarx.repo
+  sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
+  
+  # install monarx
+  sudo yum install monarx-protect-autodetect -y
 
-# force update monarx
-sudo yum update monarx-agent -y
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
 
-# force restart 
-sudo systemctl restart monarx-agent
+  # force update monarx
+  sudo yum update monarx-agent -y
+
+  # force restart 
+  sudo systemctl restart monarx-agent
+
+  
+  
+else
+  # assume this is the current Centos 7 based platform install
+  cd ~
+
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # install the repository repo and pgp key
+  cd /tmp
+  sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/7/x86_64/monarx.repo
+  sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
+
+  # install monarx
+  sudo yum install monarx-protect-autodetect -y
+
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # force update monarx
+  sudo yum update monarx-agent -y
+
+  # force restart 
+  sudo systemctl restart monarx-agent
+
+fi
+
 
 # end of monarx main deployer
+
+
+
+
+
+
+
+
