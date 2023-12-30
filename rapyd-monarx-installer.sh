@@ -162,8 +162,6 @@ if grep -a 'AlmaLinux' /etc/system-release ; then
 
   # force restart 
   sudo systemctl restart monarx-agent
-
-  
   
 else
   # assume this is the current Centos 7 based platform install
