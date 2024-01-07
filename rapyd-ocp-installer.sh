@@ -28,7 +28,7 @@ RELAY_INI_DIR=$(php-config --ini-dir)
 RELAY_INI=$RELAY_INI_DIR/relay.ini
 
 if [ -f "$RELAY_SO" ]; then
-  if [ -f "$RELAY_SO" ]; then
+  if [ -f "$RELAY_INI" ]; then
     REDIS_CLIENT="relay"
   fi
 fi
