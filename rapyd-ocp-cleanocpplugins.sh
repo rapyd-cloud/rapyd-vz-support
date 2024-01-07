@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 WP_ROOT="/var/www/webroot/ROOT"
 
