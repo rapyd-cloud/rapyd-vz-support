@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 #must be run as sudo su -  /  root
 
