@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # must be run as root - su user
 
