@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # Note - in future - we may want to update this with a more recent version 
 # refer notes from centos wiki
