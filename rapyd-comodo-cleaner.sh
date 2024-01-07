@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # must be run as litespeed user
 
@@ -17,6 +17,7 @@ rm -f 00_Rapyd_Excludes.conf
 if [ -f "rules.conf" ]; then
   sed -i '/00_Rapyd_Excludes/d' rules.conf
   sed -i '/00_Rapyd_Customer_Excludes/d' rules.conf 
+  
 fi
 
 ######################################################################################################################
