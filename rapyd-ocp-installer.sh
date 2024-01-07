@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # must be run as litespeed
 # must pass in  OCP_TOKEN 
