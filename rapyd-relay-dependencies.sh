@@ -36,5 +36,18 @@ if [ -f "/etc/redis.conf" ]; then
 fi
 
 #################################################################################
+# fix double igbinary definition 
+
+if [ -f "/usr/local/lsws/lsphp/etc/php.d/40-igbinary.ini" ]; then
+
+  if [ -f "/usr/local/lsws/lsphp/etc/php.d/50-redis.ini" ]; then
+
+    sed -i '/extension = igbinary.so/c\;extension = igbinary.so' /usr/local/lsws/lsphp/etc/php.d/50-redis.ini
+  
+  fi
+
+fi
+
+#################################################################################
 
 #end relay dependencies deployment
