@@ -15,7 +15,7 @@ if [ -z "$OCP_TOKEN" ]
 fi
 
 #################################################################################
-WPOCP_ROOT="/var/www/webroot/ROOT"   
+WP_ROOT="/var/www/webroot/ROOT"   
 
 REDIS_CLIENT="phpredis"           #  can be switched to relay when its ready
 REDIS_DATABASE=0
@@ -34,20 +34,28 @@ if [ -f "$RELAY_SO" ]; then
 fi
 
 ##################################################################################
+cd "$WP_ROOT"
+
+# get the current list of all active plugins 
+# we are going to use this later to skip all installed plugins apart for those we want to test
+SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
+SKIPLIST=$(wp plugin list --status=active --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
+
+##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
 
-cd "$WPOCP_ROOT"
-wp plugin is-installed litespeed-cache --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp plugin is-installed litespeed-cache --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
-   wp plugin is-active litespeed-cache --quiet 2>/dev/null
+   wp plugin is-active litespeed-cache --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
    if [ "$?" -eq 0 ]
      then
 
        ## disable the ls object cache before doing any other actions
-       wp litespeed-option set object false --quiet 2>/dev/null
+       wp litespeed-option set object false --quiet --skip-plugins=$SKIPLIST 2>/dev/null
      
     fi
 fi
@@ -62,7 +70,7 @@ set -e
 ## SETUP OCP CONFIG
 ##################################################################################
 
-cd "$WPOCP_ROOT"
+cd "$WP_ROOT"
 OCP_CONFIG=$(cat << EOF
 [
 'token' => '${OCP_TOKEN}',
@@ -87,31 +95,31 @@ OCP_CONFIG=$(cat << EOF
 EOF
 )
 
-cd "$WPOCP_ROOT"
-wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
 ##################################################################################
 ## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
 ##################################################################################
 
-cd "$WPOCP_ROOT"
+cd "$WP_ROOT"
 ## TODO - talk further with Till on this 
 
 ##################################################################################
 ## DISABLE OTHER REDIS TOOLS PER GUIDE
 ##################################################################################
 
-cd "$WPOCP_ROOT"
-wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
 ##################################################################################
 ## INSTALL OCP
 ##################################################################################
 
-cd "$WPOCP_ROOT"
+cd "$WP_ROOT"
 
 # attempt to work out plugin path
-PLUGIN_PATH=$(wp plugin path --allow-root --path="$WPOCP_ROOT" --quiet 2>/dev/null)
+PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins=$SKIPLIST 2>/dev/null)
 
 if [ ! -d "$PLUGIN_PATH" ]
  then
@@ -143,17 +151,17 @@ rm "$OCP_PLUGIN_TMP"
 
 set +e
 
-cd "$WPOCP_ROOT"
-wp plugin activate object-cache-pro --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp plugin activate object-cache-pro --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
-cd "$WPOCP_ROOT"
-wp redis enable --force --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp redis enable --force --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
-cd "$WPOCP_ROOT"
-wp cache flush --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp cache flush --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
-cd "$WPOCP_ROOT"
-wp redis flush --quiet 2>/dev/null
+cd "$WP_ROOT"
+wp redis flush --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
 # End of Object Cache Pro deployment
 ##################################################################################
