@@ -57,3 +57,9 @@ rm -f "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro.php"
 rm -rf "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro"
 
 wp cache flush --quiet 2>/dev/null
+
+# cleanup complete
+
+# force vz to see a clean script run - regardless of any errors
+
+exit 0
