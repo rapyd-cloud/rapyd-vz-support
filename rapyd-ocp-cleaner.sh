@@ -16,4 +16,7 @@ then
        wp plugin delete object-cache-pro --quiet 2>/dev/null || true
     fi
 fi
-   
+
+# force a clear exit regardless of any errors in script results 
+
+exit 0
