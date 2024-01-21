@@ -141,6 +141,8 @@ rm "$OCP_PLUGIN_TMP"
 ## ACTIVATE OCP and enable redis
 ##################################################################################
 
+set +e
+
 cd "$WPOCP_ROOT"
 wp plugin activate object-cache-pro --quiet 2>/dev/null
 
