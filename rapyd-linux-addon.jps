@@ -1,0 +1,81 @@
+version: 5.0
+type: update
+id: rapyd-linux-addon
+name: Rapyd Linux Config Installer 5.0
+
+description:
+  short: Tool to configure custom Linux settings for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+  
+buttons:
+  - confirmText: Do you want to force redeploy of Linxu config?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+      
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  action: deployaddon
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-linux-files
+
+        cd /usr/local/rapyd/rapyd-linux-files
+        
+        rm -f rapyd-linux-installer.sh
+        rm -f rapyd-linux-cleaner.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-linux-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-linux-files/rapyd-linux-installer.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-linux-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-linux-files/rapyd-linux-cleaner.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - action: installScripts  
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-linux-files
+        /usr/bin/bash rapyd-linux-installer.sh
+
+      user: root
+    
+    - restartContainers:
+      nodeGroup: ${targetNodes.nodeGroup}
+      
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-linux-files
+        /usr/bin/bash rapyd-linux-cleaner.sh
+        
+      user: root      
+      
+    - restartContainers:
+      nodeGroup: ${targetNodes.nodeGroup}
