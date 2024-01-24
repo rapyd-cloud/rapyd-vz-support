@@ -12,13 +12,22 @@ categories:
 targetNodes:
   nodeType:
   - llsmp
-  
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+
+settings:
+  fields:
+    - type: string
+      name: deployState
+      hidden: true
+
 buttons:
   - confirmText: Do you want to force redeploy of Linxu config?
     loadingText: Redeploying ...
     action: deployaddon
     caption: Force Redeploy
-      
+
+
 onInstall:
   action: deployaddon
 
@@ -26,12 +35,22 @@ onAfterRedeployContainer:
   action: deployaddon
 
 onAfterClone:
-  action: deployaddon
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
 
 onUninstall:
   action: removeaddon
 
 actions:
+  redeployAfterClone:
+    install: ${baseUrl}/manifest.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      deployState: "cloned"
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
   installScripts:
     - cmd[${targetNodes.nodeGroup}]: |-
     
@@ -55,6 +74,11 @@ actions:
       user: root 
       
   deployaddon:
+    - api[${targetNodes.nodeGroup}]:
+      - method: environment.control.AddContainerEnvVars
+        params:
+          vars: '{ "RAPYDCLONESTATE" : ${settings.deployState} }'
+
     - action: installScripts  
   
     - cmd[${targetNodes.nodeGroup}]: |-
