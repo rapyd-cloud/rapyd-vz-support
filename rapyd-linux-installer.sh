@@ -6,22 +6,25 @@
 # install linux config 
 
 function injectbashrc  {
-  bashpath="/home/jelastic/.bashrc"
-  if ! grep -qxF '#include .rapyd.bashrc' $bashpath ; then
-      echo '' >> $bashpath
-      echo '#include .rapyd.bashrc' >> $bashpath
-      echo 'filepath="/usr/local/rapyd/rapyd-linux-files/.rapyd.bashrc"' >> $bashpath
-      echo 'if [ -f "$filepath" ]; then' >> $bashpath
-      echo '    source "$filepath"' >> $bashpath
-      echo 'fi' >> $bashpath
+  BASHPATH="/home/jelastic/.bashrc"
+  if ! grep -qxF '#include .rapyd.bashrc' $BASHPATH ; then
+      echo '' >> $BASHPATH
+      echo '#include .rapyd.bashrc' >> $BASHPATH
+      echo 'filepath="/usr/local/rapyd/rapyd-linux-files/.rapyd.bashrc"' >> $BASHPATH
+      echo 'if [ -f "$filepath" ]; then' >> $BASHPATH
+      echo '    source "$filepath"' >> $BASHPATH
+      echo 'fi' >> $BASHPATH
   fi
 }
 
 function installrapydbashrc {
-  cd "/usr/local/rapyd/rapyd-linux-files/"
-  rm -rf ".rapyd.bashrc"
-  wget https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/.rapyd.bashrc
-  chown litespeed:litespeed .rapyd.bashrc
+  DIRECTORY="/usr/local/rapyd/rapyd-linux-files"
+  if [ -d "$DIRECTORY" ]; then
+    cd "$DIRECTORY"
+    rm -rf ".rapyd.bashrc"
+    wget https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/.rapyd.bashrc
+    chown litespeed:litespeed .rapyd.bashrc
+  fi
 }
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
@@ -39,6 +42,7 @@ else
 fi
 
 unset injectbashrc
+unset installrapydbashrc
 
 # end linux config 
 ######################################################################################################################
