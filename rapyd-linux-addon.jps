@@ -13,7 +13,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
 
 settings:
   fields:
@@ -42,13 +42,6 @@ onUninstall:
   action: removeaddon
 
 actions:
-  beforeClone:
-    - cmd[${targetNodes.nodeGroup}]: |-
-  
-        cd ~
-
-      user: root 
-
   redeployAfterClone:
     install: ${baseUrl}/rapyd-linux-addon.jps
     envName: ${this.envName}
