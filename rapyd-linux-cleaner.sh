@@ -7,9 +7,9 @@
 
 function removerapydbashrc  {
   # for now just remove the .rapyd.bashrc file 
-  filepath="/usr/local/rapyd/rapyd-linux-files/.rapyd.bashrc
-  if [ -f "$filepath" ]; then
-    rm -rf $filepath
+  FILEPATH="/usr/local/rapyd/rapyd-linux-files/.rapyd.bashrc"
+  if [ -f "$FILEPATH" ]; then
+    rm -rf $FILEPATH
   fi
 }
 
@@ -25,6 +25,8 @@ else
   removerapydbashrc
   
 fi
+
+unset removerapydbashrc
 
 # end remove linux config 
 ######################################################################################################################
