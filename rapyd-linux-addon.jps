@@ -34,6 +34,9 @@ onInstall:
 onAfterRedeployContainer:
   action: deployaddon
 
+onBeforeClone:
+  beforeClone:
+
 onAfterClone:
   redeployAfterClone:
     envName: ${event.response.env.envName}
@@ -42,6 +45,13 @@ onUninstall:
   action: removeaddon
 
 actions:
+  beforeClone:
+    - cmd[${targetNodes.nodeGroup}]: |-
+  
+        cd ~
+
+      user: root 
+
   redeployAfterClone:
     install: ${baseUrl}/rapyd-linux-addon.jps
     envName: ${this.envName}
