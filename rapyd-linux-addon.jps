@@ -34,9 +34,6 @@ onInstall:
 onAfterRedeployContainer:
   action: deployaddon
 
-onBeforeClone:
-  beforeClone:
-
 onAfterClone:
   redeployAfterClone:
     envName: ${event.response.env.envName}
