@@ -75,7 +75,6 @@ actions:
       
   deployaddon:
     - setGlobals:
-        nodeId: ${settings.nodeId:}
         nodeGroup: ${targetNodes.nodeGroup:}
 
     - api[${targetNodes.nodeGroup}]:
