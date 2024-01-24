@@ -13,7 +13,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main
 
 settings:
   fields:
