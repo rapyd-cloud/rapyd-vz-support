@@ -74,6 +74,10 @@ actions:
       user: root 
       
   deployaddon:
+  - setGlobals:
+      nodeId: ${settings.nodeId:}
+      nodeGroup: ${targetNodes.nodeGroup:}
+
     - api[${targetNodes.nodeGroup}]:
       - method: environment.control.AddContainerEnvVars
         params:
