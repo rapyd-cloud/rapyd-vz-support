@@ -42,6 +42,7 @@ onUninstall:
   action: removeaddon
 
 actions:
+
   redeployAfterClone:
     install: ${baseUrl}/rapyd-linux-addon.jps
     envName: ${this.envName}
@@ -76,11 +77,6 @@ actions:
   deployaddon:
     - setGlobals:
         nodeGroup: ${targetNodes.nodeGroup:}
-
-    - api[${targetNodes.nodeGroup}]:
-      - method: environment.control.AddContainerEnvVars
-        params:
-          vars: '{ "RAPYD_LINUX_CLONESTATE" : ${settings.cloneState} }'
 
     - action: installScripts  
   
