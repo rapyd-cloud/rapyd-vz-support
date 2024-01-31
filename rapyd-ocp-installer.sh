@@ -125,7 +125,7 @@ wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --q
 # set wp-config to previous state
 cd "$WP_ROOT"
 
-chmod $CUR_CHMOD wp-config.php
+chmod "$CUR_CHMOD" wp-config.php
 
 
 ##################################################################################
