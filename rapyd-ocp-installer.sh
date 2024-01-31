@@ -95,7 +95,15 @@ OCP_CONFIG=$(cat << EOF
 EOF
 )
 
+##################################################################################
+# set wp-config to writeable 
 cd "$WP_ROOT"
+
+CUR_CHMOD=$( stat --format '%a' wp-config.php )
+chmod 644 wp-config.php
+
+##################################################################################
+
 wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
 
 ##################################################################################
@@ -111,6 +119,14 @@ cd "$WP_ROOT"
 
 cd "$WP_ROOT"
 wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+
+
+##################################################################################
+# set wp-config to previous state
+cd "$WP_ROOT"
+
+chmod $CUR_CHMOD wp-config.php
+
 
 ##################################################################################
 ## INSTALL OCP
@@ -135,7 +151,7 @@ if [ ! -d "$PLUGIN_PATH" ]
   echo "$PLUGIN_PATH"
 fi
 
-
+##################################################################################
 # attempt to install plugin to path
 cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
