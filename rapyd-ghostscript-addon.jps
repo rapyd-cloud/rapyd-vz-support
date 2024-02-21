@@ -1,0 +1,57 @@
+version: 5.0
+type: update
+id: rapyd-ghostscript-addon
+name: Rapyd Install Ghostscript 5.0
+
+description:
+  short: Tool to install ghostscript
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+
+buttons:
+  - confirmText: Do you want to force redeploy of ghostscript?
+    loadingText: Redeploying ...
+    action: deploy
+    caption: Force Redeploy      
+
+onInstall:
+  - action: deploy
+
+onAfterRedeployContainer:
+  - action: deploy
+  
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+  
+onUninstall:
+  - action: cleanup
+  
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/rapyd-ghostscript-addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+      
+  deploy:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+        yum install ghostscript -y
+      user: root
+      
+  cleanup:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        yum remove ghostscript -y
+      user: root
