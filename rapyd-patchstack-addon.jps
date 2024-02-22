@@ -71,6 +71,7 @@ actions:
   deployaddon:
     - setGlobals:
         nodeGroup: ${targetNodes.nodeGroup:}
+        envUrl: ${env.url:}
 
     - action: installScripts  
   
