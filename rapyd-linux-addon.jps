@@ -15,13 +15,6 @@ targetNodes:
 
 baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
 
-settings:
-  fields:
-    - type: string
-      name: cloneState
-      hidden: true
-      default: PARENT
-
 buttons:
   - confirmText: Do you want to force redeploy of Linxu config?
     loadingText: Redeploying ...
@@ -42,13 +35,11 @@ onUninstall:
   action: removeaddon
 
 actions:
-
   redeployAfterClone:
     install: ${baseUrl}/rapyd-linux-addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
-      cloneState: CLONED
       newEnvName: ${this.envName}
       nodeGroup: ${globals.nodeGroup}
 
