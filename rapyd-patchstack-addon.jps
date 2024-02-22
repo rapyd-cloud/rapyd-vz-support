@@ -1,0 +1,93 @@
+version: 5.0
+type: update
+id: rapyd-patchstack-addon
+name: Rapyd Patchstack Installer 5.0
+
+description:
+  short: Tool to install Patchstack on Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+  
+buttons:
+  - confirmText: Do you want to force redeploy of Patchstack?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+      
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+onBeforeDelete:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/rapyd-linux-addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-patchstack-files
+
+        cd /usr/local/rapyd/rapyd-patchstack-files
+        
+        rm -f rapyd-patchstack-installer.sh
+        rm -f rapyd-patchstack-cleaner.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-patchstack-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-patchstack-files/rapyd-patchstack-installer.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-patchstack-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-patchstack-files/rapyd-patchstack-cleaner.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-patchstack-files
+        /usr/bin/bash rapyd-patchstack-installer.sh
+
+      user: litespeed
+      
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-patchstack-files
+        /usr/bin/bash rapyd-patchstack-cleaner.sh
+        
+      user: root      
+      
