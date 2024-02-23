@@ -16,7 +16,8 @@ PS_URL=$3
 ##################################################################################
 PS_USER="MTAzNjQ5Cg=="
 PS_TOKEN="Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK"
-PS_URL="https://wtatters-test-087.uw2.rapydapps.cloud/"
+#PS_URL="https://wtatters-test-087.uw2.rapydapps.cloud/"
+PS_URL="https://westest.rapyd.cloud/"
 
 ##################################################################################
 
