@@ -39,7 +39,7 @@ cd "$WP_ROOT"
 # get the current list of all active plugins 
 # we are going to use this later to skip all installed plugins apart for those we want to test
 SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
-SKIPLIST=$(wp plugin list --status=active --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
+SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
