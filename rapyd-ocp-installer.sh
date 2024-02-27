@@ -56,7 +56,7 @@ then
      then
 
        ## disable the ls object cache before doing any other actions
-       wp litespeed-option set object false --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+       wp litespeed-option set object false --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
      
     fi
 fi
@@ -136,7 +136,7 @@ chmod "$CUR_CHMOD" wp-config.php
 cd "$WP_ROOT"
 
 # attempt to work out plugin path
-#PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins=$SKIPLIST 2>/dev/null)
+#PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins="$SKIPLIST" 2>/dev/null)
 #if [ ! -d "$PLUGIN_PATH" ]
 
 # then
@@ -162,11 +162,14 @@ PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
 
 cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
+OCP_PLUGIN_TMP_PATH="/tmp/$OCP_PLUGIN_TMP"
 
 curl -sSL -o "$OCP_PLUGIN_TMP" "https://objectcache.pro/plugin/object-cache-pro.zip?token=${OCP_TOKEN}"
-#unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
+unzip -o "$OCP_PLUGIN_TMP" -d "$PLUGIN_PATH" 
 
-wp plugin install "$OCP_PLUGIN_TMP" --skip-plugins --quiet   2>/dev/null
+#cd "$WP_ROOT"
+#wp plugin install "${OCP_PLUGIN_TMP_PATH}" --skip-plugins --quiet   2>/dev/null
+#cd "/tmp"
 
 rm "$OCP_PLUGIN_TMP"
 
@@ -178,16 +181,16 @@ rm "$OCP_PLUGIN_TMP"
 #set +e
 
 cd "$WP_ROOT"
-wp plugin activate object-cache-pro --skip-plugins --quiet   2>/dev/null
+wp plugin activate object-cache-pro --skip-plugins --quiet 2>/dev/null
 
 cd "$WP_ROOT"
-wp redis enable --force --skip-plugins=$SKIPLIST --quiet  2>/dev/null
+wp redis enable --force --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
 
 cd "$WP_ROOT"
-wp cache flush --skip-plugins=$SKIPLIST --quiet  2>/dev/null
+wp cache flush --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
 
 cd "$WP_ROOT"
-wp redis flush --skip-plugins=$SKIPLIST --quiet  2>/dev/null
+wp redis flush --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
 
 # End of Object Cache Pro deployment
 ##################################################################################
