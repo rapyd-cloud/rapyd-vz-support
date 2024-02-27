@@ -7,6 +7,8 @@
 #load parameters
 OCP_TOKEN=$1
 
+
+##################################################################################
 ##################################################################################
 
 if [ -z "$OCP_TOKEN" ]
@@ -34,10 +36,9 @@ if [ -f "$RELAY_SO" ]; then
 fi
 
 ##################################################################################
-cd "$WP_ROOT"
-
 # get the current list of all active plugins 
 # we are going to use this later to skip all installed plugins apart for those we want to test
+cd "$WP_ROOT"
 SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
 SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
@@ -45,11 +46,11 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 # force deactivation of litespeed object cache pro if it is enabled
 
 cd "$WP_ROOT"
-wp plugin is-installed litespeed-cache --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
-   wp plugin is-active litespeed-cache --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+   wp plugin is-active litespeed-cache --quiet --skip-plugins 2>/dev/null
 
    if [ "$?" -eq 0 ]
      then
@@ -64,7 +65,7 @@ fi
 ## deploy new version of object cache pro
 ##################################################################################
 
-set -e
+#set -e
 
 ##################################################################################
 ## SETUP OCP CONFIG
@@ -104,7 +105,7 @@ chmod 644 wp-config.php
 
 ##################################################################################
 
-wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}" --quiet --skip-plugins 2>/dev/null
 
 ##################################################################################
 ## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
@@ -118,7 +119,7 @@ cd "$WP_ROOT"
 ##################################################################################
 
 cd "$WP_ROOT"
-wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false" --quiet --skip-plugins 2>/dev/null
 
 
 ##################################################################################
@@ -136,8 +137,8 @@ cd "$WP_ROOT"
 
 # attempt to work out plugin path
 #PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins=$SKIPLIST 2>/dev/null)
-
 #if [ ! -d "$PLUGIN_PATH" ]
+
 # then
 #  echo "$PLUGIN_PATH does not exist - removing special characters"
 #  PLUGIN_PATH=$(echo -e "$PLUGIN_PATH" | sed -z 's/[" \t\n\r]//g')
@@ -170,10 +171,10 @@ rm "$OCP_PLUGIN_TMP"
 ## ACTIVATE OCP and enable redis
 ##################################################################################
 
-set +e
+#set +e
 
 cd "$WP_ROOT"
-wp plugin activate object-cache-pro --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp plugin activate object-cache-pro --quiet --skip-plugins 2>/dev/null
 
 cd "$WP_ROOT"
 wp redis enable --force --quiet --skip-plugins=$SKIPLIST 2>/dev/null
