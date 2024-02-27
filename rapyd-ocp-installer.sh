@@ -135,21 +135,26 @@ chmod "$CUR_CHMOD" wp-config.php
 cd "$WP_ROOT"
 
 # attempt to work out plugin path
-PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins=$SKIPLIST 2>/dev/null)
+#PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins=$SKIPLIST 2>/dev/null)
 
-if [ ! -d "$PLUGIN_PATH" ]
- then
-  echo "$PLUGIN_PATH does not exist - removing special characters"
-  PLUGIN_PATH=$(echo -e "$PLUGIN_PATH" | sed -z 's/[" \t\n\r]//g')
-  echo "$PLUGIN_PATH"
-fi
+#if [ ! -d "$PLUGIN_PATH" ]
+# then
+#  echo "$PLUGIN_PATH does not exist - removing special characters"
+#  PLUGIN_PATH=$(echo -e "$PLUGIN_PATH" | sed -z 's/[" \t\n\r]//g')
+#  echo "$PLUGIN_PATH"
+#fi
 
-if [ ! -d "$PLUGIN_PATH" ]
- then
-  echo "$PLUGIN_PATH does not exist - forcing default"
-  PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
-  echo "$PLUGIN_PATH"
-fi
+#if [ ! -d "$PLUGIN_PATH" ]
+# then
+#  echo "$PLUGIN_PATH does not exist - forcing default"
+#  PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
+#  echo "$PLUGIN_PATH"
+#fi
+
+##### this is failing too often due to BAD PHP code in wordpress sites
+##### for now force all sites to the same physical path - which is correct for VZ sites
+PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
+
 
 ##################################################################################
 # attempt to install plugin to path
