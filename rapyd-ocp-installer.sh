@@ -154,6 +154,7 @@ cd "$WP_ROOT"
 
 ##### this is failing too often due to BAD PHP code in wordpress sites
 ##### for now force all sites to the same physical path - which is correct for VZ sites
+
 PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
 
 
