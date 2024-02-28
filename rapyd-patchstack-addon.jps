@@ -78,7 +78,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-installer.sh
+        /usr/bin/bash rapyd-patchstack-installer.sh "MTAzNjQ5Cg==" "Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK" "${env.url:}"
 
       user: litespeed
       
@@ -90,5 +90,4 @@ actions:
         cd /usr/local/rapyd/rapyd-patchstack-files
         /usr/bin/bash rapyd-patchstack-cleaner.sh
         
-      user: root      
-      
+      user: root
