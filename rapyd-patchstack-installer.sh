@@ -26,6 +26,10 @@ WP_ROOT="/var/www/webroot/ROOT"
 
 ##################################################################################
 
+echo "$PS_USER"
+echo "$PS_TOKEN"
+echo "$PS_URL"
+
 if [ -z "$PS_USER" ]
   then
   exit 9991
