@@ -11,7 +11,6 @@ PS_TOKEN=$2
 PS_URL=$3
 
 
-
 ##################################################################################
 ##################################################################################
 #PS_USER="MTAzNjQ5Cg=="
@@ -20,7 +19,6 @@ PS_URL=$3
 #PS_URL="https://westest.rapyd.cloud/"
 
 ##################################################################################
-
 
 WP_ROOT="/var/www/webroot/ROOT"   
 
@@ -106,7 +104,6 @@ if [[ -z "$IS_API_ID" ]] ; then
   exit 9996
 fi
 
-
 ##################################################################################
 # get the current list of all active plugins 
 # we are going to use this later to skip all installed plugins apart for those we want to test
@@ -119,9 +116,9 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 
 cd "$WP_ROOT"
 
-wp plugin install patchstack --force --activate  --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp plugin install patchstack --force --activate --quiet --skip-plugins 2>/dev/null
 
-wp patchstack activate $IS_API_ID $IS_API_SECRET --quiet --skip-plugins=$SKIPLIST 2>/dev/null
+wp patchstack activate $IS_API_ID $IS_API_SECRET --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
 RESULT="$?"
 if [ "$RESULT" -eq 0 ]
 then
