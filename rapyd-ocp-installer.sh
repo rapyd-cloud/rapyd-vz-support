@@ -24,6 +24,9 @@ REDIS_DATABASE=0
 
 #################################################################################
 # is relay installed - if so link together
+
+echo "checking for Relay"
+
 RELAY_EXT_DIR=$(php-config --extension-dir)
 RELAY_SO=$RELAY_EXT_DIR/relay.so
 RELAY_INI_DIR=$(php-config --ini-dir) 
@@ -44,6 +47,8 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
+
+echo "checking for litespeed cache"
 
 cd "$WP_ROOT"
 wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
@@ -70,6 +75,8 @@ fi
 ##################################################################################
 ## SETUP OCP CONFIG
 ##################################################################################
+
+echo "prepare ocp_config"
 
 cd "$WP_ROOT"
 OCP_CONFIG=$(cat << EOF
@@ -133,6 +140,7 @@ chmod "$CUR_CHMOD" wp-config.php
 ## INSTALL OCP
 ##################################################################################
 
+
 cd "$WP_ROOT"
 
 # attempt to work out plugin path
@@ -160,6 +168,8 @@ PLUGIN_PATH="/var/www/webroot/ROOT/wp-content/plugins"
 ##################################################################################
 # attempt to install plugin to path
 
+echo "install OCP plugin"
+
 cd "/tmp"
 OCP_PLUGIN_TMP=$(mktemp ocp.XXXXXXXX).zip
 OCP_PLUGIN_TMP_PATH="/tmp/$OCP_PLUGIN_TMP"
@@ -180,14 +190,22 @@ rm "$OCP_PLUGIN_TMP"
 
 #set +e
 
+echo "activate plugin"
+
 cd "$WP_ROOT"
 wp plugin activate object-cache-pro --skip-plugins --quiet 2>/dev/null
+
+echo "force enable plugin"
 
 cd "$WP_ROOT"
 wp redis enable --force --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
 
+echo "force cache flush"
+
 cd "$WP_ROOT"
 wp cache flush --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
+
+echo "force redis flush"
 
 cd "$WP_ROOT"
 wp redis flush --skip-plugins="$SKIPLIST" --quiet 2>/dev/null
