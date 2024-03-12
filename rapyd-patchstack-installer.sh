@@ -87,7 +87,7 @@ if [[ ! -z "$IS_ERROR" ]] ; then
     exit 9995
   fi
 
-  cat psresponse.txt
+  #cat psresponse.txt
   IS_API_ID=$( cat psresponse.txt | jq -r '.[].api.id' )
   IS_API_SECRET=$( cat psresponse.txt | jq -r '.[].api.secret' )
 
