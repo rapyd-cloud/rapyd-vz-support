@@ -72,15 +72,15 @@ actions:
     - setGlobals:
         nodeGroup: ${targetNodes.nodeGroup:}
         envUrl: ${env.url:}
-        us01: "MTAzNjQ5Cg=="
-        us02: "Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK"
+        usx01: "MTAzNjQ5Cg=="
+        usx02: "Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK"
 
     - action: installScripts  
   
     - cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-installer.sh "${globals.us01:}" "${globals.us02:}" "${globals.envUrl:}"
+        /usr/bin/bash rapyd-patchstack-installer.sh "${globals.usx01:}" "${globals.usx02:}" "${globals.envUrl:}"
 
       user: litespeed
       
@@ -90,6 +90,6 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.us01:}" "${globals.us02:}" "${globals.envUrl:}"
+        /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.usx01:}" "${globals.usx02:}" "${globals.envUrl:}"
         
       user: root
