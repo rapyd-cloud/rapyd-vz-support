@@ -11,22 +11,17 @@ PS_TOKEN=$2
 PS_URL=$3
 
 
-##################################################################################
-##################################################################################
-#PS_USER="MTAzNjQ5Cg=="
-#PS_TOKEN="Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK"
-#PS_URL="https://wtatters-test-087.uw2.rapydapps.cloud/"
-#PS_URL="https://westest.rapyd.cloud/"
 
+##################################################################################
 ##################################################################################
 
 WP_ROOT="/var/www/webroot/ROOT"   
 
 ##################################################################################
 
-echo "$PS_USER"
-echo "$PS_TOKEN"
-echo "$PS_URL"
+#echo "$PS_USER"
+#echo "$PS_TOKEN"
+#echo "$PS_URL"
 
 if [ -z "$PS_USER" ]
   then
@@ -60,8 +55,8 @@ HEADER="HostToken:$PS_TOKEN_KEY"
 
 NEWSITE="{\"url\": \"$PS_URL\", \"userid\": $PS_USER_KEY, \"strict\": true }"
 
-echo "$HEADER"
-echo "$NEWSITE"
+#echo "$HEADER"
+#echo "$NEWSITE"
 
 HTTP_RESPONSE=$( curl -X POST https://api.patchstack.com/hosting/site/add -H "$HEADER" -H 'Content-Type: application/json' -d "$NEWSITE" -o psresponse.txt -w "%{http_code}" )
 
@@ -73,7 +68,7 @@ fi
 ##############################################################################
 #check for error 
 IS_ERROR=$( cat psresponse.txt | jq -r '.error' )
-echo $IS_ERROR
+#echo $IS_ERROR
 # the only real error here right now is - URL already registered 
 
 if [[ ! -z "$IS_ERROR" ]] ; then
@@ -127,4 +122,3 @@ else
   echo "PatchStack activation failed"
   exit 9999
 fi
-
