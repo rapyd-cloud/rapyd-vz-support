@@ -57,8 +57,15 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 
 ##################################################################################
 # deactivate and remove plugin
+
 cd "$WP_ROOT"
-wp plugin deactivate patchstack --uninstall --network --force --quiet --skip-plugins 2>/dev/null
+
+wp plugin deactivate patchstack --network --quiet --skip-plugins 2>/dev/null
+
+wp plugin deactivate patchstack --quiet --skip-plugins 2>/dev/null
+
+wp plugin delete patchstack --quiet --skip-plugins 2>/dev/null
+
 
 ##################################################################################
 
@@ -90,4 +97,3 @@ if [[ "$HTTP_RESPONSE" -ne 200 ]] ; then
 fi
 
 ##################################################################################
-
