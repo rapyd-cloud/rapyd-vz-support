@@ -92,4 +92,4 @@ actions:
         cd /usr/local/rapyd/rapyd-patchstack-files
         /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}"
         
-      user: root
+      user: litespeed
