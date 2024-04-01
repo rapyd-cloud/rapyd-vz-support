@@ -2,7 +2,7 @@
 
 # must be run as litespeed 
 
-# must pass in  PS_USER and PS_TOKEN 
+# must pass in  PS_USER and PS_TOKEN and PS_URL
 
 ##################################################################################
 #load parameters
@@ -73,6 +73,9 @@ IS_ERROR=$( cat psresponse.txt | jq -r '.error' )
 
 if [[ ! -z "$IS_ERROR" ]] ; then
 
+  cd "$WP_ROOT"
+  rm -rf psresponse.txt
+
   EXISTINGSITE="{\"url\": \"$PS_URL\"}"
 
   HTTP_RESPONSE=$( curl -X POST https://api.patchstack.com/hosting/site/search -H "$HEADER" -H 'Content-Type: application/json' -d "$EXISTINGSITE" -o psresponse.txt -w "%{http_code}" )
@@ -93,6 +96,9 @@ else
   IS_API_SECRET=$( cat psresponse.txt | jq -r '.api.secret' )
 
 fi
+
+cd "$WP_ROOT"
+rm -rf psresponse.txt
 
 if [[ -z "$IS_API_ID" ]] ; then
   echo "Patchstack cant locate this domain in our list of sites"
