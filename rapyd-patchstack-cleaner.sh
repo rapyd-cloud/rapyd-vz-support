@@ -46,7 +46,6 @@ PS_TOKEN_KEY=$( echo "$PS_TOKEN" | base64 --decode )
 #############################################################################
 
 cd "$WP_ROOT"
-rm -rf psresponse.txt
 
 ##################################################################################
 # get the current list of all active plugins 
