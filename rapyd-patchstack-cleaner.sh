@@ -77,7 +77,7 @@ if [[ "$HTTP_RESPONSE" -ne 200 ]] ; then
   
   else
 
-  #cat psresponse.txt
+    #cat psresponse.txt
     
     IS_SITE_ID=$( cat psresponse.txt | jq -r '.[].siteid' )
     IS_API_ID=$( cat psresponse.txt | jq -r '.[].api.id' )
