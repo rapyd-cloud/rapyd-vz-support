@@ -79,16 +79,15 @@ if [[ "$HTTP_RESPONSE" -ne 200 ]] ; then
 
   #cat psresponse.txt
     
-  IS_SITE_ID=$( cat psresponse.txt | jq -r '.[].siteid' )
-  IS_API_ID=$( cat psresponse.txt | jq -r '.[].api.id' )
-  IS_API_SECRET=$( cat psresponse.txt | jq -r '.[].api.secret' )
+    IS_SITE_ID=$( cat psresponse.txt | jq -r '.[].siteid' )
+    IS_API_ID=$( cat psresponse.txt | jq -r '.[].api.id' )
+    IS_API_SECRET=$( cat psresponse.txt | jq -r '.[].api.secret' )
 
-  TARGETURL="https://api.patchstack.com/hosting/site/$IS_SITE_ID/delete"
+    TARGETURL="https://api.patchstack.com/hosting/site/$IS_SITE_ID/delete"
 
-  HTTP_RESPONSE=$( curl -X POST "$TARGETURL" -H "$HEADER" -H 'Content-Type: application/json' -o psresponse2.txt -w "%{http_code}" )
+    HTTP_RESPONSE=$( curl -X POST "$TARGETURL" -H "$HEADER" -H 'Content-Type: application/json' -o psresponse2.txt -w "%{http_code}" )
   
 fi
 
 ##################################################################################
-
 
