@@ -80,26 +80,28 @@ actions:
     - action: installScripts  
   
     - if ('${globals.cloneAction}' != 'CLONED') :
-      cmd[${targetNodes.nodeGroup}]: |-
+        cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-installer.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}" 
+          cd /usr/local/rapyd/rapyd-patchstack-files
+          /usr/bin/bash rapyd-patchstack-installer.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}" 
 
-      user: litespeed
-    - else:
-      log:
-        "CLONE DO NOT PERFORM ACTIVATION"
+        user: litespeed
+
+    - if ('${globals.cloneAction}' == 'CLONED') :
+        log:
+          "CLONE DO NOT PERFORM ACTIVATION"
       
   removeaddon:
     - action: installScripts
     
     - if ('${globals.cloneAction}' != 'CLONED') :
-      cmd[${targetNodes.nodeGroup}]: |-
+        cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}"
+          cd /usr/local/rapyd/rapyd-patchstack-files
+          /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}"
         
-      user: litespeed
-    - else:
+        user: litespeed
+
+    - if ('${globals.cloneAction}' != 'CLONED') :
         log:
           "CLONE NO REMOVAL NEEDED"
