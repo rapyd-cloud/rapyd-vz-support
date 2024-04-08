@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # must be run as litespeed 
-
 # must pass in  PS_USER and PS_TOKEN and PS_URL
 
 ##################################################################################
@@ -9,8 +8,6 @@
 PS_USER=$1
 PS_TOKEN=$2
 PS_URL=$3
-
-
 
 ##################################################################################
 ##################################################################################
@@ -117,9 +114,15 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 
 cd "$WP_ROOT"
 
+# force patchstack firewall off 
+wp option update patchstack_basic_firewall 0
+
+# force install of latest version of patchstack
 wp plugin install patchstack --force --activate --quiet --skip-plugins 2>/dev/null
 
+# activate using wpcli anr registered api and secret
 wp patchstack activate $IS_API_ID $IS_API_SECRET --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
+
 RESULT="$?"
 if [ "$RESULT" -eq 0 ]
 then
@@ -128,5 +131,6 @@ else
   echo "PatchStack activation failed"
   exit 9999
 fi
+
 #################################################################################
 
