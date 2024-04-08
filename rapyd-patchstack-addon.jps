@@ -39,7 +39,7 @@ onBeforeDelete:
 
 actions:
   redeployAfterClone:
-    install: ${baseUrl}/rapyd-linux-addon.jps
+    install: ${baseUrl}/rapyd-patchstack-addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
