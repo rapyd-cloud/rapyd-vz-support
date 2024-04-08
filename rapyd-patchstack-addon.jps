@@ -45,6 +45,7 @@ actions:
     settings:
       newEnvName: ${this.envName}
       nodeGroup: ${globals.nodeGroup}
+      cloneAction: "CLONED"
 
   installScripts:
     - cmd[${targetNodes.nodeGroup}]: |-
@@ -74,22 +75,31 @@ actions:
         envUrl: ${env.url:}
         usx01: "MTAzNjQ5Cg=="
         usx02: "Y2Q4OTk4MjYyMzk2NjRkMDQ3M2FiMjExMDVmNTViZDMK"
+        cloneAction: ${settings.cloneAction}
 
     - action: installScripts  
   
-    - cmd[${targetNodes.nodeGroup}]: |-
+    - if ('${globals.cloneAction}' != 'CLONED') :
+      cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-patchstack-files
-        /usr/bin/bash rapyd-patchstack-installer.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}"
+        /usr/bin/bash rapyd-patchstack-installer.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}" 
 
       user: litespeed
+    - else:
+      log:
+        "CLONE DO NOT PERFORM ACTIVATION"
       
   removeaddon:
     - action: installScripts
     
-    - cmd[${targetNodes.nodeGroup}]: |-
+    - if ('${globals.cloneAction}' != 'CLONED') :
+      cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-patchstack-files
         /usr/bin/bash rapyd-patchstack-cleaner.sh "${globals.usx01}" "${globals.usx02}" "${globals.envUrl}"
         
       user: litespeed
+    - else:
+        log:
+          "CLONE NO REMOVAL NEEDED"
