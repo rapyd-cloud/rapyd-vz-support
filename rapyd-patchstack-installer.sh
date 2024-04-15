@@ -107,7 +107,7 @@ fi
 # we are going to use this later to skip all installed plugins apart for those we want to test
 cd "$WP_ROOT"
 SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$\|^patchstack$'
-SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
+SKIPLIST=$(wp --skip-plugins --skip-themes --quiet   plugin list --field=name    2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
 #################################################################################
 # install patchstack 
@@ -115,13 +115,14 @@ SKIPLIST=$(wp plugin list --field=name --quiet --skip-plugins 2>/dev/null | grep
 cd "$WP_ROOT"
 
 # force patchstack firewall off 
-wp option update patchstack_basic_firewall 0
+wp --skip-plugins --skip-themes --quiet   option update patchstack_basic_firewall 0    2>/dev/null
 
 # force install of latest version of patchstack
-wp plugin install patchstack --force --activate --quiet --skip-plugins 2>/dev/null
+wp --skip-plugins --skip-themes --quiet  plugin install patchstack --force --activate    2>/dev/null
 
 # activate using wpcli anr registered api and secret
-wp patchstack activate $IS_API_ID $IS_API_SECRET --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
+wp --skip-plugins="$SKIPLIST" --skip-themes --quiet     patchstack activate $IS_API_ID $IS_API_SECRET  2>/dev/null
+
 
 RESULT="$?"
 if [ "$RESULT" -eq 0 ]
@@ -131,6 +132,7 @@ else
   echo "PatchStack activation failed"
   exit 9999
 fi
+
 
 #################################################################################
 
