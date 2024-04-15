@@ -123,7 +123,7 @@ wp --skip-plugins --skip-themes --quiet   option update patchstack_basic_firewal
 wp --skip-plugins --skip-themes --quiet   plugin install patchstack --force --activate    2>/dev/null
 
 # activate using wpcli anr registered api and secret
-wp --skip-plugins="$SKIPLIST" --skip-themes --quiet     patchstack activate $IS_API_ID $IS_API_SECRET  2>/dev/null
+wp --skip-plugins="$SKIPLIST" --skip-themes --quiet   patchstack activate $IS_API_ID $IS_API_SECRET  2>/dev/null
 
 
 RESULT="$?"
