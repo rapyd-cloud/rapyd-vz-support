@@ -118,7 +118,7 @@ cd "$WP_ROOT"
 wp --skip-plugins --skip-themes --quiet   option update patchstack_basic_firewall 0    2>/dev/null
 
 # force install of latest version of patchstack
-wp --skip-plugins --skip-themes --quiet  plugin install patchstack --force --activate    2>/dev/null
+wp --skip-plugins --skip-themes --quiet   plugin install patchstack --force --activate    2>/dev/null
 
 # activate using wpcli anr registered api and secret
 wp --skip-plugins="$SKIPLIST" --skip-themes --quiet     patchstack activate $IS_API_ID $IS_API_SECRET  2>/dev/null
