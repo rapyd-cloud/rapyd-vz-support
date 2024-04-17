@@ -24,7 +24,7 @@ wp --skip-plugins --skip-themes --quiet  plugin is-installed woocommerce  2>/dev
 if [ "$?" -ne 0 ]
 then
 
-  wp --skip-plugins --skip-themes --quiet  plugin is-installed woocommerce  2>/dev/null
+  wp --skip-plugins --skip-themes --quiet  plugin install woocommerce  2>/dev/null
 
   wp --skip-plugins --skip-themes --quiet  plugin activate woocommerce  2>/dev/null
 
