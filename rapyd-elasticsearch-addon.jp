@@ -63,7 +63,6 @@ actions:
         curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-cleaner-01.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-01.sh
 
-
         curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-installer-02.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-02.sh
         
