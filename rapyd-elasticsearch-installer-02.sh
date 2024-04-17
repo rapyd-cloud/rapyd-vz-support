@@ -26,7 +26,7 @@ then
   
   cd "$WP_ROOT"
  
-  wp --skip-plugins --skip-themes --quiet  config set --raw EP_HOST "http://127.0.0.1:9200"  2>/dev/null
+  wp --skip-plugins --skip-themes --quiet  config set --raw EP_HOST "'http://127.0.0.1:9200'"  2>/dev/null
 
   wp --skip-plugins --skip-themes --quiet  plugin install elasticpress  2>/dev/null
 
