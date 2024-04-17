@@ -18,7 +18,7 @@ SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
 SKIPLIST=$(wp --skip-plugins --skip-themes --quiet  plugin list --field=name   2>/dev/null   | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
 #################################################################################
-
+cd "$WP_ROOT"
 wp --skip-plugins --skip-themes --quiet  plugin is-installed woocommerce  2>/dev/null
 
 if [ "$?" -ne 0 ]
