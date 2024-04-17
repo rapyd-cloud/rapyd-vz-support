@@ -3,8 +3,7 @@
 # must be run as root user
 
 ######################################################################################################################
-# remove  woocommerce  config 
-# for now we should NEVER uninstalled the woocommerce plugin
+# remove  elasticsearch  config 
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
@@ -15,5 +14,5 @@ else
   
 fi
 
-# end remove linux config 
+# end remove elasticsearch config 
 ######################################################################################################################
