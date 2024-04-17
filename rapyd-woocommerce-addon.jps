@@ -16,7 +16,7 @@ targetNodes:
 baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
 
 buttons:
-  - confirmText: Do you want to force redeploy of Linxu config?
+  - confirmText: Do you want to force redeploy of WooCommerce plugin if not installed?
     loadingText: Redeploying ...
     action: deployaddon
     caption: Force Redeploy
@@ -76,11 +76,8 @@ actions:
         cd /usr/local/rapyd/rapyd-woocommerce-files
         /usr/bin/bash rapyd-woocommerce-installer.sh
 
-      user: root
-    
-    - restartContainers:
-      nodeGroup: ${targetNodes.nodeGroup}
-      
+      user: litespeed
+          
   removeaddon:
     - action: installScripts
     
@@ -89,7 +86,5 @@ actions:
         cd /usr/local/rapyd/rapyd-woocommerce-files
         /usr/bin/bash rapyd-woocommerce-cleaner.sh
         
-      user: root      
+      user: litespeed      
       
-    - restartContainers:
-      nodeGroup: ${targetNodes.nodeGroup}
