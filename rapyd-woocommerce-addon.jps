@@ -1,0 +1,95 @@
+version: 5.0
+type: update
+id: rapyd-woocommerce-addon
+name: Rapyd WooCommerce Config Installer 5.0
+
+description:
+  short: Tool to configure custom woocommerce settings for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+
+buttons:
+  - confirmText: Do you want to force redeploy of Linxu config?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/rapyd-woocommerce-addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-woocommerce-files
+
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        
+        rm -f rapyd-woocommerce-installer.sh
+        rm -f rapyd-woocommerce-cleaner.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-woocommerce-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/rapyd-woocommerce-installer.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-woocommerce-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/rapyd-woocommerce-cleaner.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        /usr/bin/bash rapyd-woocommerce-installer.sh
+
+      user: root
+    
+    - restartContainers:
+      nodeGroup: ${targetNodes.nodeGroup}
+      
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        /usr/bin/bash rapyd-woocommerce-cleaner.sh
+        
+      user: root      
+      
+    - restartContainers:
+      nodeGroup: ${targetNodes.nodeGroup}
