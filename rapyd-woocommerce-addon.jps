@@ -4,7 +4,7 @@ id: rapyd-woocommerce-addon
 name: Rapyd WooCommerce Config Installer 5.0
 
 description:
-  short: Tool to configure custom woocommerce settings for Rapyd customer environments 
+  short: Tool to install and configure woocommerce settings for Rapyd customer environments 
 
 categories:
 - apps/dev-and-admin-tools
