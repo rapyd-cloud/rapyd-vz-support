@@ -144,7 +144,7 @@ chmod "$CUR_CHMOD" wp-config.php
 cd "$WP_ROOT"
 
 # attempt to work out plugin path
-#PLUGIN_PATH=$(wp plugin path --allow-root --path="$WP_ROOT" --quiet --skip-plugins="$SKIPLIST" 2>/dev/null)
+#PLUGIN_PATH=$(wp --skip-plugins --skip-themes --quiet   plugin path --allow-root --path="$WP_ROOT" 2>/dev/null )
 #if [ ! -d "$PLUGIN_PATH" ]
 
 # then
