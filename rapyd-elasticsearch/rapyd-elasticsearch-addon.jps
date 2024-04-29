@@ -1,0 +1,112 @@
+version: 5.0
+type: update
+id: rapyd-elasticsearch-addon
+name: Rapyd elasticsearch Config Installer 5.0
+
+description:
+  short: Tool to install and configure elasticsearch settings for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+
+buttons:
+  - confirmText: Do you want to force redeploy of elasticsearch engine and elasticpress plugin if not installed?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/rapyd-elasticsearch-addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-elasticsearch-files
+
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        
+        rm -f rapyd-elasticsearch-installer-01.sh
+        rm -f rapyd-elasticsearch-cleaner-01.sh
+
+        rm -f rapyd-elasticsearch-installer-02.sh
+        rm -f rapyd-elasticsearch-cleaner-02.sh
+
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-installer-01.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-01.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-cleaner-01.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-01.sh
+
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-installer-02.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-02.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-cleaner-02.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-02.sh
+
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash rapyd-elasticsearch-installer-01.sh
+
+      user: root
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash rapyd-elasticsearch-installer-02.sh
+
+      user: litespeed
+          
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash rapyd-elasticsearch-cleaner-02.sh
+
+      user: litespeed      
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash rapyd-elasticsearch-cleaner-01.sh
+
+      user: root
