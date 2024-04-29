@@ -37,9 +37,11 @@ onAfterClone:
 
 onAfterSetCloudletCount: 
   action: configureOptions
+  action: restartES
 
 onAfterSetEnvVars:
   action: configureOptions
+  action: restartES
 
 onUninstall:
   action: removeaddon
