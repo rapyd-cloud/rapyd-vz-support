@@ -103,7 +103,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
 
          cd /usr/local/rapyd/rapyd-elasticsearch-files
-        /usr/bin/bash rapyd-elasticsearch-configure.sh $ES_MEM_LIMIT
+         /usr/bin/bash rapyd-elasticsearch-configure.sh $ES_MEM_LIMIT
 
       user: root
 
