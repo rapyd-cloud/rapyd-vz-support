@@ -1,7 +1,7 @@
 version: 5.0
 type: update
-id: rapyd-elasticsearch-addon
-name: Rapyd elasticsearch Config Installer 5.0
+id: rapyd-elasticsearch-addon-wip-draft
+name: (WIP) - Rapyd elasticsearch Config Installer 5.0 
 
 description:
   short: Tool to install and configure elasticsearch settings for Rapyd customer environments 
@@ -13,7 +13,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-elasticsearch/
 
 buttons:
   - confirmText: Do you want to force redeploy of elasticsearch engine and elasticpress plugin if not installed?
@@ -57,28 +57,33 @@ actions:
         rm -f rapyd-elasticsearch-installer-02.sh
         rm -f rapyd-elasticsearch-cleaner-02.sh
 
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-installer-01.sh
+        curl -O ${baseUrl}rapyd-elasticsearch-installer-01.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-01.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-cleaner-01.sh
+        curl -O ${baseUrl}rapyd-elasticsearch-cleaner-01.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-01.sh
 
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-installer-02.sh
+        curl -O ${baseUrl}rapyd-elasticsearch-installer-02.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-02.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-elasticsearch-cleaner-02.sh
+        curl -O ${baseUrl}rapyd-elasticsearch-cleaner-02.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-02.sh
+        
+        curl -O ${baseUrl}rapyd-elasticsearch-configure.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-configure.sh
 
         chown litespeed:litespeed /usr/local/rapyd/
         chown -R litespeed:litespeed /usr/local/rapyd/*
 
       user: root 
-      
+
   deployaddon:
     - setGlobals:
         nodeGroup: ${targetNodes.nodeGroup:}
 
     - action: installScripts  
+
+    - action: configureOptions  
 
     - cmd[${targetNodes.nodeGroup}]: |-
     
@@ -93,7 +98,15 @@ actions:
         /usr/bin/bash rapyd-elasticsearch-installer-02.sh
 
       user: litespeed
-          
+
+  configureOptions: 
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+         cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash rapyd-elasticsearch-configure.sh $ES_MEM_LIMIT
+
+      user: root
+
   removeaddon:
     - action: installScripts
     

@@ -46,3 +46,4 @@ sudo chown elasticsearch:elasticsearch  $DATA_DIR/ -R
 # Enable and start Elasticsearch service
 sudo systemctl enable elasticsearch
 sudo systemctl start elasticsearch
+
