@@ -36,12 +36,12 @@ onAfterClone:
     envName: ${event.response.env.envName}
 
 onAfterSetCloudletCount: 
-  action: configureOptions
-  action: restartES
+  - configureOptions
+  - restartES
 
 onAfterSetEnvVars:
-  action: configureOptions
-  action: restartES
+  - configureOptions
+  - restartES
 
 onUninstall:
   action: removeaddon
