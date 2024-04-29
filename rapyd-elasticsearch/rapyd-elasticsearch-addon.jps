@@ -20,6 +20,10 @@ buttons:
     loadingText: Redeploying ...
     action: deployaddon
     caption: Force Redeploy
+  - confirmText: Do you want to force restart elasticsearch engine?
+    loadingText: Restarting ...
+    action: restartES
+    caption: Restart
 
 onInstall:
   action: deployaddon
@@ -30,6 +34,12 @@ onAfterRedeployContainer:
 onAfterClone:
   redeployAfterClone:
     envName: ${event.response.env.envName}
+
+onAfterSetCloudletCount: 
+  action: configureOptions
+
+onAfterSetEnvVars:
+  action: configureOptions
 
 onUninstall:
   action: removeaddon
@@ -104,6 +114,13 @@ actions:
 
          cd /usr/local/rapyd/rapyd-elasticsearch-files
          /usr/bin/bash rapyd-elasticsearch-configure.sh $ES_MEM_LIMIT
+
+      user: root
+
+  restartES: 
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        systemctl restart elasticsearch
 
       user: root
 
