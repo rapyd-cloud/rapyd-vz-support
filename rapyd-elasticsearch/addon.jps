@@ -50,7 +50,7 @@ onUninstall:
 actions:
   
   installEsWpAddon: 
-    install: ${baseUrl}/rapyd-elasticsearch-plugin/install.jps
+    install: ${baseUrl}/rapyd-elasticsearch-plugin/addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
