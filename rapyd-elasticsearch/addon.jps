@@ -1,10 +1,10 @@
 version: 5.0
 type: update
 id: rapyd-elasticsearch-addon-wip-draft
-name: (WIP) - Rapyd elasticsearch Config Installer 5.0 
+name: (WIP) - Rapyd Elasticsearch Config Installer 5.0 
 
 description:
-  short: Tool to install and configure elasticsearch settings for Rapyd customer environments 
+  short: Tool to install and configure elasticsearch & elasticsearch wordpress addon for Rapyd customer environments 
 
 categories:
 - apps/dev-and-admin-tools
@@ -26,7 +26,6 @@ buttons:
     caption: Restart
 
 onInstall:
-  action: deployaddon
   installEsWpAddon:
     envName: ${event.response.env.envName}
 
@@ -51,7 +50,7 @@ onUninstall:
 actions:
   
   installEsWpAddon: 
-    install: ${baseUrl}/rapyd-elasticsearch/install.jps
+    install: ${baseUrl}/rapyd-elasticsearch-plugin/install.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
@@ -59,7 +58,7 @@ actions:
       nodeGroup: ${globals.nodeGroup}
   
   redeployAfterClone:
-    install: ${baseUrl}/rapyd-elasticsearch/rapyd-elasticsearch-addon.jps
+    install: ${baseUrl}/rapyd-elasticsearch/addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
