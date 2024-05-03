@@ -26,8 +26,12 @@ buttons:
     caption: Restart
 
 onInstall:
-  installEsWpAddon:
-    envName: ${event.response.env.envName}
+  installAddon:
+    id: rapyd-elasticsearch-wp-plugin-wip-draft
+
+addons:
+  - id: rapyd-elasticsearch-wp-plugin-wip-draft
+    name: Rapyd Elasticsearch WordPress Plugin
 
 onAfterRedeployContainer:
   action: deployaddon
