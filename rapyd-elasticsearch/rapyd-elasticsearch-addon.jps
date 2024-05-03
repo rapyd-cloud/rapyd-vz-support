@@ -13,7 +13,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-elasticsearch/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/
 
 buttons:
   - confirmText: Do you want to force redeploy of elasticsearch engine and elasticpress plugin if not installed?
@@ -27,6 +27,8 @@ buttons:
 
 onInstall:
   action: deployaddon
+  installEsWpAddon:
+    envName: ${event.response.env.envName}
 
 onAfterRedeployContainer:
   action: deployaddon
@@ -47,8 +49,17 @@ onUninstall:
   action: removeaddon
 
 actions:
+  
+  installEsWpAddon: 
+    install: ${baseUrl}/rapyd-elasticsearch/install.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+  
   redeployAfterClone:
-    install: ${baseUrl}/rapyd-elasticsearch-addon.jps
+    install: ${baseUrl}/rapyd-elasticsearch/rapyd-elasticsearch-addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
@@ -69,19 +80,19 @@ actions:
         rm -f rapyd-elasticsearch-installer-02.sh
         rm -f rapyd-elasticsearch-cleaner-02.sh
 
-        curl -O ${baseUrl}rapyd-elasticsearch-installer-01.sh
+        curl -O ${baseUrl}rapyd-elasticsearch/rapyd-elasticsearch-installer-01.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-01.sh
         
-        curl -O ${baseUrl}rapyd-elasticsearch-cleaner-01.sh
+        curl -O ${baseUrl}rapyd-elasticsearch/rapyd-elasticsearch-cleaner-01.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-01.sh
 
-        curl -O ${baseUrl}rapyd-elasticsearch-installer-02.sh
+        curl -O ${baseUrl}rapyd-elasticsearch/rapyd-elasticsearch-installer-02.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-installer-02.sh
         
-        curl -O ${baseUrl}rapyd-elasticsearch-cleaner-02.sh
+        curl -O ${baseUrl}rapyd-elasticsearch/rapyd-elasticsearch-cleaner-02.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-cleaner-02.sh
         
-        curl -O ${baseUrl}rapyd-elasticsearch-configure.sh
+        curl -O ${baseUrl}rapyd-elasticsearch/rapyd-elasticsearch-configure.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/rapyd-elasticsearch-configure.sh
 
         chown litespeed:litespeed /usr/local/rapyd/
