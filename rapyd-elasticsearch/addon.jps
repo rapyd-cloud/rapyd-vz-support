@@ -26,12 +26,8 @@ buttons:
     caption: Restart
 
 onInstall:
-  installAddon:
-    id: rapyd-elasticsearch-wp-plugin-wip-draft
-
-addons:
-  - id: rapyd-elasticsearch-wp-plugin-wip-draft
-    name: Rapyd Elasticsearch WordPress Plugin
+  - deployaddon
+  - installEsWpAddon
 
 onAfterRedeployContainer:
   action: deployaddon
@@ -54,12 +50,11 @@ onUninstall:
 actions:
   
   installEsWpAddon: 
-    install: ${baseUrl}/rapyd-elasticsearch-plugin/addon.jps
-    envName: ${this.envName}
-    nodeGroup: ${globals.nodeGroup}
-    settings:
-      newEnvName: ${this.envName}
-      nodeGroup: ${globals.nodeGroup}
+    api:
+    - method: marketplace.app.InstallAddon
+      params:
+        nodeGroup: cp
+        id: rapyd-elasticsearch-wp-plugin-wip-draft
   
   redeployAfterClone:
     install: ${baseUrl}/rapyd-elasticsearch/addon.jps
