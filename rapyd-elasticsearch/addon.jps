@@ -13,7 +13,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-elasticsearch/
 
 buttons:
   - confirmText: Do you want to force redeploy of elasticsearch engine and elasticpress plugin if not installed?
@@ -75,7 +75,7 @@ actions:
         rm -f install.sh
         rm -f clear.sh
         rm -f configure.sh
-        
+
         curl -O ${baseUrl}install.sh
         chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/install.sh
         
