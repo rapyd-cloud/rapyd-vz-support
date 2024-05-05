@@ -1,10 +1,11 @@
 version: 1.0
 type: update
-id: rapyd-elasticsearch-wp-plugin-wip-draft
-name: (WIP) - Rapyd Elasticsearch WordPress Plugin 1.0 
+id: rapyd-elasticpress-wp-plugin-wip-draft
+name: (WIP) - Rapyd ElasticPress WordPress Plugin 1.0 
+logo: icon.png
 
 description:
-  short: Tool to install and configure elasticsearch settings for Rapyd customer environments 
+  short: Tool to install and configure ElasticPress settings for Rapyd customer environments 
 
 categories:
 - apps/dev-and-admin-tools
@@ -20,7 +21,6 @@ buttons:
     loadingText: Redeploying ...
     action: deployaddon
     caption: Force Redeploy
-
 
 onInstall:
   action: deployaddon

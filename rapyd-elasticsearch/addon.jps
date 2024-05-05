@@ -54,7 +54,7 @@ actions:
     - method: marketplace.app.InstallAddon
       params:
         nodeGroup: cp
-        id: rapyd-elasticsearch-wp-plugin-wip-draft
+        id: rapyd-elasticpress-wp-plugin-wip-draft
   
   redeployAfterClone:
     install: ${baseUrl}/rapyd-elasticsearch/addon.jps
