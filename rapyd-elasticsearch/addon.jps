@@ -1,7 +1,7 @@
-version: 5.0
+version: 1.0
 type: update
 id: rapyd-elasticsearch-addon-wip-draft
-name: (WIP) - Rapyd Elasticsearch Config Installer 5.0 
+name: (WIP) - Rapyd Elasticsearch Config 1.0 
 logo: icon.png
 description:
   short: Tool to install and configure elasticsearch & elasticsearch wordpress addon for Rapyd customer environments 
