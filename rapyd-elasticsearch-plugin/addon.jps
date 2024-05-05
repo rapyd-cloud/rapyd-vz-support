@@ -2,7 +2,7 @@ version: 1.0
 type: update
 id: rapyd-elasticpress-wp-plugin-wip-draft
 name: (WIP) - Rapyd ElasticPress WordPress Plugin 1.0 
-logo: icon.jpg
+logo: icon.png
 
 description:
   short: Tool to install and configure ElasticPress settings for Rapyd customer environments 
