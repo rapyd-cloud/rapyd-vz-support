@@ -11,7 +11,8 @@ ramAvailable=$(($(grep MemTotal /proc/meminfo | awk '{print $2}') / 1024))
 
 # Get the max specifed heap to this node.
 if [[ $1 =~ ^[0-9]+$ ]]; then
-    heapPercentage=$1
+    heapPercentage=$(echo "$1" | sed 's/%//g');
+    
 else
     heapPercentage=10
 fi
