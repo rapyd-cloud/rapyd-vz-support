@@ -13,7 +13,7 @@ ramAvailable=$(($(grep MemTotal /proc/meminfo | awk '{print $2}') / 1024))
 if [[ $1 =~ ^[0-9]+$ ]]; then
     heapPercentage=$1
 else
-    heapPercentage=70
+    heapPercentage=10
 fi
 
 maxHeap=$(printf "%.0f" $(echo "$ramAvailable * $heapPercentage / 100" | bc))
