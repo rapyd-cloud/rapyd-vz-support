@@ -1,11 +1,11 @@
 version: 1.0
 type: update
-id: rapyd-elasticpress-wp-plugin-wip-draft
-name: (WIP) - Rapyd ElasticPress WordPress Plugin 1.0 
-logo: icon.png
+id: rapyd-woocommerce-addon
+name: Rapyd WooCommerce WordPress Plugin 1.0 
+logo: logo.gif
 
 description:
-  short: Tool to install and configure ElasticPress settings for Rapyd customer environments 
+  short: Tool to install and configure woocommerce settings for Rapyd customer environments 
 
 categories:
 - apps/dev-and-admin-tools
@@ -14,10 +14,10 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-elasticsearch-plugin/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-woocommerce-plugin/
 
 buttons:
-  - confirmText: Do you want to force the re-deployment of the Elasticsearch WordPress plugin if it is not installed?
+  - confirmText: Do you want to force redeploy of WooCommerce plugin if not installed?
     loadingText: Redeploying ...
     action: deployaddon
     caption: Force Redeploy
@@ -27,6 +27,10 @@ onInstall:
 
 onAfterRedeployContainer:
   action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
 
 onUninstall:
   action: removeaddon
@@ -44,43 +48,44 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
     
         mkdir -p /usr/local/rapyd
-        mkdir -p /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        mkdir -p /usr/local/rapyd/rapyd-woocommerce-files
 
-        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        cd /usr/local/rapyd/rapyd-woocommerce-files
         
-        rm -f clear.sh
         rm -f install.sh
-
-        curl -O ${baseUrl}clear.sh
-        chmod +x /usr/local/rapyd/rapyd-elasticsearch-plugin-files/clear.sh
-
+        rm -f clean.sh
+        
         curl -O ${baseUrl}install.sh
-        chmod +x /usr/local/rapyd/rapyd-elasticsearch-plugin-files/install.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/install.sh
+        
+        curl -O ${baseUrl}clean.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/clean.sh
         
         chown litespeed:litespeed /usr/local/rapyd/
         chown -R litespeed:litespeed /usr/local/rapyd/*
 
       user: root 
-
+      
   deployaddon:
     - setGlobals:
         nodeGroup: ${targetNodes.nodeGroup:}
 
     - action: installScripts  
-
+  
     - cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        cd /usr/local/rapyd/rapyd-woocommerce-files
         /usr/bin/bash install.sh
 
       user: litespeed
-
+          
   removeaddon:
     - action: installScripts
     
     - cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
-        /usr/bin/bash clear.sh
-
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        /usr/bin/bash clean.sh
+        
       user: litespeed      
+      
