@@ -127,9 +127,7 @@ actions:
 
       user: root
 
-  removeaddon:
-    - action: installScripts
-    
+  removeaddon:    
     - cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-elasticsearch-files
