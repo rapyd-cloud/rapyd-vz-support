@@ -57,7 +57,7 @@ actions:
         id: rapyd-elasticpress-wp-plugin
 
   redeployAfterClone:
-    install: ${baseUrl}/rapyd-elasticsearch/addon.jps
+    install: ${baseUrl}/addon.jps
     envName: ${this.envName}
     nodeGroup: ${globals.nodeGroup}
     settings:
