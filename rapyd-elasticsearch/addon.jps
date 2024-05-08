@@ -1,7 +1,7 @@
-version: 1.0
+version: 5.1
 type: update
-id: rapyd-elasticsearch-addon-wip-draft
-name: (WIP) - Rapyd Elasticsearch Config 1.0 
+id: rapyd-elasticsearch-addon
+name: Rapyd Elasticsearch Config 5.1 
 logo: icon.png
 description:
   short: Tool to install and configure elasticsearch & elasticsearch wordpress addon for Rapyd customer environments 
@@ -54,14 +54,7 @@ actions:
     - method: marketplace.app.InstallAddon
       params:
         nodeGroup: cp
-        id: rapyd-elasticpress-wp-plugin-wip-draft
-  
-  setupVariable: 
-    api:
-    - method: marketplace.app.InstallAddon
-      params:
-        nodeGroup: cp
-        id: rapyd-elasticpress-wp-plugin-wip-draft
+        id: rapyd-elasticpress-wp-plugin
 
   redeployAfterClone:
     install: ${baseUrl}/rapyd-elasticsearch/addon.jps

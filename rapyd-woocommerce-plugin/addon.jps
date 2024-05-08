@@ -1,7 +1,7 @@
-version: 1.0
+version: 5.0
 type: update
 id: rapyd-woocommerce-addon
-name: Rapyd WooCommerce WordPress Plugin 1.0 
+name: Rapyd WooCommerce WordPress Plugin 5.0 
 logo: logo.gif
 
 description:

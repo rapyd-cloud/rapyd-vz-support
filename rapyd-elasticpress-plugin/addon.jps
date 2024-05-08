@@ -1,7 +1,7 @@
-version: 1.0
+version: 5.1
 type: update
-id: rapyd-elasticpress-wp-plugin-wip-draft
-name: (WIP) - Rapyd ElasticPress WordPress Plugin 1.0 
+id: rapyd-elasticpress-wp-plugin
+name: Rapyd ElasticPress WordPress Plugin 5.1 
 logo: logo.png
 
 description:
