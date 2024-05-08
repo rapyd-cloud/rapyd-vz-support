@@ -11,15 +11,8 @@
 # Stop and Disable  -  Elasticsearch service
 sudo systemctl stop elasticsearch
 sudo systemctl disable elasticsearch
-
-if grep -a 'AlmaLinux' /etc/system-release ; then
-  # work out what we need to do here for AlmaLinux 
-  cd ~
-  
-else
-  cd ~
-  
-fi
+sudo yum remove -y elasticsearch
+sudo rm -rf /etc/elasticsearch /var/lib/elasticsearch /var/www/webroot/elasticsearch
 
 # end remove elasticsearch config 
 ######################################################################################################################
