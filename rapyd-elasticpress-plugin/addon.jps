@@ -1,0 +1,86 @@
+version: 5.1
+type: update
+id: rapyd-elasticpress-wp-plugin
+name: Rapyd ElasticPress WordPress Plugin 5.1 
+logo: logo.png
+
+description:
+  short: Tool to install and configure ElasticPress settings for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/rapyd-elasticpress-plugin/
+
+buttons:
+  - confirmText: Do you want to force the re-deployment of the Elasticsearch WordPress plugin if it is not installed?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+
+        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        
+        rm -f clear.sh
+        rm -f install.sh
+
+        curl -O ${baseUrl}clear.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-plugin-files/clear.sh
+
+        curl -O ${baseUrl}install.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-plugin-files/install.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        /usr/bin/bash install.sh
+
+      user: litespeed
+
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-plugin-files
+        /usr/bin/bash clear.sh
+
+      user: litespeed      

@@ -1,0 +1,91 @@
+version: 5.1
+type: update
+id: rapyd-woocommerce-addon
+name: Rapyd WooCommerce WordPress Plugin 5.1
+logo: logo.gif
+
+description:
+  short: Tool to install and configure woocommerce settings for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/rapyd-woocommerce-plugin/
+
+buttons:
+  - confirmText: Do you want to force redeploy of WooCommerce plugin if not installed?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-woocommerce-files
+
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        
+        rm -f install.sh
+        rm -f clean.sh
+        
+        curl -O ${baseUrl}install.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/install.sh
+        
+        curl -O ${baseUrl}clean.sh
+        chmod +x /usr/local/rapyd/rapyd-woocommerce-files/clean.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        /usr/bin/bash install.sh
+
+      user: litespeed
+          
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-woocommerce-files
+        /usr/bin/bash clean.sh
+        
+      user: litespeed      
+      

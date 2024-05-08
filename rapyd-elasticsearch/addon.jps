@@ -1,0 +1,129 @@
+version: 5.1
+type: update
+id: rapyd-elasticsearch-addon
+name: Rapyd Elasticsearch Config 5.1 
+logo: icon.png
+description:
+  short: Tool to install and configure elasticsearch & elasticsearch wordpress addon for Rapyd customer environments 
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/rapyd-elasticsearch/
+
+buttons:
+  - confirmText: Do you want to force redeploy of elasticsearch engine and elasticpress plugin if not installed?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+  - confirmText: Do you want to force restart elasticsearch engine?
+    loadingText: Restarting ...
+    action: restartES
+    caption: Restart
+
+onInstall:
+  - deployaddon
+  - installEsWpAddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onAfterSetCloudletCount: 
+  - configureOptions
+  - restartES
+
+onAfterSetEnvVars:
+  - configureOptions
+  - restartES
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  
+  installEsWpAddon: 
+    api:
+    - method: marketplace.app.InstallAddon
+      params:
+        nodeGroup: cp
+        id: rapyd-elasticpress-wp-plugin
+
+  redeployAfterClone:
+    install: ${baseUrl}/addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-elasticsearch-files
+
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        
+        rm -f install.sh
+        rm -f clear.sh
+        rm -f configure.sh
+
+        curl -O ${baseUrl}install.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/install.sh
+        
+        curl -O ${baseUrl}clear.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/clear.sh
+
+        curl -O ${baseUrl}configure.sh
+        chmod +x /usr/local/rapyd/rapyd-elasticsearch-files/configure.sh
+
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+
+    - action: configureOptions  
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash install.sh
+
+      user: root
+
+  configureOptions: 
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash configure.sh $ES_MEM_LIMIT
+
+      user: root
+
+  restartES: 
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        systemctl restart elasticsearch
+
+      user: root
+
+  removeaddon:    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-elasticsearch-files
+        /usr/bin/bash clear.sh
+
+      user: root
