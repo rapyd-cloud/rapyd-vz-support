@@ -14,7 +14,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-elasticpress-plugin/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/rapyd-elasticpress-plugin/
 
 buttons:
   - confirmText: Do you want to force the re-deployment of the Elasticsearch WordPress plugin if it is not installed?

@@ -14,7 +14,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/elasticsearch/rapyd-woocommerce-plugin/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/rapyd-woocommerce-plugin/
 
 buttons:
   - confirmText: Do you want to force redeploy of WooCommerce plugin if not installed?
