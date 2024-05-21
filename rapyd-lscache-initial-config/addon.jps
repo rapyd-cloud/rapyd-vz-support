@@ -1,0 +1,85 @@
+version: 5.1
+type: update
+id: rapyd-lscache-initial-configv2
+name: Rapyd LiteSpeed WordPress Plugin + Config 5.1 
+logo: logo.png
+
+description:
+  short: This addon performs initial configuration of the LiteSpeed Cache settings. It also installs the LiteSpeed plugin if it's not already present.
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-lscache-initial-config/
+
+buttons:
+  - confirmText: Do you want to force the redeployment of the LiteSpeed WordPress plugin and configuration if it is not present?
+    loadingText: Redeploying ...
+    action: deployaddon
+    caption: Force Redeploy
+
+onInstall:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+actions:
+
+  redeployAfterClone:
+    install: ${baseUrl}/addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-lscache-initial-config-files
+
+        cd /usr/local/rapyd/rapyd-lscache-initial-config-files
+        
+        rm -f clear.sh
+        rm -f install.sh
+
+        curl -O ${baseUrl}clear.sh
+        chmod +x ./clear.sh
+
+        curl -O ${baseUrl}install.sh
+        chmod +x ./install.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: litespeed 
+
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-lscache-initial-config-files
+        /usr/bin/bash install.sh
+
+      user: litespeed
+
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-lscache-initial-config-files
+        /usr/bin/bash clear.sh
+
+      user: litespeed      
