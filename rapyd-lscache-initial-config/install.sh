@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e;
-
 cd /var/www/webroot/ROOT/
 
 # get the current list of all active plugins 
@@ -9,15 +7,21 @@ cd /var/www/webroot/ROOT/
 SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
 SKIPLIST=$(wp plugin list --status=active --field=name --quiet --skip-plugins 2>/dev/null | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
-wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
-
 # ┌──────────────────────────────────────────────────────────────────────────┐
 # │ Make sure litespeed is installed & activate                              │
 # └──────────────────────────────────────────────────────────────────────────┘
 
+wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
+
+echo "checking is installed\n";
+
 if [ "$?" -eq 0 ]
 then
-    wp plugin is-active litespeed-cache --quiet;
+    wp plugin is-active litespeed-cache --quiet 2>/dev/null
+	if [ $? -ne 0 ]; then
+         echo "Activating LiteSpeed Plugin...\n"; 
+    	 wp plugin activate litespeed-cache --quiet || exit;
+    fi;
 else
     echo "Installing LiteSpeed Plugin...\n"; 
     wp plugin install litespeed-cache --quiet;
@@ -32,9 +36,6 @@ fi
 echo "Updating Litespeed plugin...\n";
 wp plugin update litespeed-cache --quiet --skip-plugins="$SKIPLIST";
 
-Configure litespeed configuration for best rapyd usecase 
-
-
 # ┌──────────────────────────────────────────────────────────────────────────┐
 # │ Configure litespeed for Rapyd!                                           │
 # └──────────────────────────────────────────────────────────────────────────┘
@@ -47,6 +48,13 @@ wp litespeed-option set cache-rest false --quiet --skip-plugins="$SKIPLIST" 2>/d
 wp litespeed-option set cache-page_login false --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
 wp litespeed-option set cache-favicon true --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
 wp litespeed-option set cache-resources true --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
-wp litespeed-option set cache-mobile false  --quiet --skip-plugins="$SKIPLIST" 2>/dev/null     
-wp litespeed-option set cache-exc $'^/wp-admin\n ^/wp-json \n^/wp-login\n^/register' --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
+wp litespeed-option set cache-mobile false  --quiet --skip-plugins="$SKIPLIST" 2>/dev/null    
+
+# only update Do Not Cache URIs	fields when it's empty. get value & trim then.
+cacheExc=$(wp litespeed-option get cache-exc | xargs);
+if [ -z "$cacheExc" ]; then
+   wp litespeed-option set cache-exc $'^/wp-admin\n ^/wp-json \n^/wp-login\n^/register' --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
+fi
+
 wp litespeed-option set cache true --quiet --skip-plugins="$SKIPLIST" 2>/dev/null;
+
