@@ -11,16 +11,15 @@ SKIPLIST=$(wp plugin list --status=active --field=name --quiet --skip-plugins 2>
 # │ Make sure litespeed is installed & activate                              │
 # └──────────────────────────────────────────────────────────────────────────┘
 
-wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
-
 echo "checking is installed\n";
+wp plugin is-installed litespeed-cache --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
     wp plugin is-active litespeed-cache --quiet 2>/dev/null
 	if [ $? -ne 0 ]; then
          echo "Activating LiteSpeed Plugin...\n"; 
-    	 wp plugin activate litespeed-cache --quiet || exit;
+    	 wp plugin activate litespeed-cache --quiet
     fi;
 else
     echo "Installing LiteSpeed Plugin...\n"; 
@@ -35,6 +34,7 @@ fi
 
 echo "Updating Litespeed plugin...\n";
 wp plugin update litespeed-cache --quiet --skip-plugins="$SKIPLIST";
+wp plugin activate litespeed-cache --quiet
 
 # ┌──────────────────────────────────────────────────────────────────────────┐
 # │ Configure litespeed for Rapyd!                                           │
