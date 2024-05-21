@@ -59,7 +59,7 @@ actions:
         chown litespeed:litespeed /usr/local/rapyd/
         chown -R litespeed:litespeed /usr/local/rapyd/*
 
-      user: litespeed 
+      user: root 
 
   deployaddon:
     - setGlobals:
