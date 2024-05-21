@@ -37,4 +37,7 @@ then
         wp litespeed-option set cache true --quiet --skip-plugins="$SKIPLIST" 2>/dev/null
         
     fi
+else
+    echo "Installing LiteSpeed Plugin..."; 
+    wp plugin install litespeed-cache;
 fi
