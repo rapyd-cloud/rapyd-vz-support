@@ -52,3 +52,5 @@ sed -i "s/^;\? \?relay.key =.*/relay.key = $RELAY_KEY/" $RELAY_TMP_DIR/relay.ini
 ## Move `relay.ini`
 rm -f $RELAY_INI_DIR/relay.ini
 yes | cp -rf $RELAY_TMP_DIR/relay.ini $RELAY_INI_DIR
+
+## relay deployed 
