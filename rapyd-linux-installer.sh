@@ -47,7 +47,7 @@ function injectVhConfTag {
     xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "weekly" "$XML_FILE"
     # Update logging log rollingInterval,keepDays for accessLog
     xmlstarlet ed -L -u "//logging/accessLog/rollingInterval" -v "weekly" "$XML_FILE"
-    xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "90" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "31" "$XML_FILE"
 }
 
 unset injectbashrc
