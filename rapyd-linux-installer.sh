@@ -43,10 +43,19 @@ fi
 
 function injectVhConfTag {
     XML_FILE="/var/www/conf/vhconf.xml"
+    # Checking if rollingInterval exists inside accessLog, if not adding it
+    xmlstarlet sel -t -m "//logging/accessLog/rollingInterval" -c . "$XML_FILE" | grep -q . \
+        || xmlstarlet ed -L -s "//logging/accessLog" -t elem -n rollingInterval -v "daily" "$XML_FILE"
+
     # Update logging log rollingInterval for log
-    xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "weekly" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "daily" "$XML_FILE"
+
+    # Checking if keepDays exists, if not adding it
+    xmlstarlet sel -t -m "//logging/accessLog/keepDays" -c . "$XML_FILE" | grep -q . \
+    || xmlstarlet ed -L -s "//logging/accessLog" -t elem -n keepDays -v "31" "$XML_FILE"
+
     # Update logging log rollingInterval,keepDays for accessLog
-    xmlstarlet ed -L -u "//logging/accessLog/rollingInterval" -v "weekly" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/accessLog/rollingInterval" -v "daily" "$XML_FILE"
     xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "31" "$XML_FILE"
 }
 
