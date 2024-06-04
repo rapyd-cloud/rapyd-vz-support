@@ -3,7 +3,7 @@
 # must be run as root - su user
 
 ######################################################################################################################
-# install linux config 
+# install linux config
 
 function injectbashrc  {
   BASHPATH="/home/jelastic/.bashrc"
@@ -28,17 +28,17 @@ function installrapydbashrc {
 }
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
-  # work out what we need to do here for AlmaLinux 
+  # work out what we need to do here for AlmaLinux
   cd ~
   installrapydbashrc
   injectbashrc
-    
+
 else
   # work out what we need to do here for CentOS
   cd ~
   installrapydbashrc
   injectbashrc
-  
+
 fi
 
 function injectVhConfTag {
@@ -70,9 +70,6 @@ function injectVhConfTag {
     # Updating logLevel inside accessLog & log
     xmlstarlet ed -L -u "//logging/log/logLevel" -v "ERROR" "$XML_FILE"
     xmlstarlet ed -L -u "//logging/accessLog/logLevel" -v "ERROR" "$XML_FILE"
-
-    <logLevel>ERROR</logLevel>
-
 }
 
 injectVhConfTag
@@ -80,5 +77,5 @@ unset injectbashrc
 unset installrapydbashrc
 unset injectVhConfTag
 
-# end linux config 
+# end linux config
 ######################################################################################################################
