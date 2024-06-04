@@ -51,17 +51,28 @@ function injectVhConfTag {
     xmlstarlet sel -t -m "//logging/log/rollingInterval" -c . "$XML_FILE" | grep -q . \
         || xmlstarlet ed -L -s "//logging/log" -t elem -n rollingInterval -v "daily" "$XML_FILE"
 
-    # Update logging log rollingInterval,keepDays for log
+    # Update rollingInterval,keepDays inside log
     xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "daily" "$XML_FILE"
     xmlstarlet ed -L -u "//logging/log/keepDays" -v "31" "$XML_FILE"
 
-    # Checking if keepDays exists, if not adding it
+    # Checking if keepDays exists inside accessLog , if not adding it
     xmlstarlet sel -t -m "//logging/accessLog/keepDays" -c . "$XML_FILE" | grep -q . \
     || xmlstarlet ed -L -s "//logging/accessLog" -t elem -n keepDays -v "31" "$XML_FILE"
 
-    # Update logging log rollingInterval,keepDays for accessLog
+    # Checking if logLevel exists inside log, if not adding it
+    xmlstarlet sel -t -m "//logging/log/logLevel" -c . "$XML_FILE" | grep -q . \
+    || xmlstarlet ed -L -s "//logging/log/logLevel" -t elem -n ERROR -v "31" "$XML_FILE"
+
+    # Update logging log rollingInterval,keepDays inside accessLog
     xmlstarlet ed -L -u "//logging/accessLog/rollingInterval" -v "daily" "$XML_FILE"
     xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "31" "$XML_FILE"
+
+    # Updating logLevel inside accessLog & log
+    xmlstarlet ed -L -u "//logging/log/logLevel" -v "ERROR" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/accessLog/logLevel" -v "ERROR" "$XML_FILE"
+
+    <logLevel>ERROR</logLevel>
+
 }
 
 injectVhConfTag
