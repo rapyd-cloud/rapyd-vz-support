@@ -47,8 +47,13 @@ function injectVhConfTag {
     xmlstarlet sel -t -m "//logging/accessLog/rollingInterval" -c . "$XML_FILE" | grep -q . \
         || xmlstarlet ed -L -s "//logging/accessLog" -t elem -n rollingInterval -v "daily" "$XML_FILE"
 
-    # Update logging log rollingInterval for log
+    # Checking if rollingInterval exists inside log, if not adding it
+    xmlstarlet sel -t -m "//logging/log/rollingInterval" -c . "$XML_FILE" | grep -q . \
+        || xmlstarlet ed -L -s "//logging/log" -t elem -n rollingInterval -v "daily" "$XML_FILE"
+
+    # Update logging log rollingInterval,keepDays for log
     xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "daily" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/log/keepDays" -v "31" "$XML_FILE"
 
     # Checking if keepDays exists, if not adding it
     xmlstarlet sel -t -m "//logging/accessLog/keepDays" -c . "$XML_FILE" | grep -q . \
