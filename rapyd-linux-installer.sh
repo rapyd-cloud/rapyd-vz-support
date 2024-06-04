@@ -41,8 +41,18 @@ else
   
 fi
 
+function injectVhConfTag {
+    XML_FILE="/var/www/conf/vhconf.xml"
+    # Update logging log rollingInterval for log
+    xmlstarlet ed -L -u "//logging/log/rollingInterval" -v "weekly" "$XML_FILE"
+    # Update logging log rollingInterval,keepDays for accessLog
+    xmlstarlet ed -L -u "//logging/accessLog/rollingInterval" -v "weekly" "$XML_FILE"
+    xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "90" "$XML_FILE"
+}
+
 unset injectbashrc
 unset installrapydbashrc
+unset injectVhConfTag
 
 # end linux config 
 ######################################################################################################################
