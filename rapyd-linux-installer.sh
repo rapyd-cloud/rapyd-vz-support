@@ -64,6 +64,7 @@ function injectVhConfTag {
     xmlstarlet ed -L -u "//logging/accessLog/keepDays" -v "31" "$XML_FILE"
 }
 
+injectVhConfTag
 unset injectbashrc
 unset installrapydbashrc
 unset injectVhConfTag
