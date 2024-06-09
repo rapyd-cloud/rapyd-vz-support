@@ -1,6 +1,6 @@
 version: 5.1
 type: update
-id: rapyd-lscache-initial-configv2
+id: rapyd-lscache-initial-config
 name: Rapyd LiteSpeed WP Config 5.1 
 logo: logo.png
 
