@@ -43,7 +43,7 @@ fi
 # we are going to use this later to skip all installed plugins apart for those we want to test
 cd "$WP_ROOT"
 SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
-SKIPLIST=$(wp --skip-plugins --skip-themes --quiet  plugin list --field=name   2>/dev/null   | grep -v $SKIPPLUGINS | tr '\n' ',' )
+SKIPLIST=$(wp --skip-plugins --skip-themes --skip-packages --quiet  plugin list --field=name   2>/dev/null   | grep -v $SKIPPLUGINS | tr '\n' ',' )
 
 ##################################################################################
 # force deactivation of litespeed object cache pro if it is enabled
@@ -51,11 +51,11 @@ SKIPLIST=$(wp --skip-plugins --skip-themes --quiet  plugin list --field=name   2
 echo "checking for litespeed cache"
 
 cd "$WP_ROOT"
-wp --skip-plugins --skip-themes --quiet  plugin is-installed litespeed-cache  2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages --quiet  plugin is-installed litespeed-cache  2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
-   wp --skip-plugins --skip-themes --quiet  plugin is-active litespeed-cache  2>/dev/null
+   wp --skip-plugins --skip-themes --skip-packages --quiet  plugin is-active litespeed-cache  2>/dev/null
 
    if [ "$?" -eq 0 ]
      then
@@ -99,6 +99,15 @@ OCP_CONFIG=$(cat << EOF
 'prefetch' => false,
 'shared' => true,
 'debug' => false,
+'non_persistent_groups' => [
+	'comment',
+	'counts',
+	'plugins',
+	'themes',
+	'wc_session_id',
+	'learndash_reports',
+	'learndash_admin_profile',
+ ], 
 ]
 EOF
 )
@@ -112,7 +121,16 @@ chmod 644 wp-config.php
 
 ##################################################################################
 
-wp --skip-plugins --skip-themes --quiet  config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}"  2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages --quiet  config has WP_REDIS_CONFIG  2>/dev/null
+
+
+if [ "$?" -ne 0 ]
+  then
+    ## disable the ls object cache before doing any other actions
+    wp --skip-plugins --skip-themes --skip-packages --quiet  config set --raw WP_REDIS_CONFIG "${OCP_CONFIG}"  2>/dev/null
+     
+fi
+
 
 ##################################################################################
 ## SETUP OCP MERGE CONSTANTS FOR non_persistent_groups - if not already created
@@ -126,7 +144,7 @@ cd "$WP_ROOT"
 ##################################################################################
 
 cd "$WP_ROOT"
-wp  --skip-plugins --skip-themes --quiet  config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false"  2>/dev/null
+wp  --skip-plugins --skip-themes --skip-packages --quiet  config set --raw WP_REDIS_DISABLED "getenv('WP_REDIS_DISABLED') ?: false"  2>/dev/null
 
 
 ##################################################################################
@@ -144,7 +162,7 @@ chmod "$CUR_CHMOD" wp-config.php
 cd "$WP_ROOT"
 
 # attempt to work out plugin path
-#PLUGIN_PATH=$(wp --skip-plugins --skip-themes --quiet   plugin path --allow-root --path="$WP_ROOT" 2>/dev/null )
+#PLUGIN_PATH=$(wp --skip-plugins --skip-themes --skip-packages --quiet   plugin path --allow-root --path="$WP_ROOT" 2>/dev/null )
 #if [ ! -d "$PLUGIN_PATH" ]
 
 # then
@@ -193,7 +211,7 @@ rm "$OCP_PLUGIN_TMP"
 echo "activate plugin"
 
 cd "$WP_ROOT"
-wp --skip-plugins --skip-themes --quiet  plugin activate object-cache-pro  2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate object-cache-pro  2>/dev/null
 
 echo "force enable plugin"
 
