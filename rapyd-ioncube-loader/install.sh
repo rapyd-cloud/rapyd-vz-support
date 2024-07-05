@@ -15,15 +15,15 @@ PHP_EXT_DIR=$(php-config --extension-dir);
 #================================================================
 if [ -e "$PHP_EXTENTION" ]; then
   
-  IONCUBE_LOADER_INI=$PHP_INI_DIR/ioncube-loader.ini;
+  IONCUBE_LOADER_INI=$PHP_INI_DIR/ioncube.ini;
 
   # Install the extention file.
-  rm -f $RELAY_EXT_DIR/relay.so
-  yes | cp -rf $PHP_EXTENTION $RELAY_EXT_DIR/ioncube-loader.so
+  rm -f $PHP_EXT_DIR/ioncube.so;
+  cp -f $PHP_EXTENTION $PHP_EXT_DIR/ioncube.so
 
   # Install ini file.
   rm -f $IONCUBE_LOADER_INI;
-  echo "zend_extension = ioncube-loader.so" > $IONCUBE_LOADER_INI;
+  echo "zend_extension = ioncube.so" > $IONCUBE_LOADER_INI;
 
   echo "ionCube Loader Installed!";  
 
