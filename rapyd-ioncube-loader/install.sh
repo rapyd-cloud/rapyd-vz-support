@@ -6,7 +6,7 @@ wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.z
 unzip ioncube_loaders_lin_x86-64.zip;
 
 PHP_VERSION=$( php -i | head -n 5 | grep "PHP Version =>" |  grep -o '[0-9.]*' | grep -o '^[0-9]\+\.[0-9]\+');
-PHP_EXTENTION="/home/ioncubeloader/ioncube/ioncube_loader_lin_$PHP_VERSION.so";
+PHP_EXTENTION="./ioncube/ioncube_loader_lin_$PHP_VERSION.so";
 PHP_INI_DIR=$(php-config --ini-dir);      
 PHP_EXT_DIR=$(php-config --extension-dir);
 

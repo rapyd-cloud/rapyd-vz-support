@@ -72,6 +72,9 @@ actions:
         /usr/bin/bash install.sh
 
       user: litespeed
+
+    - restartNodes:
+      nodeGroup: ${targetNodes.nodeGroup}
           
   removeaddon:
     - action: installScripts
@@ -81,5 +84,8 @@ actions:
         cd /usr/local/rapyd/rapyd-ioncube-loader-files
         /usr/bin/bash clean.sh
         
-      user: litespeed      
+      user: litespeed     
+
+    - restartNodes:
+      nodeGroup: ${targetNodes.nodeGroup} 
       
