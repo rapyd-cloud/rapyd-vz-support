@@ -1,0 +1,91 @@
+version: 1.0
+type: update
+id: rapyd-ioncube-loader
+name: Rapyd ionCube Loader 1.0
+logo: logo.png
+
+description:
+  short: Addon to install ionCube Loader.
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ioncube-loader/
+
+onInstall:
+  action: deployaddon
+
+onAfterRedeployContainer:
+  action: deployaddon
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+onUninstall:
+  action: removeaddon
+
+actions:
+  redeployAfterClone:
+    install: ${baseUrl}/addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-ioncube-loader-files
+
+        cd /usr/local/rapyd/rapyd-ioncube-loader-files
+        
+        rm -f install.sh
+        rm -f clean.sh
+        
+        curl -O ${baseUrl}install.sh
+        chmod +x /usr/local/rapyd/rapyd-ioncube-loader-files/install.sh
+        
+        curl -O ${baseUrl}clean.sh
+        chmod +x /usr/local/rapyd/rapyd-ioncube-loader-files/clean.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root 
+      
+  deployaddon:
+    - setGlobals:
+        nodeGroup: ${targetNodes.nodeGroup:}
+
+    - action: installScripts  
+  
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-ioncube-loader-files
+        /usr/bin/bash install.sh
+
+      user: litespeed
+
+    - restartNodes:
+      nodeGroup: ${targetNodes.nodeGroup}
+          
+  removeaddon:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-ioncube-loader-files
+        /usr/bin/bash clean.sh
+        
+      user: litespeed     
+
+    - restartNodes:
+      nodeGroup: ${targetNodes.nodeGroup} 
+      
