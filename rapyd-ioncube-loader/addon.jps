@@ -14,7 +14,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/ioncube-loader/rapyd-ioncube-loader/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ioncube-loader/
 
 onInstall:
   action: deployaddon
