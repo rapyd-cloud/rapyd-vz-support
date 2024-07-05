@@ -3,7 +3,7 @@ cd /usr/local/rapyd/rapyd-ioncube-loader-files;
 
 # Download IonCube Libraries.
 wget https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.zip;
-unzip ioncube_loaders_lin_x86-64.zip;
+unzip -o ioncube_loaders_lin_x86-64.zip;
 
 PHP_VERSION=$( php -i | head -n 5 | grep "PHP Version =>" |  grep -o '[0-9.]*' | grep -o '^[0-9]\+\.[0-9]\+');
 PHP_EXTENTION="./ioncube/ioncube_loader_lin_$PHP_VERSION.so";
