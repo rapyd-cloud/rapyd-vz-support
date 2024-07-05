@@ -15,7 +15,7 @@ PHP_EXT_DIR=$(php-config --extension-dir);
 #================================================================
 if [ -e "$PHP_EXTENTION" ]; then
   
-  IONCUBE_LOADER_INI=$PHP_INI_DIR/ioncube.ini;
+  IONCUBE_LOADER_INI=$PHP_INI_DIR/10-ioncube.ini;
 
   # Install the extention file.
   rm -f $PHP_EXT_DIR/ioncube.so;
