@@ -14,6 +14,8 @@ targetNodes:
   nodeType:
   - llsmp
 
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-wp-mu-plugin-live/
+
 buttons:
   - confirmText: Do you want to update rapyd wp mu-plugin if required?
     loadingText: Redeploying ...
@@ -72,7 +74,7 @@ actions:
         cd /usr/local/rapyd/rapyd-wp-files
         rm -f wp-mu-plugingdeploy.sh
         rm -f plugin-deploy.sh
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-wp-mu-plugin-live/plugin-deploy.sh
+        curl -O ${baseUrl}/plugin-deploy.sh
         chmod +x /usr/local/rapyd/rapyd-wp-files/plugin-deploy.sh
 
       user: litespeed
