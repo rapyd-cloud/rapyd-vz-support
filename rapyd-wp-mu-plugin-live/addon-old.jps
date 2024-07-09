@@ -1,0 +1,121 @@
+version: 3.7
+type: update
+id: rapyd-wp-mu-plugin-live
+name: Rapyd WordPress mu-plugin
+
+description:
+  short: Addon to deploy and manage Rapyd WordPress mu-plugin set
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+buttons:
+  - confirmText: Do you want to update rapyd wp mu-plugin if required?
+    loadingText: Redeploying ...
+    action: updatedeploy
+    caption: Check for Updates
+  - confirmText: Do you want to force redeploy rapyd wp mu-plugin?
+    loadingText: Redeploying ...
+    action: forcedeploy
+    caption: Force Redeploy
+
+onInstall:
+  - action: installjq
+  - action: forcedeploy
+
+onUninstall:
+  - action: installjq
+  - action: cleanup
+  
+onAfterRedeployContainer:    
+  - action: installjq
+  - action: forcedeploy
+
+actions:
+  installjq:
+    cmd[${targetNodes.nodeGroup}]: |-
+     
+      cd ~
+
+    user: root 
+
+  cleanup:
+    cmd[${targetNodes.nodeGroup}]: |-
+      
+      mkdir -p /usr/local/rapyd
+      chown litespeed:litespeed /usr/local/rapyd -R
+      rm -rf /usr/local/rapyd/rapyd-wp-files
+      rm -f  /var/www/webroot/ROOT/wp-content/mu-plugins/rapyd-loader.php
+      rm -fr /var/www/webroot/ROOT/wp-content/mu-plugins/rapyd-includes
+
+    user: root
+
+  forcedeploy:
+    - cleanup:
+    - install_script:
+    - install_cron:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-wp-files
+        /usr/bin/bash wp-mu-plugingdeploy.sh true
+
+      user: litespeed
+
+  updatedeploy:
+    - install_script:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /usr/local/rapyd/rapyd-wp-files
+        /usr/bin/bash wp-mu-plugingdeploy.sh false
+
+      user: litespeed
+
+  install_script:
+    - api[${targetNodes.nodeGroup}]:
+      - method: environment.control.AddContainerEnvVars
+        params:
+          vars: '{ "RAPYDGITPAK1" : "xxx-xxx-xxx-xxx" }'
+          
+    - cmd[${targetNodes.nodeGroup}]: |-
+        mkdir -p /usr/local/rapyd/rapyd-wp-files
+        cd /usr/local/rapyd/rapyd-wp-files
+        rm -f wp-mu-plugingdeploy.sh
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/wp-mu-plugingdeploy.sh
+        chmod +x /usr/local/rapyd/rapyd-wp-files/wp-mu-plugingdeploy.sh
+
+      user: litespeed
+
+ 
+  install_cron:
+    - cmd[${targetNodes.nodeGroup}]: |-
+      
+        # Define the crontab entry
+        new_cron_entry="0 * * * * sudo -u litespeed /usr/local/rapyd/rapyd-wp-files/wp-mu-plugingdeploy.sh false >> /var/log/wp-mu-plugingdeploy.log 2>&1"
+        tmp_file=$(mktemp)
+        crontab -l > "$tmp_file"
+        sed -i '/wp-mu-plugingdeploy.sh/d' "$tmp_file"
+        echo "$new_cron_entry" >> "$tmp_file"
+        crontab "$tmp_file"
+        rm "$tmp_file"
+
+      user: root
+
+    - cmd[${targetNodes.nodeGroup}]: |-
+      
+        # Define the Logrotate
+        cd /etc/logrotate.d
+        echo "/var/log/wp-mu-plugingdeploy.log {" >> wp-mu-plugingdeploy
+        echo "    weekly" >> wp-mu-plugingdeploy
+        echo "    rotate 10" >> wp-mu-plugingdeploy
+        echo "    copytruncate" >> wp-mu-plugingdeploy
+        echo "    delaycompress" >> wp-mu-plugingdeploy
+        echo "    compress" >> wp-mu-plugingdeploy
+        echo "    notifempty" >> wp-mu-plugingdeploy
+        echo "    missingok" >> wp-mu-plugingdeploy
+        echo "}" >> wp-mu-plugingdeploy
+
+      user: root
