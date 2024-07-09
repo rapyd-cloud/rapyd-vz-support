@@ -54,7 +54,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
     
         cd /usr/local/rapyd/rapyd-wp-files
-        /usr/bin/bash wp-mu-plugingdeploy.sh true
+        /usr/bin/bash plugin-deploy.sh true
 
       user: litespeed
 
@@ -63,7 +63,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
 
         cd /usr/local/rapyd/rapyd-wp-files
-        /usr/bin/bash wp-mu-plugingdeploy.sh false
+        /usr/bin/bash plugin-deploy.sh false
 
       user: litespeed
 
@@ -72,7 +72,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
         mkdir -p /usr/local/rapyd/rapyd-wp-files
         cd /usr/local/rapyd/rapyd-wp-files
-        rm -f wp-mu-plugingdeploy.sh
+        rm -f wp-mu-plugingdeploy.sh # old file.
         rm -f plugin-deploy.sh
         curl -O ${baseUrl}/plugin-deploy.sh
         chmod +x /usr/local/rapyd/rapyd-wp-files/plugin-deploy.sh
