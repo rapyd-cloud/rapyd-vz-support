@@ -26,7 +26,7 @@ cd $INSTALL_DIR
 # Get the latest version from the GitHub API
 LATEST_VERSION=$(curl -sSL "https://vz-2110-repo.s3.amazonaws.com/rapyd-mu-plugin/builds/current-version.txt");
 
-echo "Latest Version : $LATEST_VERSION \n";
+echo "Latest Version : $LATEST_VERSION";
 
 rm -f "$INSTALL_DIR/$FILE_NAME"
 
@@ -68,7 +68,7 @@ if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ] || [ "$FORCE" = "true" ]; then
 
         echo "Failed to download the plugin."
         exit 999
-        
+
     fi
 
 
