@@ -14,7 +14,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-wp-mu-plugin-live/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-wp-mu-plugin-live
 
 buttons:
   - confirmText: Do you want to update rapyd wp mu-plugin if required?
@@ -53,8 +53,8 @@ actions:
     - install_cron:
     - cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /usr/local/rapyd/rapyd-wp-files
-        /usr/bin/bash plugin-deploy.sh true
+        cd /usr/local/rapyd/rapyd-wp-files;
+        /usr/bin/bash ./plugin-deploy.sh true
 
       user: litespeed
 
@@ -62,8 +62,8 @@ actions:
     - install_script:
     - cmd[${targetNodes.nodeGroup}]: |-
 
-        cd /usr/local/rapyd/rapyd-wp-files
-        /usr/bin/bash plugin-deploy.sh false
+        cd /usr/local/rapyd/rapyd-wp-files;
+        /usr/bin/bash ./plugin-deploy.sh false
 
       user: litespeed
 
@@ -87,6 +87,7 @@ actions:
         new_cron_entry="0 * * * * sudo -u litespeed /usr/local/rapyd/rapyd-wp-files/plugin-deploy.sh false >> /var/log/wp-mu-plugingdeploy.log 2>&1"
         tmp_file=$(mktemp)
         crontab -l > "$tmp_file"
+        sed -i '/wp-mu-plugingdeploy.sh/d' "$tmp_file"
         sed -i '/plugin-deploy.sh/d' "$tmp_file"
         echo "$new_cron_entry" >> "$tmp_file"
         crontab "$tmp_file"
