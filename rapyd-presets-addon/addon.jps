@@ -76,7 +76,21 @@ actions:
         wget ${baseUrl}999-rapyd.ini
         chown litespeed:litespeed 999-rapyd.ini
       fi
-      
+
+      # Enable Required PHP extensions if disabled.
+  
+      # enable imagick extension 
+      extension_path=$(find /usr/local/lsws/lsphp/etc/php.d -name "*-imagick.ini" | head -n 1);
+      if [ -f "$extension_path" ]; then
+          sed -i 's/;extension=imagick.so/extension=imagick.so/' "$extension_path"
+      fi
+
+      # enable gd extension 
+      extension_path=$(find /usr/local/lsws/lsphp/etc/php.d -name "*-gd.ini" | head -n 1);
+      if [ -f "$extension_path" ]; then
+          sed -i 's/;extension=gd.so/extension=gd.so/' "$extension_path"
+      fi
+
     user: root
 
   - restartNodes:
