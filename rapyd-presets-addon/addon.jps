@@ -1,0 +1,83 @@
+version: 5.1
+type: update
+id: rapyd-presets-addon2
+name: Rapyd PHP Stack Defaults Installer 5.1
+logo: logo.png
+
+description:
+  short: This addon configures php.ini defaults and preset settings for Rapyd Customer Environments
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-presets-addon/
+
+buttons:
+  - confirmText: Do you want to force the Rapyd PHP Presets to default? This will remove any custom presets configured by the client.
+    loadingText: Force Redeploying ...
+    action: forcePRESETS
+    caption: Force Redeploy
+      
+onInstall:
+  action: deployPRESETS
+
+onUninstall:
+  action: removePRESETS
+  
+onAfterRedeployContainer:
+  action: deployPRESETS
+  
+actions:
+  forcePRESETS:
+  - cmd[${targetNodes.nodeGroup}]: |-
+      cd /usr/local/lsws/lsphp/etc/php.d
+      rm -f 990-buddyboss.ini
+      rm -f 997-rapyd.ini    
+      rm -f 998-rapyd.ini
+      rm -f 999-rapyd.ini
+      
+    user: root
+    
+  - action: deployPRESETS
+
+  removePRESETS:
+  - cmd[${targetNodes.nodeGroup}]: |-
+      cd /usr/local/lsws/lsphp/etc/php.d
+      rm -f 990-buddyboss.ini 
+      rm -f 997-rapyd.ini    
+      
+    user: root
+
+  deployPRESETS:
+  - cmd[${targetNodes.nodeGroup}]: |-
+      cd /usr/local/lsws/lsphp/etc/php.d
+      rm -f 990-buddyboss.ini 
+      rm -f 997-rapyd.ini    
+      
+    user: root
+
+  - cmd[${targetNodes.nodeGroup}]: |-
+  
+      cd /usr/local/lsws/lsphp/etc/php.d
+      
+      wget ${baseUrl}997-rapyd.ini
+      chown litespeed:litespeed 997-rapyd.ini
+      
+      if [ ! -f "998-rapyd.ini" ]; then
+        wget ${baseUrl}998-rapyd.ini
+        chown litespeed:litespeed 998-rapyd.ini
+      fi
+      
+      if [ ! -f "999-rapyd.ini" ]; then
+        wget ${baseUrl}999-rapyd.ini
+        chown litespeed:litespeed 999-rapyd.ini
+      fi
+      
+    user: root
+
+  - restartNodes:
+      nodeGroup: ${targetNodes.nodeGroup} 
