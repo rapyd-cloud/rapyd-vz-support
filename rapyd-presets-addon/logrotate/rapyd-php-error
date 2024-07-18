@@ -1,11 +1,11 @@
 /var/www/logs/php_errors.log {
-    daily
-    rotate 10
-    size 10M
+    maxsize 100M
+    hourly
+    rotate 50
     su litespeed litespeed
     copytruncate
     notifempty
     missingok
-    dateext 
-    dateformat -%Y-%m-%d
+    dateext
+    dateformat -%Y-%m-%d-%H-%M
 }
