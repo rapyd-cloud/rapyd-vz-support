@@ -35,6 +35,6 @@ jobs:
 
       - name: Deploy with rsync
         run: |
-           echo "Dest Path - $destPath"
-           rsync -avz -e --exclude=".*/" "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:$RAPYD_DEST_PATH
+           echo "Dest Path - $RAPYD_DEST_PATH"
+           rsync -avz -e --exclude=.*/ "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:$RAPYD_DEST_PATH
 
