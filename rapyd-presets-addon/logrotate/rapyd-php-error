@@ -6,5 +6,5 @@
     copytruncate
     notifempty
     missingok
-    dateext
+    dateext %Y-%m-%d
 }
