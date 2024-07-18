@@ -93,7 +93,7 @@ actions:
 
       # configure log rotate for php errors.
       
-      $php_error_logrotate="/etc/logrotate.d/rapyd-php-error"; #configure path.
+      php_error_logrotate="/etc/logrotate.d/rapyd-php-error"; #configure path.
 
       # Only configure if the configure file does not exist.
       if [ ! -f "$php_error_logrotate" ]; then
