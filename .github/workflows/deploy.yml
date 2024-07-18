@@ -21,7 +21,7 @@ jobs:
           currBranch=$(echo ${{ github.ref }} | sed 's/refs\/heads\///');
           destPath="/var/www/webroot/ROOT/2024v5/b/$currBranch";
           ssh-keyscan -p ${{ vars.RAPYD_REPO_HOST_PORT }} -H ${{ vars.RAPYD_REPO_HOST }} >> ~/.ssh/known_hosts
-
+          echo "RAPYD_DEST_PATH=$destPath" >> $GITHUB_ENV
       - name: Make Destination dest
         uses: appleboy/ssh-action@master
         with:
@@ -29,8 +29,9 @@ jobs:
           username: ${{ vars.RAPYD_REPO_USER }}
           key: ${{ secrets.RAPYD_REPO_SSH_PRIVATE_KEY }}
           port: ${{ vars.RAPYD_REPO_HOST_PORT }}
+          envs: RAPYD_DEST_PATH
           script: |
-            mkdir -p $destPath;
+            mkdir -p $RAPYD_DEST_PATH;
 
       - name: Deploy with rsync
         run: |
