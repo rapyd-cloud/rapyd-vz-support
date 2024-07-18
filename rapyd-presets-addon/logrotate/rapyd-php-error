@@ -1,8 +1,8 @@
 /var/www/logs/php_errors.log {
     daily
+    rotate 10
     size 10M
     su litespeed litespeed
-    rotate 10
     copytruncate
     notifempty
     missingok
