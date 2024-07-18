@@ -20,7 +20,11 @@ jobs:
         run: ssh-keyscan -p ${{ vars.RAPYD_REPO_HOST_PORT }} -H ${{ vars.RAPYD_REPO_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
-        run: rsync -avz -e --mkpath "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:/var/www/webroot/ROOT/2024v5/b/$(echo ${{ github.ref }} | sed 's/refs\/heads\///')/
+        run: |
+           currBranch=$(echo ${{ github.ref }} | sed 's/refs\/heads\///');
+           destPath="/var/www/webroot/ROOT/2024v5/b/$currBranch";
+           echo "Dest Path - {$destPath}";
+           rsync -avz -e --mkpath "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:$destPath
 
       # - name: Restart Server
       #   uses: appleboy/ssh-action@master
