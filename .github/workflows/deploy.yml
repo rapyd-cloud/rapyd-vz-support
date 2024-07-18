@@ -24,7 +24,7 @@ jobs:
            currBranch=$(echo ${{ github.ref }} | sed 's/refs\/heads\///');
            destPath="/var/www/webroot/ROOT/2024v5/b/$currBranch";
            echo "Dest Path - {$destPath}";
-           rsync -avz -e -R "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:$destPath
+           rsync -avz -e --relative "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:$destPath
 
       # - name: Restart Server
       #   uses: appleboy/ssh-action@master
