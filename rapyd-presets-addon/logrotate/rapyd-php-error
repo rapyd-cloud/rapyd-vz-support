@@ -1,0 +1,9 @@
+/var/www/logs/php_errors.log {
+    daily
+    size 10M
+    su litespeed litespeed
+    rotate 10
+    copytruncate
+    notifempty
+    missingok
+}

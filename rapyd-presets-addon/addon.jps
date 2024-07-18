@@ -91,6 +91,19 @@ actions:
           sed -i 's/;extension=gd.so/extension=gd.so/' "$extension_path"
       fi
 
+      # configure log rotate for php errors.
+      
+      $php_error_logrotate="/etc/logrotate.d/rapyd-php-error"; #configure path.
+
+      # Only configure if the configure file does not exist.
+      if [ ! -f "$php_error_logrotate" ]; then
+          # Only if no other configure is found for the log in question.
+          if ! grep -q "your_string" /path/to/directory/*; then
+               cd "/etc/logrotate.d/";
+               wget -O rapyd-php-error ${baseUrl}logrotate/rapyd-php-error
+          fi
+      fi
+
     user: root
 
   - restartNodes:
