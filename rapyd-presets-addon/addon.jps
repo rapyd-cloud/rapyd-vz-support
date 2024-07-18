@@ -98,7 +98,7 @@ actions:
       # Only configure if the configure file does not exist.
       if [ ! -f "$php_error_logrotate" ]; then
           # Only if no other configure is found for the log in question.
-          if ! grep -q "your_string" /path/to/directory/*; then
+          if ! grep -q "/var/www/logs/php_errors.log" /etc/logrotate.d/*; then
                cd "/etc/logrotate.d/";
                wget -O rapyd-php-error ${baseUrl}logrotate/rapyd-php-error
           fi
