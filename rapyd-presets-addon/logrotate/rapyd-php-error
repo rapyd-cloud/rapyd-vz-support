@@ -6,4 +6,5 @@
     copytruncate
     notifempty
     missingok
+    dateext
 }
