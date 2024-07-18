@@ -20,7 +20,7 @@ jobs:
         run: ssh-keyscan -p ${{ vars.RAPYD_REPO_HOST_PORT }} -H ${{ vars.RAPYD_REPO_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy with rsync
-        run: rsync -avz -e "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:/var/www/webroot/ROOT/2024v5/b/${{ github.ref }}/
+        run: rsync -avz -e --mkpath "ssh -p ${{ vars.RAPYD_REPO_HOST_PORT }}" ./ ${{ vars.RAPYD_REPO_USER }}@${{ vars.RAPYD_REPO_HOST }}:/var/www/webroot/ROOT/2024v5/b/${{ (echo "refs/heads/main/" | sed 's/refs\/heads\///') }}/
 
       # - name: Restart Server
       #   uses: appleboy/ssh-action@master
