@@ -1,6 +1,6 @@
 version: 5.1
 type: update
-id: rapyd-presets-addon2
+id: rapyd-presets-addon
 name: Rapyd PHP Stack Defaults Installer 5.1
 logo: logo.png
 
