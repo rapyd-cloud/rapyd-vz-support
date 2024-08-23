@@ -6,5 +6,5 @@
     notifempty
     missingok
     dateext
-    dateformat -%Y-%m-%d
+    dateformat .%Y_%m_%d
 }
