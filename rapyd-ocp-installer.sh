@@ -51,7 +51,7 @@ SKIPLIST=$(wp --skip-plugins --skip-themes --skip-packages --quiet  plugin list 
 echo "checking for litespeed cache"
 
 cd "$WP_ROOT"
-wp --skip-plugins --skip-themes --skip-packages --quiet  plugin is-installed litespeed-cache  2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed litespeed-cache  2>/dev/null
 
 if [ "$?" -eq 0 ]
 then
@@ -61,7 +61,7 @@ then
      then
 
        ## disable the ls object cache before doing any other actions
-       wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  litespeed-option set object false  2>/dev/null
+       wp --skip-plugins="$SKIPLIST" --skip-themes --skip-packages --quiet  litespeed-option set object false  2>/dev/null
      
     fi
 fi
