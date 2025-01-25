@@ -1,7 +1,7 @@
-version: 4.1
+version: 5.1
 type: update
-id: rapyd-object-cache-pro-addon
-name: Rapyd Object Cache Pro Installer 4.1
+id: rapyd-object-cache-pro-addon-redis-conf
+name: Rapyd Object Cache Pro Installer 5.1
 
 description:
   short: This addon deploys Object Cache Pro into a customers environment and can also redeploy if needed 
@@ -12,6 +12,8 @@ categories:
 targetNodes:
   nodeType:
   - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-object-cache-pro-addon/
 
 buttons:
   - confirmText: Do you want to force redeploy Rapyd Object Cache Pro addon?
@@ -57,19 +59,43 @@ actions:
         rm -f rapyd-ocp-cleanocpplugins.sh
         rm -f rapyd-ocp-cleaner.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ocp-installer.sh
+        curl -O ${baseUrl}rapyd-ocp-installer.sh
         chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-installer.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ocp-cleanocpplugins.sh
-        chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-cleanocpplugins.sh        
+        curl -O ${baseUrl}rapyd-ocp-plugin-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-plugin-cleaner.sh        
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ocp-cleaner.sh
+        curl -O ${baseUrl}rapyd-ocp-cleaner.sh
         chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-cleaner.sh
 
         chown litespeed:litespeed /usr/local/rapyd/
         chown -R litespeed:litespeed /usr/local/rapyd/*
         
       user: root
+
+  optimizeRedis:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /etc/sysctl.d
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-support-tools/refs/heads/main/99-redis.conf
+        /usr/sbin/sysctl --system
+        rm /etc/redis.conf
+        cd /etc
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-support-tools/refs/heads/main/redis.conf
+        /usr/bin/systemctl restart redis
+        
+      user: root
+
+  clearCache:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /var/www/webroot/ROOT
+        /home/jelastic/bin/wp cache flush
+        /home/jelastic/bin/wp redis flush
+        
+      user: litespeed
+       
 
   removeOCP:
     - action: installScripts
@@ -99,3 +125,6 @@ actions:
         echo "Ending Deploy OCP ..";
 
       user: litespeed
+
+    - action: optimizeRedis
+    - action: clearCache
