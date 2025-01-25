@@ -80,7 +80,7 @@ actions:
         
         curl -O ${baseUrl}/files/sysctl.d/99-redis.conf
         /usr/sbin/sysctl --system
-        rm /etc/redis.conf
+        mv /etc/redis.conf /etc/redis.conf.$(date +%Y%m%d%H%M%S).bak # backup the conf file.
         cd /etc
         curl -O ${baseUrl}/files/etc/redis.conf
         /usr/bin/systemctl restart redis
