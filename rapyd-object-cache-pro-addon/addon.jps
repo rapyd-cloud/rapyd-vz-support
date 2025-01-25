@@ -42,7 +42,7 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
         echo "starting Clean"
         cd /usr/local/rapyd/rapyd-ocp-files
-        /usr/bin/bash rapyd-ocp-cleanocpplugins.sh
+        /usr/bin/bash rapyd-ocp-plugin-cleaner.sh
         echo "ending Clean"
         
       user: litespeed
@@ -57,6 +57,7 @@ actions:
         
         rm -f rapyd-ocp-installer.sh
         rm -f rapyd-ocp-cleanocpplugins.sh
+        rm -f rapyd-ocp-plugin-cleaner.sh
         rm -f rapyd-ocp-cleaner.sh
         
         curl -O ${baseUrl}rapyd-ocp-installer.sh
