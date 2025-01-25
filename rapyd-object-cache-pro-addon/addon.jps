@@ -2,6 +2,7 @@ version: 5.1
 type: update
 id: rapyd-object-cache-pro-addon-redis-conf
 name: Rapyd Object Cache Pro Installer 5.1
+logo: logo.png
 
 description:
   short: This addon deploys Object Cache Pro into a customers environment and can also redeploy if needed 
@@ -26,9 +27,24 @@ onInstall:
 
 onUninstall:
   action: removeOCP
-  
+
+onAfterRedeployContainer:
+  - action: deployOCP
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
 actions:
 
+  redeployAfterClone:
+    install: ${baseUrl}addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+  
   setuplog:
     - cmd[${targetNodes.nodeGroup}]: |-
     
