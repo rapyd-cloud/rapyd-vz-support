@@ -78,11 +78,11 @@ actions:
 
         cd /etc/sysctl.d
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-support-tools/refs/heads/main/99-redis.conf
+        curl -O ${baseUrl}/files/sysctl.d/99-redis.conf
         /usr/sbin/sysctl --system
         rm /etc/redis.conf
         cd /etc
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-support-tools/refs/heads/main/redis.conf
+        curl -O ${baseUrl}/files/etc/redis.conf
         /usr/bin/systemctl restart redis
         
       user: root
