@@ -1,0 +1,89 @@
+version: 5.1
+type: update
+id: rapyd-monarx-addon
+name: Rapyd Monarx Installer 5.1
+logo: icon.png
+
+description:
+  short: Addon to deploy the Monarx Malware platform for Rapyd customers
+
+categories:
+- apps/dev-and-admin-tools
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/monarx/rapyd-monarx-addon/
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+buttons:
+  - confirmText: Do you want to force redeploy Rapyd Monarx
+    loadingText: Redeploying ...
+    action: deployMonarx  
+    caption: Force Redeploy
+      
+onInstall:
+  action: deployMonarx
+  
+onAfterRedeployContainer:
+  action: deployMonarx
+
+onAfterClone:
+  action: deployMonarx
+
+onUninstall:
+  action: cleanup
+
+actions:
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-monarx-files
+
+        cd /usr/local/rapyd/rapyd-monarx-files
+        
+        rm -f rapyd-monarx-installer.sh
+        rm -f rapyd-monarx-linker.sh
+        rm -f rapyd-monarx-cleaner.sh
+        
+        curl -O ${baseUrl}rapyd-monarx-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-installer.sh
+
+        curl -O ${baseUrl}rapyd-monarx-linker.sh
+        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-linker.sh
+
+        curl -O ${baseUrl}rapyd-monarx-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-cleaner.sh
+
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root
+      
+  deployMonarx:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+        VZENVNAME="${env.envName}"
+        VZUID="${env.uid}"
+        VZNODEID="${nodes.cp.master.id}"
+        cd /usr/local/rapyd/rapyd-monarx-files
+        /usr/bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
+      user: root
+      
+    - cmd[${targetNodes.nodeGroup}]: |-
+        cd /usr/local/rapyd/rapyd-monarx-files
+        /usr/bin/bash rapyd-monarx-linker.sh
+      user: root
+      
+    - restartContainers:
+        nodeGroup: ${targetNodes.nodeGroup}
+
+  cleanup:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+        cd /usr/local/rapyd/rapyd-monarx-files
+        /usr/bin/bash rapyd-monarx-cleaner.sh
+      user: root
