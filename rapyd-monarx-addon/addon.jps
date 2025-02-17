@@ -23,13 +23,18 @@ buttons:
     caption: Force Redeploy
       
 onInstall:
-  action: deployMonarx
-  
+  - action: deployMonarx
+
+  - setGlobals:
+      nodeId: ${settings.nodeId:}
+      nodeGroup: ${targetNodes.nodeGroup:}
+
 onAfterRedeployContainer:
   action: deployMonarx
 
 onAfterClone:
-  action: deployMonarx
+  InstallMonarxAddon:
+    envName: ${event.response.env.envName}
 
 onUninstall:
   action: cleanup
@@ -73,8 +78,9 @@ actions:
         # install the monarx.
         /usr/bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
 
-        # run the linker script.        
+        # Link the monarx php extension to the installed php script.
         /usr/bin/bash rapyd-monarx-php-extention.sh
+
       user: root
 
     - restartContainers:
@@ -87,3 +93,8 @@ actions:
         cd /usr/local/rapyd/rapyd-monarx-files
         /usr/bin/bash rapyd-monarx-cleaner.sh
       user: root
+
+  InstallMonarxAddon:
+    install: ${baseUrl}addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
