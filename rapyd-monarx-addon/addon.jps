@@ -44,14 +44,14 @@ actions:
         cd /usr/local/rapyd/rapyd-monarx-files
         
         rm -f rapyd-monarx-installer.sh
-        rm -f rapyd-monarx-linker.sh
+        rm -f rapyd-monarx-php-extention.sh
         rm -f rapyd-monarx-cleaner.sh
         
         curl -O ${baseUrl}rapyd-monarx-installer.sh
         chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-installer.sh
 
-        curl -O ${baseUrl}rapyd-monarx-linker.sh
-        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-linker.sh
+        curl -O ${baseUrl}rapyd-monarx-php-extention.sh
+        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-php-extention.sh
 
         curl -O ${baseUrl}rapyd-monarx-cleaner.sh
         chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-cleaner.sh
@@ -69,14 +69,14 @@ actions:
         VZUID="${env.uid}"
         VZNODEID="${nodes.cp.master.id}"
         cd /usr/local/rapyd/rapyd-monarx-files
+
+        # install the monarx.
         /usr/bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
+
+        # run the linker script.        
+        /usr/bin/bash rapyd-monarx-php-extention.sh
       user: root
-      
-    - cmd[${targetNodes.nodeGroup}]: |-
-        cd /usr/local/rapyd/rapyd-monarx-files
-        /usr/bin/bash rapyd-monarx-linker.sh
-      user: root
-      
+
     - restartContainers:
         nodeGroup: ${targetNodes.nodeGroup}
 

@@ -33,15 +33,13 @@ yum remove monarx-protect-autodetect -y
 yum remove monarx-protect -y
 yum remove monarx-agent -y
 
-mkdir -p /usr/local/rapyd/
+# make sure directory exists before cleaup.
 mkdir -p /usr/local/rapyd/rapyd-monarx-files
+
+# fix the rapyd directory permissions, if it's has wrong permissions.
 chown litespeed:litespeed /usr/local/rapyd
-chown litespeed:litespeed /usr/local/rapyd/rapyd-monarx-files
 
-cd /usr/local/rapyd/rapyd-monarx-files
-
-rm -f rapyd-monarx-installer.sh
-rm -f rapyd-monarx-linker.sh
-rm -f rapyd-monarx-cleaner.sh
+# remove all files related to monarx.
+rm -rf /usr/local/rapyd/rapyd-monarx-files/*
 
 #end of monarx cleanup logic
