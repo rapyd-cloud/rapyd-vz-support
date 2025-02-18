@@ -10,7 +10,7 @@ description:
 categories:
 - apps/dev-and-admin-tools
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/monarx/rapyd-monarx-addon/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-monarx-addon/
 
 targetNodes:
   nodeType:
