@@ -1,0 +1,148 @@
+version: 5.1
+type: update
+id: rapyd-object-cache-pro-addon-redis-conf
+name: Rapyd Object Cache Pro Installer 5.1
+logo: logo.png
+
+description:
+  short: This addon deploys Object Cache Pro into a customers environment and can also redeploy if needed 
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-object-cache-pro-addon/
+
+buttons:
+  - confirmText: Do you want to force redeploy Rapyd Object Cache Pro addon?
+    loadingText: Redeploying ...
+    action: deployOCP
+    caption: Force Redeploy
+      
+onInstall:
+  - action: deployOCP
+
+onUninstall:
+  action: removeOCP
+
+onAfterRedeployContainer:
+  - action: deployOCP
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+actions:
+
+  redeployAfterClone:
+    install: ${baseUrl}addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+  
+  setuplog:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /var/log
+        mkdir -p objectcachepro
+        chown litespeed:litespeed /var/log/objectcachepro 
+
+      user: root
+      
+  cleanOCPplugins:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        echo "starting Clean"
+        cd /usr/local/rapyd/rapyd-ocp-files
+        /usr/bin/bash rapyd-ocp-plugin-cleaner.sh
+        echo "ending Clean"
+        
+      user: litespeed
+    
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-ocp-files
+        
+        cd /usr/local/rapyd/rapyd-ocp-files
+        
+        rm -f rapyd-ocp-installer.sh
+        rm -f rapyd-ocp-cleanocpplugins.sh
+        rm -f rapyd-ocp-plugin-cleaner.sh
+        rm -f rapyd-ocp-cleaner.sh
+        
+        curl -O ${baseUrl}rapyd-ocp-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-installer.sh
+        
+        curl -O ${baseUrl}rapyd-ocp-plugin-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-plugin-cleaner.sh        
+        
+        curl -O ${baseUrl}rapyd-ocp-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-ocp-files/rapyd-ocp-cleaner.sh
+
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+        
+      user: root
+
+  optimizeRedis:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /etc/sysctl.d
+        
+        curl -O ${baseUrl}files/sysctl.d/99-redis.conf
+        /usr/sbin/sysctl --system
+        mv /etc/redis.conf /etc/redis.conf.$(date +%Y%m%d%H%M%S).bak # backup the conf file.
+        cd /etc
+        curl -O ${baseUrl}files/etc/redis.conf
+        chown redis:redis /etc/redis.conf
+        /usr/bin/systemctl restart redis
+        
+      user: root
+
+  clearCache:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /var/www/webroot/ROOT
+        /home/jelastic/bin/wp cache flush
+        /home/jelastic/bin/wp redis flush
+        
+      user: litespeed
+       
+
+  removeOCP:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-ocp-files
+        /usr/bin/bash rapyd-ocp-cleaner.sh
+      
+      user: litespeed
+
+  deployOCP:
+    - action: setuplog
+    
+    - action: installScripts
+    
+    - action: cleanOCPplugins
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+        
+        echo "Deploying OCP ..";
+        OCP_TOKEN="79fb1487477c0a555d76e3249e1a1d2b975715293174f50afb456171301f"
+
+        echo "Starting Deploy OCP ..";
+        cd /usr/local/rapyd/rapyd-ocp-files
+        /usr/bin/bash rapyd-ocp-installer.sh "$OCP_TOKEN" >/var/log/objectcachepro/ocpdeploy.log 2>&1
+        echo "Ending Deploy OCP ..";
+
+      user: litespeed
+
+    - action: optimizeRedis
+    - action: clearCache
