@@ -1,0 +1,85 @@
+version: 4.3
+type: update
+id: rapyd-relay-addon
+name: Rapyd Relay Installer 4.3
+
+description:
+  short: This addon deploys Relay into a customers environment and can also redeploy if needed 
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+buttons:
+  - confirmText: Do you want to force redeploy Rapyd Relay addon?
+    loadingText: Redeploying ...
+    action: installRELAY
+    caption: Force Redeploy
+      
+onInstall:
+  - action: installRELAY
+
+onUninstall:
+  - action: installScripts
+  - action: removeRELAY
+  
+onAfterRedeployContainer:
+  - action: installRELAY
+
+actions:
+  installRELAY:
+    - action: installScripts
+    - action: installDependencies
+    - action: deployRELAY
+
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-relay-files
+        
+        cd /usr/local/rapyd/rapyd-relay-files
+        
+        rm -f rapyd-relay-installer.sh
+        rm -f rapyd-relay-dependencies.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-relay-installer.sh
+        chmod +x /usr/local/rapyd/rapyd-relay-files/rapyd-relay-installer.sh
+        
+        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-relay-dependencies.sh
+        chmod +x /usr/local/rapyd/rapyd-relay-files/rapyd-relay-dependencies.sh
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+
+      user: root
+      
+  installDependencies:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /usr/local/rapyd/rapyd-relay-files
+        /usr/bin/bash rapyd-relay-dependencies.sh
+      
+      user: root
+      
+    - restartContainers:
+        nodeGroup: ${targetNodes.nodeGroup}
+
+
+  deployRELAY:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        RELAY_KEY="4WMR-UJOT-FWOHRH-ZNHEUFQ-KMXIHQF-FNMWJZ"
+        cd /usr/local/rapyd/rapyd-relay-files
+        /usr/bin/bash rapyd-relay-installer.sh "$RELAY_KEY" 
+      user: root
+      
+    - restartContainers:
+        nodeGroup: ${targetNodes.nodeGroup}
+        
+  removeRELAY:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        cd /var/www/webroot/ROOT/
+      user: root
