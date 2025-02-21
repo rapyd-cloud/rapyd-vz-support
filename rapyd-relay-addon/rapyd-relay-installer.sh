@@ -10,9 +10,9 @@ if [ -z "$RELAY_KEY" ]
   exit 9991
 fi
 
-# v0.8.0 release May 22 2024
+# v0.10.1 release Jan 30 2025, Previous version v0.8.0
 
-RELAY_VERSION="v0.8.0"                         # https://builds.r2.relay.so/meta/latest
+RELAY_VERSION="v0.10.1"                         # https://builds.r2.relay.so/meta/latest
 RELAY_PHP=$(php-config --version | cut -c -3)  # 8.1
 RELAY_INI_DIR=$(php-config --ini-dir)          # /etc/php/8.1/cli/conf.d/
 RELAY_EXT_DIR=$(php-config --extension-dir)    # /usr/lib/php/20210902
