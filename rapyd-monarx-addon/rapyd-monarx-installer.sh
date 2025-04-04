@@ -51,6 +51,7 @@ echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
 echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
 echo "user_base=/tmp/" >> monarx-agent.conf
 echo "user_base=/home/litespeed/" >> monarx-agent.conf
+echo "user_base=/root/" >> monarx-agent.conf
 
 echo "tags=$HOSTNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
