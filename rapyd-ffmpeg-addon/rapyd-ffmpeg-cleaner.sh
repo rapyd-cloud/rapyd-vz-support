@@ -8,7 +8,7 @@
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
   cd ~
-  echo "Removing ffmpeg for AlamLinux"
+  echo "Removing ffmpeg for AlmaLinux"
 
   sudo dnf remove ffmpeg ffmpeg-devel -y
   

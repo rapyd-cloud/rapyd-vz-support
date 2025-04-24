@@ -8,7 +8,7 @@
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # work out what we need to do here for AlmaLinux 
   cd ~
-  echo "Installing ffmpeg for AlamLinux"
+  echo "Installing ffmpeg for AlmaLinux"
 
   sudo dnf install epel-release -y
   sudo dnf config-manager --set-enabled crb -y
