@@ -12,7 +12,7 @@ else
   cd ~
   sudo yum install -y openssl11-libs
 
-fi
+fi 
 
 #################################################################################
 # install relay required so library updates
