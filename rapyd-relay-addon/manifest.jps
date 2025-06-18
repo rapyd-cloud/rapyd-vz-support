@@ -1,7 +1,7 @@
 version: 4.3
 type: update
 id: rapyd-relay-addon
-name: Rapyd Relay Installer 4.3
+name: Rapyd Relay Installer 5.1
 logo: logo.png
 
 description:
