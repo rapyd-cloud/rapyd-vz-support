@@ -2,12 +2,15 @@ version: 4.3
 type: update
 id: rapyd-relay-addon
 name: Rapyd Relay Installer 4.3
+logo: logo.png
 
 description:
   short: This addon deploys Relay into a customers environment and can also redeploy if needed 
 
 categories:
   - apps/dev-and-admin-tools
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-relay-addon/
 
 targetNodes:
   nodeType:
@@ -46,10 +49,10 @@ actions:
         rm -f rapyd-relay-installer.sh
         rm -f rapyd-relay-dependencies.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/dev/rapyd-relay-addon/rapyd-relay-installer.sh
+        curl -O ${baseUrl}rapyd-relay-installer.sh
         chmod +x /usr/local/rapyd/rapyd-relay-files/rapyd-relay-installer.sh
         
-        curl -O https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/dev/rapyd-relay-addon/rapyd-relay-dependencies.sh
+        curl -O ${baseUrl}rapyd-relay-dependencies.sh
         chmod +x /usr/local/rapyd/rapyd-relay-files/rapyd-relay-dependencies.sh
         
         chown litespeed:litespeed /usr/local/rapyd/
