@@ -140,8 +140,12 @@ WP_REDIS_IGNORED_GROUPS=$(cat << EOF
  ]
 EOF
 )
+EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null)
+if [ -n "$(echo -n "$EXISTS_REDIS_IGNORED_GROUPS" | tr -d '[:space:]')" ];then
+  WP_REDIS_IGNORED_GROUPS="$EXISTS_REDIS_IGNORED_GROUPS"
+fi
 
-wp --skip-plugins --skip-themes --skip-packages --quiet config set WP_REDIS_IGNORED_GROUPS "${WP_REDIS_IGNORED_GROUPS}" 2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDIS_IGNORED_GROUPS "${WP_REDIS_IGNORED_GROUPS}" 2>/dev/null
 
 echo "activate plugin"
 

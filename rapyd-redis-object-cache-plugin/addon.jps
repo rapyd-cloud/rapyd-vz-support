@@ -14,7 +14,7 @@ targetNodes:
   nodeType:
   - llsmp
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-object-cache-plugin/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/object-cache-plugin/rapyd-redis-object-cache-plugin/
 
 buttons:
   - confirmText: Do you want to force redeploy Rapyd Object Cache addon?
@@ -48,8 +48,7 @@ actions:
   setuplog:
     - cmd[${targetNodes.nodeGroup}]: |-
     
-        cd /var/log
-        mkdir -p redis-object-cache
+        mkdir -p /var/log/redis-object-cache
         chown litespeed:litespeed /var/log/redis-object-cache
 
       user: root
@@ -107,9 +106,12 @@ actions:
 
         echo "Starting Deploy OCP ..";
         cd /usr/local/rapyd/rapyd-redis-object-cache-files
+        
         /usr/bin/bash installer.sh "$OCP_TOKEN" > /var/log/redis-object-cache/deploy.log 2>&1
+        if [ "$?" -ne 0 ]; then
+          exit 1
+        fi
+
         echo "Ending Deploy Redis Object Cache ..";
 
       user: litespeed
-
-    - action: clearCache
