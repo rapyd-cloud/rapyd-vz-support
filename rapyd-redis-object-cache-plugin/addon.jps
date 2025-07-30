@@ -1,0 +1,115 @@
+version: 5.1
+type: update
+id: rapyd-redis-object-cache-plugin
+name: Rapyd Redis Object Cache Installer 5.1
+logo: logo.gif
+
+description:
+  short: This addon deploys Redis Object Cache WordPress Plugin into a customers environment and can also redeploy if needed 
+
+categories:
+  - apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-object-cache-plugin/
+
+buttons:
+  - confirmText: Do you want to force redeploy Rapyd Object Cache addon?
+    loadingText: Redeploying ...
+    action: DeployRedisObjectCache
+    caption: Force Redeploy
+      
+onInstall:
+  - action: DeployRedisObjectCache
+
+onUninstall:
+  action: RemoveRedisObjectCache
+
+onAfterRedeployContainer:
+  - action: DeployRedisObjectCache
+
+onAfterClone:
+  redeployAfterClone:
+    envName: ${event.response.env.envName}
+
+actions:
+
+  redeployAfterClone:
+    install: ${baseUrl}addon.jps
+    envName: ${this.envName}
+    nodeGroup: ${globals.nodeGroup}
+    settings:
+      newEnvName: ${this.envName}
+      nodeGroup: ${globals.nodeGroup}
+  
+  setuplog:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /var/log
+        mkdir -p redis-object-cache
+        chown litespeed:litespeed /var/log/redis-object-cache
+
+      user: root
+      
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-redis-object-cache-files
+        
+        cd /usr/local/rapyd/rapyd-redis-object-cache-files
+        
+        rm -f installer.sh
+        rm -f cleaner.sh
+        
+        curl -O ${baseUrl}installer.sh
+        chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/installer.sh
+        
+        curl -O ${baseUrl}cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/cleaner.sh 
+        
+        chown litespeed:litespeed /usr/local/rapyd/
+        chown -R litespeed:litespeed /usr/local/rapyd/*
+        
+      user: root
+
+  clearCache:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        cd /var/www/webroot/ROOT
+        /home/jelastic/bin/wp cache flush
+        /home/jelastic/bin/wp redis flush
+        
+      user: litespeed
+      
+  RemoveRedisObjectCache:
+    - action: installScripts
+    
+    - cmd[${targetNodes.nodeGroup}]: |-
+    
+        cd /usr/local/rapyd/rapyd-redis-object-cache-files
+        /usr/bin/bash cleaner.sh
+      
+      user: litespeed
+
+  DeployRedisObjectCache:
+    - action: setuplog
+    
+    - action: installScripts
+        
+    - cmd[${targetNodes.nodeGroup}]: |-
+        
+        echo "Deploying OCP ..";
+        OCP_TOKEN="79fb1487477c0a555d76e3249e1a1d2b975715293174f50afb456171301f"
+
+        echo "Starting Deploy OCP ..";
+        cd /usr/local/rapyd/rapyd-redis-object-cache-files
+        /usr/bin/bash installer.sh "$OCP_TOKEN" > /var/log/redis-object-cache/deploy.log 2>&1
+        echo "Ending Deploy Redis Object Cache ..";
+
+      user: litespeed
+
+    - action: clearCache
