@@ -90,8 +90,7 @@ if [ "$?" -eq 0 ]; then
         # if it is using our licence then we need to uninstall the plugin.
         wp plugin deactivate object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
         wp plugin delete object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
-        wp --skip-plugins --skip-themes --skip-packages --quiet  config delete WP_REDIS_CONFIG 2>/dev/null | grep -q $OCP_TOKEN
-
+        wp --skip-plugins --skip-themes --skip-packages --quiet --raw config delete WP_REDIS_CONFIG 2>/dev/null;
         InstallRedisCache=1;
       else
         # if it is not using our licence then we can skip the installation.
