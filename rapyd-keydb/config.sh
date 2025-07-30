@@ -20,12 +20,17 @@ readonly RUN_DIR="/run/redis"
 
 # --- Pre-flight Checks ---
 if [[ "$EUID" -ne 0 ]]; then die "This script must be run as root."; fi
+<<<<<<< HEAD
 REQUIRED_CMDS=("systemctl" "chown" "chmod" "mkdir" "rm" "getent" "usermod" "sed" "curl")
 for cmd in "${REQUIRED_CMDS[@]}"; do
+=======
+for cmd in systemctl chown chmod mkdir rm getent usermod sed; do
+>>>>>>> 89af833 (last update)
   if ! command_exists "$cmd"; then die "Required command '$cmd' not found."; fi
 done
 
 # --- Use the full keydb.conf as a base ---
+<<<<<<< HEAD
 echo "Copying and configuring the main keydb.conf..."
 # Assuming keydb.conf.txt is in the same directory as the script during execution
 # If not, this path needs to be adjusted.
@@ -38,10 +43,29 @@ sed -i 's/^#port 6379/port 0/' "${KEYDB_CONF_FILE}"
 sed -i 's/^unixsocketperm 777/unixsocketperm 770/' "${KEYDB_CONF_FILE}"
 sed -i 's|^logfile /var/log/keydb/keydb-server.log|logfile /var/log/keydb/keydb.log|' "${KEYDB_CONF_FILE}"
 echo "include ${MAXMEMORY_CONF_FILE}" >> "${KEYDB_CONF_FILE}"
+=======
+echo "Copying and configuring the main keydb.conf from /root/keydb.conf.txt..."
+if [ ! -f /root/keydb.conf.txt ]; then
+    die "Configuration file /root/keydb.conf.txt not found."
+fi
+cp "/root/keydb.conf.txt" "${KEYDB_CONF_FILE}"
+
+# --- Apply necessary configurations ---
+sed -i 's/^daemonize yes/daemonize no/' "${KEYDB_CONF_FILE}"
+sed -i 's/^supervised no/supervised systemd/' "${KEYDB_CONF_FILE}"
+sed -i 's/^#port 6379/port 0/' "${KEYDB_CONF_FILE}"
+sed -i "s|^pidfile .*|pidfile ${RUN_DIR}/redis.pid|" "${KEYDB_CONF_FILE}"
+sed -i "s|^unixsocket .*|unixsocket ${RUN_DIR}/redis.sock|" "${KEYDB_CONF_FILE}"
+sed -i 's/^unixsocketperm 777/unixsocketperm 770/' "${KEYDB_CONF_FILE}"
+sed -i 's|^logfile .*|logfile /var/log/keydb/keydb.log|' "${KEYDB_CONF_FILE}"
+sed -i 's|^dir .*|dir /var/lib/keydb|' "${KEYDB_CONF_FILE}"
+grep -qF "include ${MAXMEMORY_CONF_FILE}" "${KEYDB_CONF_FILE}" || echo "include ${MAXMEMORY_CONF_FILE}" >> "${KEYDB_CONF_FILE}"
+>>>>>>> 89af833 (last update)
 
 chown "${USER_NAME}:${USER_NAME}" "${KEYDB_CONF_FILE}"
 chmod 644 "${KEYDB_CONF_FILE}"
 
+<<<<<<< HEAD
 # --- Create a default maxmemory.conf file BEFORE service start ---
 echo "Creating default maxmemory.conf..."
 echo "maxmemory 512mb" > "${MAXMEMORY_CONF_FILE}"
@@ -50,6 +74,10 @@ chmod 644 "${MAXMEMORY_CONF_FILE}"
 
 # --- Create Secure systemd Service File ---
 echo "Creating secure redis.service file..."
+=======
+# --- Create Secure systemd Service File (as redis.service) ---
+echo "Creating secure redis.service file at ${REDIS_SERVICE_FILE}..."
+>>>>>>> 89af833 (last update)
 cat <<EOF > "${REDIS_SERVICE_FILE}"
 [Unit]
 Description=Advanced key-value store
@@ -60,11 +88,17 @@ Documentation=https://docs.keydb.dev, man:keydb-server(1)
 Type=notify
 User=keydb
 Group=keydb
-ExecStart=/usr/bin/keydb-server /etc/keydb/keydb.conf --supervised systemd --server-threads 2
+ExecStart=/usr/bin/keydb-server ${KEYDB_CONF_FILE} --supervised systemd --server-threads 2
 ExecStop=/bin/kill -s TERM \$MAINPID
+<<<<<<< HEAD
 PIDFile=/run/redis/redis.pid
 TimeoutStopSec=0
 Restart=always
+=======
+PIDFile=${RUN_DIR}/redis.pid
+Restart=always
+LimitNOFILE=65535
+>>>>>>> 89af833 (last update)
 RuntimeDirectory=redis
 RuntimeDirectoryMode=0755
 
@@ -107,10 +141,9 @@ if getent group "${GROUP_NAME}" &>/dev/null; then
   usermod -a -G "${GROUP_NAME}" "${USER_NAME}"
 fi
 
-# --- Reload and Enable Service ---
+# --- Reload systemd ---
+echo "Reloading systemd..."
 systemctl daemon-reload
-systemctl enable --now redis
-systemctl restart redis
 
-echo "KeyDB configuration completed successfully."
+echo "Main configuration (config.sh) completed successfully."
 exit 0
