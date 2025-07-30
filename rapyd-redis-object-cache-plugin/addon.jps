@@ -64,10 +64,10 @@ actions:
         rm -f installer.sh
         rm -f cleaner.sh
         
-        curl -O ${baseUrl}installer.sh
+        curl -o ./installer.sh ${baseUrl}installer.sh?$(date +%s)
         chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/installer.sh
         
-        curl -O ${baseUrl}cleaner.sh
+        curl -o ./cleaner.sh ${baseUrl}cleaner.sh?$(date +%s)
         chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/cleaner.sh 
         
         chown litespeed:litespeed /usr/local/rapyd/

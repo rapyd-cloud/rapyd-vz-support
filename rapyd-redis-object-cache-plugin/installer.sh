@@ -64,6 +64,8 @@ then
 fi
 
 InstallRedisCache=0;
+# collect the non_persistent_groups before anything get's deleted. 
+EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null);
 
 # check if the object cache pro plugin exists.
 wp plugin is-active object-cache-pro --quiet --skip-plugins 2>/dev/null
@@ -140,7 +142,7 @@ WP_REDIS_IGNORED_GROUPS=$(cat << EOF
  ]
 EOF
 )
-EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null)
+
 if [ -n "$(echo -n "$EXISTS_REDIS_IGNORED_GROUPS" | tr -d '[:space:]')" ];then
   echo "using existing site ignored groups";
   WP_REDIS_IGNORED_GROUPS="$EXISTS_REDIS_IGNORED_GROUPS"
