@@ -80,7 +80,7 @@ ocpWasInstalled=0;
 ocpWasActivated=0;
 redisCacheInstalled=0;
 redisCacheActivated=0;
-
+fixOCPClient=0;
 InstallRedisCache=0;
 
 # collect the non_persistent_groups before anything get's deleted. 
@@ -116,7 +116,9 @@ if [ "$?" -eq 0 ]; then
         InstallRedisCache=1;
       else
         # if it is not using our licence then we can skip the installation.
-        echo "Object Cache Pro is already installed and using a different licence. Skipping installation."
+        echo "Object Cache Pro is already installed and using a different licence. Skipping installation."        
+        fixOCPClient=1;
+
       fi
 
   fi
@@ -133,6 +135,30 @@ fi
 
 ######## END
 
+
+##################################################################################
+# Fix Object Cache Pro Client.
+##################################################################################
+if [ "$fixOCPClient" -eq 1 ]; then
+
+  # deactivate object cache pro before doing anything if it is activated.
+  if["$redisCacheActivated" -eq 1 ]; then
+    wp --skip-plugins --skip-themes --skip-packages --quiet  plugin deactivate object-cache-pro  2>/dev/null
+  fi
+
+  WP_REDIS_CONFIG_DATA=$(wp --skip-plugins --skip-themes --skip-packages --quiet  config get WP_REDIS_CONFIG 2>/dev/null)
+  # change relay to phpredis as it's not supported by rapyd.
+  WP_REDIS_CONFIG_DATA=$(echo "$WP_REDIS_CONFIG_DATA" | sed -e "s/\"relay\"/\"phpredis\"/g" -e "s/'relay'/'phpredis'/g")
+  # make zstd to none as it's not supported by phpredis.
+  WP_REDIS_CONFIG_DATA=$(echo "$WP_REDIS_CONFIG_DATA" | sed -e "s/\"zstd\"/\"none\"/g" -e "s/'zstd'/'none'/g")
+  wp --skip-plugins --skip-themes --skip-packages --quiet --raw config set WP_REDIS_CONFIG "$WP_REDIS_CONFIG_DATA" 2>/dev/null;
+
+  # activate object cache pro after fixing the client. if it was activated before.
+  if["$redisCacheActivated" -eq 1 ]; then
+    wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate object-cache-pro  2>/dev/null
+  fi
+
+fi
 
 ##################################################################################
 # End the script with error if not installing Redis Cache.
