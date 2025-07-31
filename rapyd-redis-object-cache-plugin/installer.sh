@@ -63,6 +63,8 @@ then
   fi
 fi
 
+ocpWasInstalled=0;
+ocpWasActivated=0;
 InstallRedisCache=0;
 # collect the non_persistent_groups before anything get's deleted. 
 EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null);
@@ -73,6 +75,14 @@ echo "Existing Redis Ignored Groups: $EXISTS_REDIS_IGNORED_GROUPS";
 wp plugin is-active object-cache-pro --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
+
+  ocpWasInstalled=1;
+
+  wp --skip-plugins --skip-themes --skip-packages --quiet  plugin is-active object-cache-pro  2>/dev/null
+
+  if [ "$?" -eq 0 ]; then
+    ocpWasActivated=1;
+  fi
     
   # check if it has config defined.
   wp --skip-plugins --skip-themes --skip-packages --quiet  config has WP_REDIS_CONFIG  2>/dev/null
@@ -164,24 +174,26 @@ wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDI
 
 echo "activate plugin"
 
-wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
+# do not active redis cache if ocp was found deactivated.
+if [ $ocpWasInstalled -eq 1 ] && [ $ocpWasActivated -eq 0 ]; then
+  
+  wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
+  echo "force enable plugin"
 
-echo "force enable plugin"
+  wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis enable --force  2>/dev/null
 
-cd "$WP_ROOT"
-wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis enable --force  2>/dev/null
+  echo "force cache flush"
 
-echo "force cache flush"
+  cd "$WP_ROOT"
+  wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  cache flush  2>/dev/null
 
-cd "$WP_ROOT"
-wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  cache flush  2>/dev/null
+  echo "force redis flush"
 
-echo "force redis flush"
+  cd "$WP_ROOT"
+  wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis flush  2>/dev/null
 
-cd "$WP_ROOT"
-wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis flush  2>/dev/null
+fi
 
-##################################################################################
 # set wp-config to previous state
 cd "$WP_ROOT"
 
