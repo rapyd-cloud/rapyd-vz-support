@@ -246,7 +246,7 @@ if [ "$redisCacheShouldActivate" -eq 1 ]; then
 
   wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis enable --force  2>/dev/null
 
-  echo "force cache flush"
+  echo "force cache flush..."
 
   cd "$WP_ROOT"
   wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  cache flush  2>/dev/null
