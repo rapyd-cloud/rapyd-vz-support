@@ -118,6 +118,14 @@ wp --skip-plugins --skip-themes --skip-packages --quiet config delete WP_REDIS_C
 
 echo "installing plugin"
 
+# hard clear out known injections 
+rm -f "$WP_ROOT/wp-content/advanced-cache.php"
+rm -f "$WP_ROOT/wp-content/object-cache.php"
+
+# mu version installed by cloudways
+rm -f "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro.php"
+rm -rf "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro"
+
 wp plugin install redis-cache --activate --skip-plugins="$SKIPLIST" 2>/dev/null
 
 cd "$WP_ROOT"
