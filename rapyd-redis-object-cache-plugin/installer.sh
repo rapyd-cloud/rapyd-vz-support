@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Running script: $(readlink -f "$0")"
+
 echo "Build 1";
 
 #load parameters
