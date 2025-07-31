@@ -2,7 +2,7 @@
 
 echo "Running script: $(readlink -f "$0")"
 
-echo "Build 1";
+echo "Build 2";
 
 #load parameters
 OCP_TOKEN=$1
