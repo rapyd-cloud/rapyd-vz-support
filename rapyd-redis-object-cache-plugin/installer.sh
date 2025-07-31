@@ -4,9 +4,9 @@
 OCP_TOKEN=$1
 SHOULD_ACTIVATE_DEFAULT=$2
 
-if [ "$SHOULD_ACTIVATE_DEFAULT" == "true" ]; then
+if [ "$SHOULD_ACTIVATE_DEFAULT" = "true" ]; then
   SHOULD_ACTIVATE_DEFAULT=1
-else [ "$SHOULD_ACTIVATE_DEFAULT" == "false" ]; then
+elif [ "$SHOULD_ACTIVATE_DEFAULT" = "false" ]; then
   SHOULD_ACTIVATE_DEFAULT=0
 fi
 

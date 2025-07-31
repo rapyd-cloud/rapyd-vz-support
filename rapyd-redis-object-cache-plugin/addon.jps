@@ -111,10 +111,7 @@ actions:
         
     - cmd[${targetNodes.nodeGroup}]: |-
         
-        echo "Deploying OCP ..";
         OCP_TOKEN="79fb1487477c0a555d76e3249e1a1d2b975715293174f50afb456171301f"
-
-        echo "Starting Deploy OCP ..";
         cd /usr/local/rapyd/rapyd-redis-object-cache-files;
         
         echo "Activate Default - ${settings.activate_plugin}";
