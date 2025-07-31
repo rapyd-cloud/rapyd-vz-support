@@ -65,7 +65,10 @@ fi
 
 ocpWasInstalled=0;
 ocpWasActivated=0;
+redisCacheActivated=0;
+
 InstallRedisCache=0;
+
 # collect the non_persistent_groups before anything get's deleted. 
 EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null);
 
@@ -76,14 +79,9 @@ wp plugin is-active object-cache-pro --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
 
+  ocpWasActivated=1;
   ocpWasInstalled=1;
 
-  wp --skip-plugins --skip-themes --skip-packages --quiet  plugin is-active object-cache-pro  2>/dev/null
-
-  if [ "$?" -eq 0 ]; then
-    ocpWasActivated=1;
-  fi
-    
   # check if it has config defined.
   wp --skip-plugins --skip-themes --skip-packages --quiet  config has WP_REDIS_CONFIG  2>/dev/null
 
@@ -110,13 +108,53 @@ if [ "$?" -eq 0 ]; then
   fi
 
 else
+
+  wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed object-cache-pro  2>/dev/null
+
+  if [ "$?" -eq 0 ]; then
+    ocpWasInstalled=1;
+  fi
+
   InstallRedisCache=1;
+
 fi
 
 if [ "$InstallRedisCache" -eq 0 ]; then
   echo "Skipping Redis Object Cache installation"
   exit 1
 fi
+
+# check if redis cache is activated.
+wp plugin is-active object-cache --quiet --skip-plugins 2>/dev/null
+
+if [ "$?" -eq 0 ]; then
+
+  redisCacheActivated=1;
+
+fi;
+
+ocpWasInstalled=0;
+ocpWasActivated=0;
+
+##################################################################################
+# Decide wether to activate Redis Object Cache or not.
+##################################################################################
+
+redisCacheShouldActivate=1; # default activate.
+
+# if object cache pro was installed and not activated then we can skip the redis cache installation.
+if [ "$ocpWasInstalled" -eq 1 ] && [ "$ocpWasActivated" -eq 0 ]; then
+  echo "Object Cache Pro is installed but not activated. Skipping Redis Object Cache installation";
+  redisCacheShouldActivate=0;
+fi
+
+# @override - if redis cache is activated while installation then do activate always no matter previous logics.
+if [ "$redisCacheActivated" -eq 1 ]; then
+  echo "Redis Cache is already activated. Will activate it again after installation.";
+  redisCacheShouldActivate=1;
+fi
+
+######## END
 
 echo "Installing Redis Object Cache";
 
@@ -142,6 +180,7 @@ cd "$WP_ROOT"
 
 echo "setting config";
 
+# defaults wp-config.php configurations.
 wp --skip-plugins --skip-themes --skip-packages --quiet config set WP_REDIS_SCHEME "unix" 2>/dev/null
 wp --skip-plugins --skip-themes --skip-packages --quiet config set WP_REDIS_PATH "/var/run/redis/redis.sock" 2>/dev/null
 wp --skip-plugins --skip-themes --skip-packages --quiet config set WP_REDIS_PORT "0" 2>/dev/null
@@ -175,8 +214,8 @@ wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDI
 echo "activate plugin"
 
 # do not active redis cache if ocp was found deactivated.
-if [ $ocpWasInstalled -eq 1 ] && [ $ocpWasActivated -eq 0 ]; then
-  
+if [ redisCacheShouldActivate -eq 1 ]; then
+
   wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
   echo "force enable plugin"
 
