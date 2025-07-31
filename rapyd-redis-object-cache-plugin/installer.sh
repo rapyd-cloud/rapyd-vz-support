@@ -10,6 +10,8 @@ elif [ "$SHOULD_ACTIVATE_DEFAULT" = "false" ]; then
   SHOULD_ACTIVATE_DEFAULT=0
 fi
 
+echo "SHOULD_ACTIVATE_DEFAULT: $SHOULD_ACTIVATE_DEFAULT";
+
 if [ -z "$OCP_TOKEN" ]
   then
   exit 9991
