@@ -258,7 +258,7 @@ if [ "$redisCacheShouldActivate" -eq 1 ]; then
   wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis flush  2>/dev/null
 
 else 
-  echo "Object Cache Pro was found deactivated. Skipping Redis Cache activation.";
+  echo "Non of object cache plugin was found activated. Skipping Redis Cache activation.";
 fi
 
 # set wp-config to previous state
