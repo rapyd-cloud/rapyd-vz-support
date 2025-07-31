@@ -65,6 +65,7 @@ fi
 
 ocpWasInstalled=0;
 ocpWasActivated=0;
+redisCacheInstalled=0;
 redisCacheActivated=0;
 
 InstallRedisCache=0;
@@ -125,12 +126,19 @@ if [ "$InstallRedisCache" -eq 0 ]; then
   exit 1
 fi
 
+# check if redis cache is installed.
+wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed object-cache 2>/dev/null
+if [ "$?" -eq 0 ]; then
+  redisCacheInstalled=1;
+fi
+
 # check if redis cache is activated.
-wp plugin is-active object-cache --quiet --skip-plugins 2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages  --quiet plugin is-active object-cache 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
   redisCacheActivated=1;
 fi;
+
 
 ##################################################################################
 # Decide wether to activate Redis Object Cache or not.
@@ -140,7 +148,7 @@ redisCacheShouldActivate=1; # default activate.
 
 # if object cache pro was installed and not activated then we can skip the redis cache installation.
 if [ "$ocpWasInstalled" -eq 1 ] && [ "$ocpWasActivated" -eq 0 ]; then
-  echo "Object Cache Pro is installed but not activated. Skipping Redis Object Cache installation";
+  echo "Object Cache Pro is installed but not activated.  Skipping Redis Object Cache activation";
   redisCacheShouldActivate=0;
 fi
 
@@ -148,6 +156,12 @@ fi
 if [ "$redisCacheActivated" -eq 1 ]; then
   echo "Redis Cache is already activated. Will activate it again after installation.";
   redisCacheShouldActivate=1;
+fi
+
+# if redis object cache was installed and not activated then we can skip the redis cache installation.
+if [ "$redisCacheInstalled" -eq 1 ] && [ "$redisCacheActivated" -eq 0 ]; then
+  echo "Redis Object Cache is installed but not activated. Skipping Redis Object Cache activation";
+  redisCacheShouldActivate=0;
 fi
 
 ######## END
