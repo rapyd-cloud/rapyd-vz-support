@@ -133,14 +133,14 @@ fi
 # check if redis cache is installed.
 wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed redis-cache 2>/dev/null
 if [ "$?" -eq 0 ]; then
-  echo "Redis Object Cache Found and Installed";
+  echo "Redis Object Cache Found - Installed";
   redisCacheInstalled=1;
 fi
 
 # check if redis cache is activated.
 wp --skip-plugins --skip-themes --skip-packages  --quiet plugin is-active redis-cache 2>/dev/null
 if [ "$?" -eq 0 ]; then
-  echo "Redis Object Cache Found and Activated";
+  echo "Redis Object Cache Found - Activated";
   redisCacheActivated=1;
 fi;
 
@@ -198,7 +198,7 @@ rm -f "$WP_ROOT/wp-content/object-cache.php"
 rm -f "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro.php"
 rm -rf "$WP_ROOT/wp-content/mu-plugins/redis-cache-pro"
 
-wp plugin install redis-cache --activate --skip-plugins="$SKIPLIST" 2>/dev/null
+wp plugin install redis-cache --skip-plugins="$SKIPLIST" 2>/dev/null
 
 cd "$WP_ROOT"
 
@@ -235,12 +235,14 @@ fi;
 
 wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDIS_IGNORED_GROUPS "${WP_REDIS_IGNORED_GROUPS}" 2>/dev/null
 
-echo "activate plugin"
 
 # do not active redis cache if ocp was found deactivated.
 if [ "$redisCacheShouldActivate" -eq 1 ]; then
+  
+  echo "activate plugin.."
 
   wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
+  
   echo "force enable plugin"
 
   wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis enable --force  2>/dev/null
