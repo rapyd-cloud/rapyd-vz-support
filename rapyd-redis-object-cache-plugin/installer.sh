@@ -84,7 +84,7 @@ wp plugin is-active object-cache-pro --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
 
-  echo ""Object Cache Pro" Found and Activated";
+  echo "\"Object Cache Pro\" Found and Activated";
 
   ocpWasActivated=1;
   ocpWasInstalled=1;
@@ -112,7 +112,7 @@ else
   
   wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed object-cache-pro  2>/dev/null
   if [ "$?" -eq 0 ]; then
-    echo ""Object Cache Pro" Found and Installed";
+    echo "\"Object Cache Pro\" Found and Installed";
     ocpWasInstalled=1;
   fi
   InstallRedisCache=1;
@@ -133,7 +133,7 @@ fi
 # check if redis cache is installed.
 wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed object-cache 2>/dev/null
 if [ "$?" -eq 0 ]; then
-  echo ""Redis Object Cache" Found and Installed";
+  echo "\"Redis Object Cache\" Found and Installed";
   redisCacheInstalled=1;
 fi
 
@@ -141,7 +141,7 @@ fi
 wp --skip-plugins --skip-themes --skip-packages  --quiet plugin is-active object-cache 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
-  echo ""Redis Object Cache" Found and Activated";
+  echo "\"Redis Object Cache\" Found and Activated";
   redisCacheActivated=1;
 fi;
 

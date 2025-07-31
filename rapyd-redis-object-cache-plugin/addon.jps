@@ -56,18 +56,19 @@ actions:
   installScripts:
     - cmd[${targetNodes.nodeGroup}]: |-
     
-        mkdir -p /usr/local/rapyd
+        rm -rf /usr/local/rapyd/rapyd-redis-object-cache-files || echo "doesn't exists";
         mkdir -p /usr/local/rapyd/rapyd-redis-object-cache-files
         
         cd /usr/local/rapyd/rapyd-redis-object-cache-files
         
-        rm -f installer.sh
-        rm -f cleaner.sh
-        
-        curl -o ./installer.sh "${baseUrl}installer.sh?ver=?_r=${fn.random}"
+        downloadURL="${baseUrl}installer.sh?ver=?_r=${fn.random}";
+        echo "Downloading - $downloadURL"
+        curl -o ./installer.sh $downloadURL
         chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/installer.sh
         
-        curl -o ./cleaner.sh "${baseUrl}cleaner.sh?_r=${fn.random}"
+        downloadURL="${baseUrl}cleaner.sh?ver=?_r=${fn.random}";
+        echo "Downloading - $downloadURL"
+        curl -o ./cleaner.sh $downloadURL
         chmod +x /usr/local/rapyd/rapyd-redis-object-cache-files/cleaner.sh 
         
         chown litespeed:litespeed /usr/local/rapyd/
