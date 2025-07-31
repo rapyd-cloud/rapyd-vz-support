@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Build 1";
+
 #load parameters
 OCP_TOKEN=$1
 SHOULD_ACTIVATE_DEFAULT=$2
