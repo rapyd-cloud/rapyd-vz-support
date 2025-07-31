@@ -74,6 +74,10 @@ EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_group
 
 echo "Existing Redis Ignored Groups: $EXISTS_REDIS_IGNORED_GROUPS";
 
+##################################################################################
+# Decide wether to install Redis Object Cache or not.
+##################################################################################
+
 # check if the object cache pro plugin exists.
 wp plugin is-active object-cache-pro --quiet --skip-plugins 2>/dev/null
 
@@ -85,20 +89,14 @@ if [ "$?" -eq 0 ]; then
   # check if it has config defined.
   wp --skip-plugins --skip-themes --skip-packages --quiet  config has WP_REDIS_CONFIG  2>/dev/null
 
-  if [ "$?" -ne 0 ];then
-      # if it's not defined then no need to worry and uninstall the plugin.
-      wp plugin deactivate object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
-      wp plugin delete object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
+  if [ "$?" -ne 0 ];then # when where is no WP_REDIS_CONFIG
       InstallRedisCache=1;
-  else
+  else # when there is WP_REDIS_CONFIG
+  
       # if it is defined then we need to check if it is using our licence or not
       wp --skip-plugins --skip-themes --skip-packages --quiet  config get WP_REDIS_CONFIG 2>/dev/null | grep -q $OCP_TOKEN
 
       if [ "$?" -eq 0 ];then
-        # if it is using our licence then we need to uninstall the plugin.
-        echo "Object Cache Pro is using our licence. Uninstalling it.";
-        wp plugin deactivate object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
-        wp plugin delete object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
         InstallRedisCache=1;
       else
         # if it is not using our licence then we can skip the installation.
@@ -108,16 +106,19 @@ if [ "$?" -eq 0 ]; then
   fi
 
 else
-
   wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed object-cache-pro  2>/dev/null
-
   if [ "$?" -eq 0 ]; then
     ocpWasInstalled=1;
   fi
-
   InstallRedisCache=1;
-
 fi
+
+######## END
+
+
+##################################################################################
+# End the script with error if not installing Redis Cache.
+##################################################################################
 
 if [ "$InstallRedisCache" -eq 0 ]; then
   echo "Skipping Redis Object Cache installation"
@@ -128,13 +129,8 @@ fi
 wp plugin is-active object-cache --quiet --skip-plugins 2>/dev/null
 
 if [ "$?" -eq 0 ]; then
-
   redisCacheActivated=1;
-
 fi;
-
-ocpWasInstalled=0;
-ocpWasActivated=0;
 
 ##################################################################################
 # Decide wether to activate Redis Object Cache or not.
@@ -155,6 +151,15 @@ if [ "$redisCacheActivated" -eq 1 ]; then
 fi
 
 ######## END
+
+
+if [ "$ocpWasInstalled" -eq 1 ]; then
+  echo "Removing Object Cache Pro";
+  # if it is using our licence then we need to uninstall the plugin.
+  echo "Object Cache Pro is using our licence. Uninstalling it.";
+  wp plugin deactivate object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
+  wp plugin delete object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
+fi
 
 echo "Installing Redis Object Cache";
 
