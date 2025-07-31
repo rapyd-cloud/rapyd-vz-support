@@ -35,7 +35,7 @@ onInstall:
   - action: DeployRedisObjectCache
 
 onUninstall:
-  action: RemoveRedisObjectCache
+  - action: RemoveRedisObjectCache
 
 onAfterRedeployContainer:
   - action: DeployRedisObjectCache

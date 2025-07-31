@@ -200,16 +200,16 @@ if [ "$ocpWasInstalled" -eq 1 ] && [ "$ocpWasActivated" -eq 0 ]; then
   redisCacheShouldActivate=0;
 fi
 
-# @override - if redis cache is activated while installation then do activate always no matter previous logics.
-if [ "$redisCacheActivated" -eq 1 ]; then
-  echo "Redis Cache is already activated. Will activate it again after installation.";
-  redisCacheShouldActivate=1;
-fi
-
 # if redis object cache was installed and not activated then we can skip the redis cache installation.
 if [ "$redisCacheInstalled" -eq 1 ] && [ "$redisCacheActivated" -eq 0 ]; then
   echo "Redis Object Cache is installed but not activated. Skipping Redis Object Cache activation";
   redisCacheShouldActivate=0;
+fi
+
+# if one of the cache plugin found activated then we can activte the plugin.
+if [ "$redisCacheActivated" -eq 1 ] || [ "$ocpWasActivated" -eq 1 ]; then
+  echo "Redis Cache is already activated. Will activate it again after installation.";
+  redisCacheShouldActivate=1;
 fi
 
 ######## END
