@@ -214,7 +214,7 @@ wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDI
 echo "activate plugin"
 
 # do not active redis cache if ocp was found deactivated.
-if [ redisCacheShouldActivate -eq 1 ]; then
+if [ "$redisCacheShouldActivate" -eq 1 ]; then
 
   wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
   echo "force enable plugin"
