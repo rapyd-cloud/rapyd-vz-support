@@ -2,6 +2,13 @@
 
 #load parameters
 OCP_TOKEN=$1
+SHOULD_ACTIVATE_DEFAULT=$2
+
+if [ "$SHOULD_ACTIVATE_DEFAULT" == "true" ]; then
+  SHOULD_ACTIVATE_DEFAULT=1
+else [ "$SHOULD_ACTIVATE_DEFAULT" == "false" ]; then
+  SHOULD_ACTIVATE_DEFAULT=0
+fi
 
 if [ -z "$OCP_TOKEN" ]
   then
@@ -149,7 +156,7 @@ fi;
 # Decide wether to activate Redis Object Cache or not.
 ##################################################################################
 
-redisCacheShouldActivate=1; # default activate.
+redisCacheShouldActivate=$SHOULD_ACTIVATE_DEFAULT; # default activate.
 
 # if object cache pro was installed and not activated then we can skip the redis cache installation.
 if [ "$ocpWasInstalled" -eq 1 ] && [ "$ocpWasActivated" -eq 0 ]; then

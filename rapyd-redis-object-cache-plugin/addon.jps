@@ -14,6 +14,15 @@ targetNodes:
   nodeType:
   - llsmp
 
+settings:
+  fields:
+    - type: checkbox  
+      name: activate_plugin
+      caption: Activate (Default)
+      value: true
+      hideLabel: false
+      hidden: false
+
 baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/object-cache-plugin/rapyd-redis-object-cache-plugin/
 
 buttons:
@@ -106,9 +115,11 @@ actions:
         OCP_TOKEN="79fb1487477c0a555d76e3249e1a1d2b975715293174f50afb456171301f"
 
         echo "Starting Deploy OCP ..";
-        cd /usr/local/rapyd/rapyd-redis-object-cache-files
+        cd /usr/local/rapyd/rapyd-redis-object-cache-files;
         
-        /usr/bin/bash installer.sh "$OCP_TOKEN" > /var/log/redis-object-cache/deploy.log 2>&1
+        echo "Activate Default - ${settings.activate_plugin}";
+
+        /usr/bin/bash installer.sh "$OCP_TOKEN" "${settings.activate_plugin}" > /var/log/redis-object-cache/deploy.log 2>&1
         if [ "$?" -ne 0 ]; then
           exit 1
         fi
