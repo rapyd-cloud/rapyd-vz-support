@@ -23,7 +23,7 @@ settings:
       hideLabel: false
       hidden: false
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/object-cache-plugin/rapyd-redis-object-cache-plugin/
+baseUrl: https://repo.rapydapps.cloud/2024v5/b/object-cache-plugin/rapyd-redis-object-cache-plugin/
 
 buttons:
   - confirmText: Do you want to force redeploy Rapyd Object Cache addon?

@@ -143,6 +143,8 @@ if [ "$InstallRedisCache" -eq 0 ]; then
   exit 1
 fi
 
+wp --skip-plugins --skip-themes --skip-packages --quiet plugin list;
+
 # check if redis cache is installed.
 wp --skip-plugins --skip-themes --skip-packages --quiet plugin is-installed redis-cache
 if [ "$?" -eq 0 ]; then
