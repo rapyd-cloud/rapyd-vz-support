@@ -164,7 +164,7 @@ wp --skip-plugins --skip-themes --skip-packages --quiet config set --raw WP_REDI
 
 echo "activate plugin"
 
-wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate object-cache-pro  2>/dev/null
+wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate redis-cache  2>/dev/null
 
 echo "force enable plugin"
 
