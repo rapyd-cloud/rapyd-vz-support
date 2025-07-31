@@ -144,10 +144,12 @@ if [ "$InstallRedisCache" -eq 0 ]; then
 fi
 
 # check if redis cache is installed.
-wp --skip-plugins --skip-themes --skip-packages  --quiet  plugin is-installed redis-cache
+wp --skip-plugins --skip-themes --skip-packages --quiet plugin is-installed redis-cache
 if [ "$?" -eq 0 ]; then
   echo "Redis Object Cache Found - Installed";
   redisCacheInstalled=1;
+else
+  echo "Redis Object Cache Found - Not Installed";
 fi
 
 # check if redis cache is activated.
@@ -155,7 +157,9 @@ wp --skip-plugins --skip-themes --skip-packages  --quiet plugin is-active redis-
 if [ "$?" -eq 0 ]; then
   echo "Redis Object Cache Found - Activated";
   redisCacheActivated=1;
-fi;
+else
+  echo "Redis Object Cache Found - Not Activated";
+fi
 
 
 ##################################################################################
