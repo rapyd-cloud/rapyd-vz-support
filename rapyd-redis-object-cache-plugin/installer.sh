@@ -143,7 +143,7 @@ if [ "$fixOCPClient" -eq 1 ]; then
 
   # deactivate object cache pro before doing anything if it is activated.
   if [ "$ocpWasActivated" -eq 1 ]; then
-    wp --skip-plugins --skip-themes --skip-packages --quiet  plugin deactivate object-cache-pro  2>/dev/null
+     wp --skip-plugins="$SKIPLIST" --skip-themes --skip-packages redis enable  2>/dev/null
   fi
 
   WP_REDIS_CONFIG_DATA=$(wp --skip-plugins --skip-themes --skip-packages --quiet  config get WP_REDIS_CONFIG 2>/dev/null)
@@ -155,7 +155,7 @@ if [ "$fixOCPClient" -eq 1 ]; then
 
   # activate object cache pro after fixing the client. if it was activated before.
   if [ "$ocpWasActivated" -eq 0 ]; then
-    wp --skip-plugins --skip-themes --skip-packages --quiet  plugin activate object-cache-pro  2>/dev/null
+     wp --skip-plugins="$SKIPLIST" --skip-themes --skip-packages redis enable  2>/dev/null
   fi
 
 fi
