@@ -192,6 +192,8 @@ if [ $ocpWasInstalled -eq 1 ] && [ $ocpWasActivated -eq 0 ]; then
   cd "$WP_ROOT"
   wp --skip-plugins="$SKIPLIST" --skip-themes --quiet  redis flush  2>/dev/null
 
+else 
+  echo "Object Cache Pro was found deactivated. Skipping Redis Cache activation.";
 fi
 
 # set wp-config to previous state
