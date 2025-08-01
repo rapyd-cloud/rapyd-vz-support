@@ -1,7 +1,7 @@
 version: 5.1
 type: update
 id: rapyd-keydb
-name: v1 Rapyd KeyDb
+name: Rapyd v1 KeyDb 5.1
 description:
   short: KeyDb for Rapyd v2 Environment
 
