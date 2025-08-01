@@ -41,6 +41,11 @@ onAfterClone:
     envName: ${event.response.env.envName}
     nodeGroup: ${targetNodes.nodeGroup:}
 
+onAfterRestartNode: 
+  - cmd[${targetNodes.nodeGroup:}]: |-
+      sudo service keydb restart || true
+    user: root
+
 actions:
 
   removeRedis:
@@ -74,7 +79,7 @@ actions:
         curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
         /usr/bin/dnf install -y /tmp/keydb-latest.rpm
         rm -f /tmp/keydb-latest.rpm
-        
+
         curl -O ${baseUrl}/conf/config.sh
         chmod +x config.sh
         /usr/bin/bash config.sh ${baseUrl}
@@ -103,7 +108,7 @@ actions:
 
         # Remove the correct PHP session config file
         rm -f /usr/local/lsws/lsphp/etc/php.d/90-keydb-session.ini
-        
+
       user: root
 
   deployKeyDB:
