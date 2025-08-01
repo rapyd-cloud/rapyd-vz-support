@@ -1,14 +1,16 @@
-version: 2.0.0
+version: 5.1
 type: update
 id: rapyd-keydb
-name: Rapyd KeyDb
+name: v1 Rapyd KeyDB 5.1
 description:
-  short: Installs and configures KeyDb
+  short: Installs and configures KeyDB for v1
 
 categories:
   - apps/dev-and-admin-tools
 
 logo: icon.png
+
+baseUrl: https://repo.rapydapps.cloud/2024v5/b/main/rapyd-keydb/
 
 targetNodes:
   nodeType:
@@ -40,9 +42,9 @@ actions:
   runConfigScripts:
     - cmd[${targetNodes.nodeGroup}]: |-
         # Download all necessary files first
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/config.sh https://raw.githubusercontent.com/rapyd-cloud/Keydb/production/config.sh
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/set-memory.sh https://raw.githubusercontent.com/rapyd-cloud/Keydb/production/set-memory.sh
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/keydb.conf.txt https://raw.githubusercontent.com/rapyd-cloud/Keydb/production/keydb.conf.txt
+        curl -fsSL --retry 3 --retry-delay 5 -o /root/config.sh ${baseUrl}config.sh
+        curl -fsSL --retry 3 --retry-delay 5 -o /root/set-memory.sh ${baseUrl}set-memory.sh
+        curl -fsSL --retry 3 --retry-delay 5 -o /root/keydb.conf.txt ${baseUrl}keydb.conf.txt
         chmod +x /root/config.sh /root/set-memory.sh
       user: root
     - cmd[${targetNodes.nodeGroup}]: |-
