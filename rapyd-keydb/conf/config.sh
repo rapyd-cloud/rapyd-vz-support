@@ -122,9 +122,6 @@ else
   die "Group '${GROUP_NAME}' does not exist. Please create it manually."
 fi
 
-# fix permission of sock.
-chmod 777 /run/redis/redis.sock;
-
 # === Systemd Management ===
 echo "Reloading and starting KeyDB service..."
 # Force systemd to re-read unit files
