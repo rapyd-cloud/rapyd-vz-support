@@ -1,6 +1,12 @@
 #!/bin/bash
 # /usr/local/bin/set-keydb-memory.sh
 
+# load jel environment variables
+if [ -f /.jelenv ]; then
+    # Read values from /.jelenv
+    source /.jelenv
+fi
+
 # Strict mode for safe scripting
 set -euo pipefail
 
