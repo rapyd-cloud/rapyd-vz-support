@@ -2,10 +2,7 @@
 # /usr/local/bin/set-keydb-memory.sh
 
 # load jel environment variables
-if [ -f /.jelenv ]; then
-    # Read values from /.jelenv
-    source /.jelenv
-fi
+readonly CACHE_MEM_LIMIT=$(grep 'CACHE_MEM_LIMIT=' /.jelenv | sed 's/.*CACHE_MEM_LIMIT=\(.*\)%/\1/')
 
 # Strict mode for safe scripting
 set -euo pipefail
