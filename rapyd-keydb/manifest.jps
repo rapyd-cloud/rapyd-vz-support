@@ -33,6 +33,8 @@ onAfterClone:
 actions:
   installKeyDB:
     - cmd[${targetNodes.nodeGroup}]: |-
+        # remove redis if present
+        dnf remove redis -y || true
         rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
         curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
         dnf install -y /tmp/keydb-latest.rpm
