@@ -1,95 +1,119 @@
 version: 5.1
 type: update
 id: rapyd-keydb
-name: v1 Rapyd KeyDB 5.1
+name: v1 Rapyd KeyDb
 description:
-  short: Installs and configures KeyDB for v1
+  short: KeyDb for Rapyd v2 Environment
 
 categories:
-  - apps/dev-and-admin-tools
+- apps/dev-and-admin-tools
 
 logo: icon.png
-
 baseUrl: https://repo.rapydapps.cloud/2024v5/b/main/rapyd-keydb/
 
 targetNodes:
   nodeType:
-    - llsmp
+  - llsmp
+
+buttons:
+  - confirmText: Do you want to force redeploy KeyDB?
+    loadingText: Redeploying ...
+    action: deployKeyDB
+    caption: Force Redeploy
 
 onInstall:
   - action: deployKeyDB
+  - setGlobals:
+      nodeId: ${settings.nodeId:}
+      nodeGroup: ${targetNodes.nodeGroup:}
+      envName: ${env.name}
 
 onUninstall:
   - action: removeKeyDB
+  - setGlobals:
+      nodeGroup: ${targetNodes.nodeGroup:}
 
 onAfterRedeployContainer:
   - action: deployKeyDB
 
 onAfterClone:
-  redeployAfterClone:
+  InstallKeyDbAddon:
     envName: ${event.response.env.envName}
-    nodeGroup: cp
+    nodeGroup: ${targetNodes.nodeGroup:}
 
 actions:
-  installKeyDB:
-    - cmd[${targetNodes.nodeGroup}]: |-
-        # remove redis if present
-        dnf remove redis -y || true
-        rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
-        curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
-        dnf install -y /tmp/keydb-latest.rpm
-        rm -f /tmp/keydb-latest.rpm
+
+  removeRedis:
+    - cmd[${targetNodes.nodeGroup:}]: |-
+        if dnf list installed | grep -q "redis"; then
+
+          /usr/bin/systemctl stop redis || true
+          /usr/bin/systemctl disable redis || true
+
+          sleep 5
+
+          if pgrep redis > /dev/null; then
+            /usr/bin/killall -9 redis || true
+          fi
+          if pgrep redis-server > /dev/null; then
+              /usr/bin/killall -9 redis-server || true
+          fi
+
+          /usr/bin/dnf -y remove redis >> /var/log/redis_install.log 2>&1
+        fi
       user: root
 
-  runConfigScripts:
-    - cmd[${targetNodes.nodeGroup}]: |-
-        # Download all necessary files first
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/config.sh ${baseUrl}config.sh
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/set-memory.sh ${baseUrl}set-memory.sh
-        curl -fsSL --retry 3 --retry-delay 5 -o /root/keydb.conf.txt ${baseUrl}keydb.conf.txt
-        chmod +x /root/config.sh /root/set-memory.sh
-      user: root
-    - cmd[${targetNodes.nodeGroup}]: |-
-        # Execute the scripts
-        /root/config.sh
-        /root/set-memory.sh
-        # Clean up downloaded files
-        rm -f /root/config.sh /root/set-memory.sh /root/keydb.conf.txt
+  installKeyDB:
+    - cmd[${targetNodes.nodeGroup:}]: |-
+    
+        mkdir -p /etc/rapyd/
+        mkdir -p /etc/rapyd/rapyd-keydb-files
+        cd /etc/rapyd/rapyd-keydb-files
+      
+        rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
+        curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
+        /usr/bin/dnf install -y /tmp/keydb-latest.rpm
+        rm -f /tmp/keydb-latest.rpm
+        
+        curl -O ${baseUrl}/conf/config.sh
+        chmod +x config.sh
+        /usr/bin/bash config.sh ${baseUrl}
+
       user: root
 
   removeKeyDB:
-    - cmd[${targetNodes.nodeGroup}]: |-
-        systemctl stop redis.service &>/dev/null || true
-        systemctl disable redis.service &>/dev/null || true
-        systemctl stop keydb.service &>/dev/null || true
-        systemctl disable keydb.service &>/dev/null || true
-        if dnf list installed keydb &>/dev/null; then
-          dnf remove -y keydb
-        fi
-        rm -f /usr/lib/systemd/system/redis.service /usr/lib/systemd/system/keydb.service
-        rm -f /usr/local/bin/set-keydb-memory.sh
-        rm -rf /etc/keydb /var/lib/keydb /var/log/keydb
-        systemctl daemon-reload
-      user: root
+    - cmd[${targetNodes.nodeGroup:}]: |-
+        # Attempt a graceful shutdown first
+        /usr/bin/systemctl stop keydb || true
+        /usr/bin/systemctl disable keydb || true
 
-  clearCache:
-    - cmd[${targetNodes.nodeGroup}]: |-
-        if [ -f /home/jelastic/bin/wp ]; then
-          cd /var/www/webroot/ROOT
-          /home/jelastic/bin/wp cache flush
+        # Wait a few seconds for the service to stop
+        sleep 5
+
+        # Check if it's still running, and only then use killall
+        if pgrep keydb > /dev/null; then
+          /usr/bin/killall -9 keydb || true
         fi
-      user: litespeed
+        if pgrep keydb-server > /dev/null; then
+            /usr/bin/killall -9 keydb-server || true
+        fi
+
+        /usr/bin/dnf remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
+        rm -rf /etc/rapyd/rapyd-keydb-files
+
+        # Remove the correct PHP session config file
+        rm -f /usr/local/lsws/lsphp/etc/php.d/90-keydb-session.ini
+        
+      user: root
 
   deployKeyDB:
-    - action: removeKeyDB # Clean previous installations first
+    - action: removeRedis
+    - action: removeKeyDB
     - action: installKeyDB
-    - action: runConfigScripts
-    - cmd[${targetNodes.nodeGroup}]: |-
-        systemctl restart redis.service
-        if systemctl list-units --type=service | grep -q 'lsws.service'; then
-          systemctl restart lsws
-        fi
-      user: root
-    - action: clearCache
 
-success: "KeyDB has been successfully installed and configured."
+  InstallKeyDbAddon:
+    install: ${baseUrl}manifest.jps
+    envName: ${this.envName}
+    nodeGroup: ${targetNodes.nodeGroup:}
+
+success: "Installed Successfully."

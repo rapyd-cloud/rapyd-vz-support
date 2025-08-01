@@ -1,0 +1,10 @@
+[Service]
+# Run the script to calculate and set memory BEFORE KeyDB starts.
+# The hyphen (-) at the beginning tells systemd not to fail if the script returns an error.
+ExecStartPre=-/usr/local/bin/set-keydb-memory.sh
+
+ExecStart=
+
+ExecStart=/usr/bin/keydb-server /etc/keydb/keydb.conf --supervised systemd
+
+Restart=always

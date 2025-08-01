@@ -23,21 +23,13 @@ ProtectHome=yes
 ReadOnlyDirectories=/
 ReadWriteDirectories=-/var/lib/keydb
 ReadWriteDirectories=-/var/log/keydb
-ReadWriteDirectories=-/var/run/keydb
+ReadWriteDirectories=-/var/run/redis
+ReadWriteDirectories=-/etc/keydb
 
 NoNewPrivileges=true
 CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-
-# keydb-server can write to its own config file when in cluster mode so we
-# permit writing there by default. If you are not using this feature, it is
-# recommended that you replace the following lines with "ProtectSystem=full".
 ProtectSystem=true
-ReadWriteDirectories=-/etc/keydb
-
-RuntimeDirectory=redis
-RuntimeDirectoryMode=0755
-
 
 [Install]
 WantedBy=multi-user.target

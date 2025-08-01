@@ -106,7 +106,7 @@ protected-mode yes
 
 # Accept connections on the specified port, default is 6379 (IANA #815344).
 # If port 0 is specified KeyDB will not listen on a TCP socket.
-#port 6379
+port 6379
 
 # TCP listen() backlog.
 #
@@ -124,7 +124,7 @@ tcp-backlog 511
 # on a unix socket when not specified.
 #
 unixsocket /var/run/redis/redis.sock
-unixsocketperm 777
+unixsocketperm 770
 
 # Close the connection after a client is idle for N seconds (0 to disable)
 timeout 0
@@ -291,7 +291,7 @@ daemonize no
 #                        UPSTART_JOB or NOTIFY_SOCKET environment variables
 # Note: these supervision methods only signal "process is ready."
 #       They do not enable continuous pings back to your supervisor.
-supervised no
+supervised systemd
 
 # If a pid file is specified, KeyDB writes it where specified at startup
 # and removes it at exit.
@@ -302,8 +302,8 @@ supervised no
 #
 # Creating a pid file is best effort: if KeyDB is not able to create it
 # nothing bad happens, the server will start and run normally.
-#pidfile /var/run/keydb/keydb-server.pid
-pidfile /run/redis/redis.pid
+pidfile /var/run/keydb/keydb-server.pid
+#pidfile /var/run/redis/redis.pid
 
 # Specify the server verbosity level.
 # This can be one of:
@@ -1086,7 +1086,7 @@ acllog-max-len 128
 #
 # The default is:
 #
-# maxmemory-policy noeviction
+maxmemory-policy allkeys-lru
 
 # LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated
 # algorithms (in order to save memory), so you can tune it for speed or
@@ -1188,8 +1188,8 @@ acllog-max-len 128
 # in order to instead release memory in a non-blocking way like if UNLINK
 # was called, using the following configuration directives.
 
-lazyfree-lazy-eviction no
-lazyfree-lazy-expire no
+lazyfree-lazy-eviction yes
+lazyfree-lazy-expire yes
 lazyfree-lazy-server-del no
 replica-lazy-flush no
 
@@ -1271,7 +1271,7 @@ disable-thp yes
 #
 # Please check http://redis.io/topics/persistence for more information.
 
-appendonly no
+appendonly yes
 
 # The name of the append only file (default: "appendonly.aof")
 
@@ -2078,3 +2078,6 @@ replica-weighting-factor 2
 # disk space or any other I/O error KeyDB will instead use memory.
 # 
 # blob-support false
+
+# Include a dynamically generated configuration file for memory settings
+include /etc/keydb/maxmemory.conf
