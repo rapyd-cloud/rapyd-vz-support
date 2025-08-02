@@ -219,8 +219,8 @@ if [ "$ocpWasInstalled" -eq 1 ]; then
   echo "Removing Object Cache Pro";
   # if it is using our licence then we need to uninstall the plugin.
   echo "Object Cache Pro is using our licence. Uninstalling it.";
-  wp plugin deactivate object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
-  wp plugin delete object-cache-pro --quiet --skip-plugins="$SKIPLIST" 2>/dev/null || true
+  wp plugin deactivate object-cache-pro --quiet --skip-themes --skip-plugins="$SKIPLIST" 2>/dev/null || true
+  wp plugin delete object-cache-pro --quiet --skip-themes --skip-plugins="$SKIPLIST" 2>/dev/null || true
 fi
 
 echo "Installing Redis Object Cache";
