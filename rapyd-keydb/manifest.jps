@@ -1,6 +1,6 @@
 version: 5.1
 type: update
-id: rapyd-keydb
+id: rapyd-keydb-addon
 name: Rapyd v1 KeyDb 5.1
 description:
   short: KeyDb for Rapyd v2 Environment
@@ -69,6 +69,12 @@ actions:
       user: root
 
   installKeyDB:
+    - api[${targetNodes.nodeGroup}]:
+      - method: environment.control.SetContainerEnvVars
+        params:
+          nodeId: ${nodes.cp.id}
+          vars: '{ "REDIS_ENABLED" : "false" }'
+          
     - cmd[${targetNodes.nodeGroup:}]: |-
     
         mkdir -p /etc/rapyd/

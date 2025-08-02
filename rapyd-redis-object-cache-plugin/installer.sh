@@ -84,7 +84,7 @@ fixOCPClient=0;
 InstallRedisCache=0;
 
 # collect the non_persistent_groups before anything get's deleted. 
-EXISTS_REDIS_IGNORED_GROUPS=$(wp eval 'if (WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null);
+EXISTS_REDIS_IGNORED_GROUPS=$(wp --skip-plugins --skip-themes --skip-packages eval 'error_reporting(0); ini_set("display_errors", "0"); if (defined("WP_REDIS_CONFIG") && WP_REDIS_CONFIG["non_persistent_groups"]) { echo json_encode(WP_REDIS_CONFIG["non_persistent_groups"],JSON_PRETTY_PRINT); exit(0); }' 2>/dev/null);
 
 echo "Existing Redis Ignored Groups: $EXISTS_REDIS_IGNORED_GROUPS";
 
