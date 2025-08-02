@@ -50,22 +50,49 @@ actions:
 
   removeRedis:
     - cmd[${targetNodes.nodeGroup:}]: |-
-        if dnf list installed | grep -q "redis"; then
 
+        
+        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
+
+          if dnf list installed | grep -q "redis"; then
+
+            /usr/bin/systemctl stop redis || true
+            /usr/bin/systemctl disable redis || true
+
+            sleep 5
+
+            if pgrep redis > /dev/null; then
+              /usr/bin/killall -9 redis || true
+            fi
+            if pgrep redis-server > /dev/null; then
+                /usr/bin/killall -9 redis-server || true
+            fi
+
+            /usr/bin/dnf -y remove redis >> /var/log/redis_install.log 2>&1
+          fi
+
+        else  # if centos.
+
+          # Stop and disable the Redis service
           /usr/bin/systemctl stop redis || true
           /usr/bin/systemctl disable redis || true
 
+          # Wait for 5 seconds
           sleep 5
 
+          # Kill any running Redis processes
           if pgrep redis > /dev/null; then
-            /usr/bin/killall -9 redis || true
+              /usr/bin/killall -9 redis || true
           fi
           if pgrep redis-server > /dev/null; then
               /usr/bin/killall -9 redis-server || true
           fi
 
-          /usr/bin/dnf -y remove redis >> /var/log/redis_install.log 2>&1
+          # Remove Redis and log the output
+          /usr/bin/yum -y remove redis || true;
+      
         fi
+
       user: root
 
   installKeyDB:
@@ -83,7 +110,13 @@ actions:
       
         rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
         curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
-        /usr/bin/dnf install -y /tmp/keydb-latest.rpm
+
+        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
+          /usr/bin/dnf install -y /tmp/keydb-latest.rpm
+        else  # if centos.
+          /usr/bin/yum install -y /tmp/keydb-latest.rpm
+        fi
+
         rm -f /tmp/keydb-latest.rpm
 
         curl -O ${baseUrl}/conf/config.sh
@@ -109,7 +142,12 @@ actions:
             /usr/bin/killall -9 keydb-server || true
         fi
 
-        /usr/bin/dnf remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
+        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
+          /usr/bin/dnf remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
+        else  # if centos.
+          /usr/bin/yum remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
+        fi
+        
         rm -rf /etc/rapyd/rapyd-keydb-files
 
         # Remove the correct PHP session config file
