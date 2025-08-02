@@ -160,12 +160,12 @@ actions:
     - cmd[${targetNodes.nodeGroup}]: |-
 
         if [ -f /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled ]; then
-          cp /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
+          cp -f /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
         fi
 
         if [ -f /usr/local/lsws/lsphp/etc/php.d/50-redis.ini ]; then
-          cp /usr/local/lsws/lsphp/etc/php.d/50-redis.ini /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini;
-          mv  /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled;
+          cp -f /usr/local/lsws/lsphp/etc/php.d/50-redis.ini /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini;
+          mv  /usr/local/lsws/lsphp/etc/php.d/50-redis.ini  /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled;
         fi
       
       user: root
