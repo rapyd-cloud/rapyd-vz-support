@@ -3,7 +3,7 @@ type: update
 id: rapyd-keydb-addon
 name: Rapyd v1 KeyDb 5.1
 description:
-  short: KeyDb for Rapyd v2 Environment
+  short: KeyDb for Rapyd Environments
 
 categories:
 - apps/dev-and-admin-tools
