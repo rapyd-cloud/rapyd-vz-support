@@ -144,30 +144,34 @@ echo "# deployed: $now"  >> monarx-agent.conf
 
 echo "#########################################################################" >> monarx-agent.conf
 
+# Stop the agent before making changes
+sudo systemctl stop monarx-agent
+
 if grep -a 'AlmaLinux' /etc/system-release ; then
   # AlmaLinux install commands
-  cd ~
-  sudo systemctl stop monarx-agent
   cd /tmp
   sudo curl -fsS https://repository.monarx.com/repository/monarx-yum/monarx.repo | sudo tee /etc/yum.repos.d/monarx.repo
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
-  sudo yum install monarx-protect-autodetect monarx-agent-auditd -y
-  sudo systemctl stop monarx-agent
-  sudo yum update monarx-agent -y
+  
+  # Install if not present, and upgrade if it is
+  sudo yum install -y monarx-protect-autodetect monarx-agent-auditd
+  sudo yum update -y 'monarx-*'
   
 else
   # CentOS 7 install commands
-  cd ~
-  sudo systemctl stop monarx-agent
   cd /tmp
   sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/7/x86_64/monarx.repo
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
-  sudo yum install monarx-protect-autodetect monarx-agent-auditd -y
-  sudo systemctl stop monarx-agent
-  sudo yum update monarx-agent monarx-agent-auditd -y
+  
+  # Install if not present, and upgrade if it is
+  sudo yum install -y monarx-protect-autodetect monarx-agent-auditd
+  sudo yum update -y 'monarx-*'
 
 fi
 
+# ==============================================================================
+# ===CODE BLOCK TO FIX THE NETWORK TIMING ISSUE ===
+# ==============================================================================
 # Create a systemd drop-in to ensure the network is online before starting Monarx.
 # This prevents startup failures in containers that are created or cloned quickly.
 
