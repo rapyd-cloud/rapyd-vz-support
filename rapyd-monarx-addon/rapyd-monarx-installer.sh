@@ -2,7 +2,7 @@
 
 source /etc/profile
 
-# must be run as sudo su - 
+# must be run as sudo su -
 # must pass in vzenvironmentname , vzuid , vznodeid
 
 #load parameters
@@ -33,13 +33,20 @@ IS_DEVELOPER=false
 cd /etc/
 rm -f monarx-agent.conf
 
-# create monarx-agent configuration file 
+# create monarx-agent configuration file
 echo "#########################################################################" > monarx-agent.conf
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
 echo "#########################################################################" > monarx-agent.conf
 
-echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
-echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
+if [ -z "$MONARX_CLIENT_ID" ] || [ -z "$MONARX_CLIENT_SECRET" ]; then
+  # Fallback to default credentials if environment variables are not set
+  echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
+  echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
+else
+  # Use credentials from environment variables
+  echo "client_id=$MONARX_CLIENT_ID" >> monarx-agent.conf
+  echo "client_secret=$MONARX_CLIENT_SECRET" >> monarx-agent.conf
+fi
 
 echo "host_id=$VZNODEID-$VZENVNAME" >> monarx-agent.conf
 
@@ -47,10 +54,10 @@ echo "exclude_dirs=/virtfs" >> monarx-agent.conf
 echo "exclude_dirs=/(clam_|\.)?quarantine" >> monarx-agent.conf
 echo "exclude_users=^virtfs$" >> monarx-agent.conf
 
-echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
+echo "user_base=/home/" >> monarx-agent.conf
+echo "user_base=/var/www/" >> monarx-agent.conf
 echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
 echo "user_base=/tmp/" >> monarx-agent.conf
-echo "user_base=/home/litespeed/" >> monarx-agent.conf
 
 echo "tags=$HOSTNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
@@ -64,7 +71,7 @@ if [[ "$RAPYD_PLAN" == *"STAGING"* ]]
     IS_STAGING=true
 fi
 
-if [[ "$VZENVNAME" == *"-staging"* ]] 
+if [[ "$VZENVNAME" == *"-staging"* ]]
   then
     IS_STAGING=true
 fi
@@ -76,25 +83,25 @@ fi
 
 if [[ "$HOSTNAME" == *"rapydapps.cloud"* ]]
   then
-    echo "tags=rapydapps.cloud" >> monarx-agent.conf  
+    echo "tags=rapydapps.cloud" >> monarx-agent.conf
 fi
 
 if [[ "$HOSTNAME" == *"rapyd.cloud"* ]]
   then
-    echo "tags=rapyd.cloud" >> monarx-agent.conf  
+    echo "tags=rapyd.cloud" >> monarx-agent.conf
     IS_STAGING=true
     IS_TESTING=true
 fi
 
-if [[ "$HOSTNAME" == *"developbb.dev"* ]] 
+if [[ "$HOSTNAME" == *"developbb.dev"* ]]
   then
-    echo "tags=developbb.dev" >> monarx-agent.conf  
+    echo "tags=developbb.dev" >> monarx-agent.conf
     IS_STAGING=true
     IS_DEVELOPER=true
 fi
 
 totalk=$(awk '/MemTotal:/{print $2}' /proc/meminfo)
-devmemlimit=2100000 
+devmemlimit=2100000
 if [[ $totalk -lt $devmemlimit ]]
   then
     IS_DEVELOPER=true
@@ -113,7 +120,7 @@ fi
 if [[ "$IS_TESTING" = true ]]
   then
     echo "tags=test" >> monarx-agent.conf
-    echo "tags=testing" >> monarx-agent.conf    
+    echo "tags=testing" >> monarx-agent.conf
 fi
 
 if [[ "$IS_STAGING" = true ]]
@@ -121,7 +128,7 @@ if [[ "$IS_STAGING" = true ]]
     echo "tags=staging" >> monarx-agent.conf
 fi
 
-if [[ "$IS_DEVELOPER" = true ]] 
+if [[ "$IS_DEVELOPER" = true ]]
   then
     echo "tags=dev" >> monarx-agent.conf
     echo "tags=developer" >> monarx-agent.conf
@@ -140,34 +147,34 @@ echo "#########################################################################"
 
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
-  # work out what we need to do here for AlmaLinux 
+  # work out what we need to do here for AlmaLinux
   cd ~
-  
-  # force stop monarx  if it happens to be running 
+
+  # force stop monarx  if it happens to be running
   sudo systemctl stop monarx-agent
 
   # install the repository repo and pgp key
   cd /tmp
-  sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/9/x86_64/monarx.repo
+  sudo curl -fsS https://repository.monarx.com/repository/monarx-yum/monarx.repo | sudo tee /etc/yum.repos.d/monarx.repo
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
-  
-  # install monarx
-  sudo yum install monarx-protect-autodetect -y
 
-  # force stop monarx  if it happens to be running 
+  # install monarx
+  sudo yum install monarx-protect-autodetect monarx-agent-auditd -y
+
+  # force stop monarx  if it happens to be running
   sudo systemctl stop monarx-agent
 
   # force update monarx
   sudo yum update monarx-agent -y
 
-  # force restart 
+  # force restart
   sudo systemctl restart monarx-agent
-  
+
 else
   # assume this is the current Centos 7 based platform install
   cd ~
 
-  # force stop monarx  if it happens to be running 
+  # force stop monarx  if it happens to be running
   sudo systemctl stop monarx-agent
 
   # install the repository repo and pgp key
@@ -176,26 +183,18 @@ else
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
 
   # install monarx
-  sudo yum install monarx-protect-autodetect -y
+  sudo yum install monarx-protect-autodetect monarx-agent-auditd -y
 
-  # force stop monarx  if it happens to be running 
+  # force stop monarx  if it happens to be running
   sudo systemctl stop monarx-agent
 
   # force update monarx
-  sudo yum update monarx-agent -y
+  sudo yum update monarx-agent monarx-agent-auditd -y
 
-  # force restart 
+  # force restart
   sudo systemctl restart monarx-agent
 
 fi
 
 
 # end of monarx main deployer
-
-
-
-
-
-
-
-
