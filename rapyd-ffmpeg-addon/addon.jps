@@ -1,0 +1,82 @@
+version: 5.1
+type: update
+id: rapyd-ffmpeg-addon
+name: Rapyd FFmpeg Installer 5.1
+
+description:
+  short: Installs or uninstalls FFmpeg in Rapyd Cloud (VZ) environments.
+
+categories:
+  - apps/dev-and-admin-tools
+
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-ffmpeg-addon/
+
+targetNodes:
+  nodeType:
+    - llsmp
+
+buttons:
+  - confirmText: Do you want to force the reinstallation of FFmpeg?
+    loadingText: Reinstalling FFmpeg...
+    action: deployffmpeg
+    caption: Force Reinstall
+
+onInstall:
+  action: deployffmpeg
+
+onAfterRedeployContainer:
+  action: deployffmpeg
+
+onAfterClone:
+  action: deployffmpeg
+
+onUninstall:
+  action: removeffmpeg
+
+actions:
+  installScripts:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        mkdir -p /usr/local/rapyd
+        mkdir -p /usr/local/rapyd/rapyd-ffmpeg-files
+
+        cd /usr/local/rapyd/rapyd-ffmpeg-files
+
+        rm -f rapyd-ffmpeg-installer.sh
+        rm -f rapyd-ffmpeg-cleaner.sh
+
+        echo "Downloading installation script..."
+        curl -fsSLO ${baseUrl}rapyd-ffmpeg-installer.sh
+
+        chmod +x /usr/local/rapyd/rapyd-ffmpeg-files/rapyd-ffmpeg-installer.sh
+        echo "Downloading cleanup script..."
+
+        curl -fsSLO ${baseUrl}rapyd-ffmpeg-cleaner.sh
+        chmod +x /usr/local/rapyd/rapyd-ffmpeg-files/rapyd-ffmpeg-cleaner.sh
+        chown root:root /usr/local/rapyd/
+        chown -R root:root /usr/local/rapyd/*
+      user: root
+
+  deployffmpeg:
+    - action: installScripts
+    - cmd[${targetNodes.nodeGroup}]: |-
+        echo "Executing FFmpeg installation script..."
+        cd /usr/local/rapyd/rapyd-ffmpeg-files
+        /usr/bin/bash rapyd-ffmpeg-installer.sh
+        echo "FFmpeg installation completed."
+        
+      user: root
+    - restartContainers:
+        nodeGroup: ${targetNodes.nodeGroup}
+
+  removeffmpeg:
+    - action: installScripts
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        echo "Executing FFmpeg cleanup script..."
+        cd /usr/local/rapyd/rapyd-ffmpeg-files
+        /usr/bin/bash rapyd-ffmpeg-cleaner.sh
+        echo "FFmpeg cleanup completed."
+
+      user: root
+    - restartContainers:
+        nodeGroup: ${targetNodes.nodeGroup}

@@ -10,7 +10,7 @@ description:
 categories:
 - apps/dev-and-admin-tools
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-monarx-addon/
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-monarx-addon/ 
 
 targetNodes:
   nodeType:
@@ -40,10 +40,9 @@ onAfterClone:
   InstallMonarxAddon:
     envName: ${event.response.env.envName}
     install:
-      jps: ${baseUrl}manifest.jps
+      jps: ${baseUrl}addon.jps # Or manifest.jps, whatever you named it
       settings:
         nodeGroup: ${globals.nodeGroup}
-
 
 onUninstall:
   action: removeMonarx
@@ -51,26 +50,18 @@ onUninstall:
 actions:
   installScripts:
     - cmd[${targetNodes.nodeGroup}]: |-
-        mkdir -p /usr/local/rapyd
         mkdir -p /usr/local/rapyd/rapyd-monarx-files
-
         cd /usr/local/rapyd/rapyd-monarx-files
-        
-        rm -f rapyd-monarx-installer.sh
-        rm -f rapyd-monarx-php-extention.sh
-        rm -f rapyd-monarx-cleaner.sh
+        rm -f rapyd-monarx-installer.sh rapyd-monarx-php-extention.sh rapyd-monarx-cleaner.sh
         
         curl -O ${baseUrl}rapyd-monarx-installer.sh
-        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-installer.sh
+        chmod +x rapyd-monarx-installer.sh
 
         curl -O ${baseUrl}rapyd-monarx-php-extention.sh
-        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-php-extention.sh
+        chmod +x rapyd-monarx-php-extention.sh
 
         curl -O ${baseUrl}rapyd-monarx-cleaner.sh
-        chmod +x /usr/local/rapyd/rapyd-monarx-files/rapyd-monarx-cleaner.sh
-
-        chown litespeed:litespeed /usr/local/rapyd/
-        chown -R litespeed:litespeed /usr/local/rapyd/*
+        chmod +x rapyd-monarx-cleaner.sh
       user: root
 
   deployMonarx:
@@ -80,12 +71,8 @@ actions:
         VZUID="${env.uid}"
         VZNODEID="${nodes.cp.master.id}"
         cd /usr/local/rapyd/rapyd-monarx-files
-
-        # install the monarx.
-        /usr/bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
-
-        # Link the monarx php extension to the installed php script.
-        /usr/bin/bash rapyd-monarx-php-extention.sh
+        /bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
+        /bin/bash rapyd-monarx-php-extention.sh
       user: root
     - restartContainers:
         nodeGroup: ${targetNodes.nodeGroup}
@@ -94,7 +81,7 @@ actions:
     - action: installScripts
     - cmd[${targetNodes.nodeGroup}]: |-
         cd /usr/local/rapyd/rapyd-monarx-files
-        /usr/bin/bash rapyd-monarx-cleaner.sh
+        /bin/bash rapyd-monarx-cleaner.sh
       user: root
 
   InstallMonarxAddon:
