@@ -5,12 +5,15 @@ echo
 # 1) /var/www/webroot/ROOT
 echo "1) /var/www/webroot/ROOT size:"
 du -sh /var/www/webroot/ROOT 2>/dev/null
+echo
 # 2) /var/www/webroot/ROOT/wp-content
 echo "2) /var/www/webroot/ROOT/wp-content size:"
 du -sh /var/www/webroot/ROOT/wp-content 2>/dev/null
+echo
 # 3) /var/www/webroot/ROOT/wp-content/uploads
 echo "3) /var/www/webroot/ROOT/wp-content/uploads size:"
 du -sh /var/log 2>/dev/null
+echo
 # 4) /var/log
 echo "4) /var/log folder size:"
 du -sh /var/log 2>/dev/null
@@ -51,7 +54,8 @@ for dir in "${CACHE_FOLDERS[@]}"; do
     fi
 done
 # 7) Other folders
-echo "7) Cache folders sizes:"
+echo
+echo "7) Other folders sizes:"
 X_FOLDERS=(
     "/var/www/webroot/ROOT/wp-content/updraft/"
     "/var/www/webroot/ROOT/wp-content/backup-db/"
