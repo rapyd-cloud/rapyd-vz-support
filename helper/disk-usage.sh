@@ -53,9 +53,9 @@ for dir in "${CACHE_FOLDERS[@]}"; do
         echo "$dir : Folder does not exist"
     fi
 done
-# 7) Other folders
+# 8) Other folders
 echo
-echo "7) Other folders sizes:"
+echo "8) Other folders sizes:"
 X_FOLDERS=(
     "/var/www/webroot/ROOT/wp-content/updraft/"
     "/var/www/webroot/ROOT/wp-content/backup-db/"
