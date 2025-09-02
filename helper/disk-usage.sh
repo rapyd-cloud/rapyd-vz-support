@@ -76,5 +76,8 @@ for dir in "${X_FOLDERS[@]}"; do
         echo "$dir : Folder does not exist"
     fi
 done
+echo "9) List of Unknown Files in WP Root";
+find /var/www/webroot/ROOT -maxdepth 1 -type f -not -name 'wp-*.php' -not -name 'index.php' -not -name 'license.txt' -not -name 'readme.html' -not -name 'wp-activate.php' -not -name 'wp-blog-header.php' -not -name 'wp-comments-post.php' -not -name 'wp-config.php' -not -name 'wp-config-sample.php' -not -name 'wp-cron.php' -not -name 'wp-links-opml.php' -not -name 'wp-load.php' -not -name 'wp-login.php' -not -name 'wp-mail.php' -not -name 'wp-settings.php' -not -name 'wp-signup.php' -not -name 'wp-trackback.php' -not -name 'xmlrpc.php' -not -name '.htaccess' -not -name '.htaccess.bk' -not -name 'favicon.ico' -exec du -sh {} +
+
 echo
 echo "=== End of Report ==="
