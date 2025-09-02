@@ -99,7 +99,7 @@ cat << EOF > "${KEYDB_OVERRIDE_FILE}"
 ExecStartPre=-${SET_MEMORY_SCRIPT}
 ExecStart=
 ExecStart=/usr/bin/keydb-server /etc/keydb/keydb.conf --supervised systemd --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 777
-Restart=always
+Restart=on-failure
 EOF
 
 # --- NEW: Create PHP configuration for KeyDB sessions ---
