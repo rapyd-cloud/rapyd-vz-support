@@ -30,15 +30,15 @@ echo
 echo "7) Cache folders sizes:"
 CACHE_FOLDERS=(
     "/var/www/webroot/ROOT/wp-content/cache/"
-    "/var/www/webroot/ROOT/wp-content/uploads/wp-rocket-config"
+    "/var/www/webroot/ROOT/wp-content/uploads/wp-rocket-config/"
     "/var/www/webroot/ROOT/wp-content/w3tc/"
     "/var/www/webroot/ROOT/wp-content/cache/autoptimize/"
     "/var/www/webroot/ROOT/wp-content/cache/"
     "/var/www/webroot/ROOT/wp-content/litespeed/"
-    "/var/www/webroot/ROOT/wp-content/plugins/litespeed-cache"
-    "/var/www/webroot/ROOT/wp-content/plugins/litespeed-cache/tpl/cache"
-    "/var/www/webroot/ROOT/wp-content/plugins-b/wp-fastest-cache"
-    "/var/www/webroot/.cache"
+    "/var/www/webroot/ROOT/wp-content/plugins/litespeed-cache/"
+    "/var/www/webroot/ROOT/wp-content/plugins/litespeed-cache/tpl/cache/"
+    "/var/www/webroot/ROOT/wp-content/plugins-b/wp-fastest-cache/"
+    "/var/www/webroot/.cache/"
 )
 for dir in "${CACHE_FOLDERS[@]}"; do
     if [ -e "$dir" ]; then
@@ -62,6 +62,7 @@ X_FOLDERS=(
     "/var/www/webroot/ROOT/wp-content/duplicator/"
     "/var/www/webroot/ROOT/wp-content/ai1wm-backups/"
     "/var/www/webroot/ROOT/wp-content/ai1wm-temp/"
+    "/var/www/webroot/ROOT/wp-content/backups-dup-pro/"
 )
 for dir in "${X_FOLDERS[@]}"; do
     if [ -e "$dir" ]; then
