@@ -79,7 +79,11 @@ done
 
 echo 
 echo "9) List of Unknown Files in WP Root";
-find /var/www/webroot/ROOT -maxdepth 1 -type f -not -name 'wp-*.php' -not -name 'index.php' -not -name 'license.txt' -not -name 'readme.html' -not -name 'wp-activate.php' -not -name 'wp-blog-header.php' -not -name 'wp-comments-post.php' -not -name 'wp-config.php' -not -name 'wp-config-sample.php' -not -name 'wp-cron.php' -not -name 'wp-links-opml.php' -not -name 'wp-load.php' -not -name 'wp-login.php' -not -name 'wp-mail.php' -not -name 'wp-settings.php' -not -name 'wp-signup.php' -not -name 'wp-trackback.php' -not -name 'xmlrpc.php' -not -name '.htaccess' -not -name '.htaccess.bk' -not -name 'favicon.ico' -exec du -sh {} +
+for file in $(find /var/www/webroot/ROOT -maxdepth 1 \( -type f -o -type d \) \( -not -name 'wp-*.php' -not -name 'index.php' -not -name 'license.txt' -not -name 'readme.html' -not -name 'wp-activate.php' -not -name 'wp-blog-header.php' -not -name 'wp-comments-post.php' -not -name 'wp-config.php' -not -name 'wp-config-sample.php' -not -name 'wp-cron.php' -not -name 'wp-links-opml.php' -not -name 'wp-load.php' -not -name 'wp-login.php' -not -name 'wp-mail.php' -not -name 'wp-settings.php' -not -name 'wp-signup.php' -not -name 'wp-trackback.php' -not -name 'xmlrpc.php' -not -name '.htaccess' -not -name '.htaccess.bk' -not -name 'favicon.ico' -not -name 'robots.txt' -not -name 'humans.txt' -not -name 'crossdomain.xml' -not -name 'sitemap.xml' -not -name 'sitemap.xml.gz' -not -name 'sitemap.xml.gz' -not -name 'sitemap.xml.gz' -not -name 'sitemap.xml.gz' \) -and \( -not -name 'wp-content' -not -name 'wp-includes' -not -name 'wp-admin' -not -name 'vendor' -not -name 'node_modules' -not -name '.git' -not -name '.github' -not -name '.idea' -not -name '.vscode' -not -name '.well-known' -not -name '.env' -not -name '.env.example' -not -name '.env.bak' -not -name 'composer.lock' -not -name 'composer.json' -not -name 'package.json' -not -name 'package-lock.json' -not -name 'yarn.lock' -not -name 'yarn-error.log' -not -name 'npm-debug.log' -not -name 'npm-debug.log' -not -name 'error_log' -not -name 'error_log' -not -name 'error_log' -not -name 'error_log' \)); do
+    if [ "$file" != '/var/www/webroot/ROOT' ]; then
+        du -sh $file
+    fi
+done
 
 echo
 echo "=== End of Report ==="
