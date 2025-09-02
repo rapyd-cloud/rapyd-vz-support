@@ -12,7 +12,7 @@ du -sh /var/www/webroot/ROOT/wp-content 2>/dev/null
 echo
 # 3) /var/www/webroot/ROOT/wp-content/uploads
 echo "3) /var/www/webroot/ROOT/wp-content/uploads size:"
-du -sh /var/log 2>/dev/null
+du -sh /var/www/webroot/ROOT/wp-content/uploads 2>/dev/null
 echo
 # 4) /var/log
 echo "4) /var/log folder size:"
