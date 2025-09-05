@@ -3,7 +3,7 @@ type: update
 id: rapyd-keydb-addon
 name: Rapyd v1 KeyDb 5.1.2
 description:
-  short: KeyDb for Rapyd Environments 
+  short: KeyDb for Rapyd Environments
 
 categories:
 - apps/dev-and-admin-tools
@@ -41,13 +41,12 @@ onAfterClone:
     envName: ${event.response.env.envName}
     nodeGroup: ${targetNodes.nodeGroup:}
 
-onAfterRestartNode:
+onAfterRestartNode: 
   - cmd[${targetNodes.nodeGroup:}]: |-
       sudo service keydb restart || true
     user: root
 
 actions:
-
   cleanupRedis:
     - cmd[${targetNodes.nodeGroup}]: |-
         if grep -a 'AlmaLinux' /etc/system-release ; then
@@ -69,15 +68,22 @@ actions:
       user: root
 
   installKeyDB:
-    - cmd[${targetNodes.nodeGroup}]: |-
+    - api[${targetNodes.nodeGroup}]:
+      - method: environment.control.AddContainerEnvVars
+        params:
+          nodeId: ${nodes.cp.id}
+          vars: '{ "REDIS_ENABLED" : "false" }'
+          
+    - cmd[${targetNodes.nodeGroup:}]: |-
+        
         mkdir -p /etc/rapyd/rapyd-keydb-files
-        cd /etc/rapyd/rapyd-keydb-files
+        cd /etc/rapyd/rapyd-keydb-files;
         rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
 
-        if grep -a 'AlmaLinux' /etc/system-release ; then
+        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
           curl -fsSL --retry 3 --retry-delay 5 -o /tmp/keydb-latest.rpm https://download.keydb.dev/pkg/open_source/rpm/centos8/x86_64/keydb-latest-1.el8.x86_64.rpm
           /usr/bin/dnf install -y /tmp/keydb-latest.rpm
-        else
+        else  # if centos.
           wget https://download.keydb.dev/pkg/open_source/rpm/centos7/x86_64/keydb-latest-1.el7.x86_64.rpm
           sudo yum install -y ./keydb-latest-1.el7.x86_64.rpm
         fi
@@ -86,22 +92,27 @@ actions:
         curl -O ${baseUrl}/conf/config.sh
         chmod +x config.sh
         /usr/bin/bash config.sh ${baseUrl}
+
       user: root
 
   removeKeyDB:
-    - cmd[${targetNodes.nodeGroup}]: |-
+    - cmd[${targetNodes.nodeGroup:}]: |-
+        # Attempt a graceful shutdown first
         /usr/bin/systemctl stop keydb || true
         /usr/bin/systemctl disable keydb || true
-        if grep -a 'AlmaLinux' /etc/system-release ; then
+
+        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
           /usr/bin/dnf remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
-        else
+        else  # if centos.
           /usr/bin/yum remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
         fi
+
         rm -rf /etc/rapyd/rapyd-keydb-files
         rm -f /usr/local/lsws/lsphp/etc/php.d/90-keydb-session.ini
         rm -f /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
-      user: root
 
+      user: root
+      
   configureKeyDB:
     - cmd[${targetNodes.nodeGroup}]: |-
         echo "Configuring KeyDB as the active cache server..."
@@ -119,7 +130,9 @@ actions:
         systemctl enable keydb || true
         systemctl start keydb || true
         systemctl restart lsws || true
+        
         echo "KeyDB configuration completed successfully."
+
       user: root
 
   deployKeyDB:
