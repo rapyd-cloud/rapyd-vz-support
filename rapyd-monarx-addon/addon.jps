@@ -1,7 +1,7 @@
 version: 5.2
 type: update
 id: rapyd-monarx
-name: Rapyd Monarx
+name: Rapyd Monarx v5.2
 logo: icon.png
 
 description:
@@ -10,7 +10,7 @@ description:
 categories:
 - apps/dev-and-admin-tools
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-monarx-addon/ 
+baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-monarx-addon/
 
 targetNodes:
   nodeType:
