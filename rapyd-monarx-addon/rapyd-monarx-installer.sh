@@ -38,15 +38,8 @@ echo "#########################################################################"
 echo "# Rapyd Monarx Customer Deployment" >> monarx-agent.conf
 echo "#########################################################################" > monarx-agent.conf
 
-if [ -z "$MONARX_CLIENT_ID" ] || [ -z "$MONARX_CLIENT_SECRET" ]; then
-  # Fallback to default credentials if environment variables are not set
-  echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
-  echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
-else
-  # Use credentials from environment variables
-  echo "client_id=$MONARX_CLIENT_ID" >> monarx-agent.conf
-  echo "client_secret=$MONARX_CLIENT_SECRET" >> monarx-agent.conf
-fi
+echo "client_id=id_live_vAcPku6RwAUoemSNFKRbZMX2" >> monarx-agent.conf
+echo "client_secret=sk_live_sb4s7Wvvvh2DIx4L6gH5KHwS" >> monarx-agent.conf
 
 echo "host_id=$VZNODEID-$VZENVNAME" >> monarx-agent.conf
 
@@ -54,10 +47,11 @@ echo "exclude_dirs=/virtfs" >> monarx-agent.conf
 echo "exclude_dirs=/(clam_|\.)?quarantine" >> monarx-agent.conf
 echo "exclude_users=^virtfs$" >> monarx-agent.conf
 
-echo "user_base=/home/" >> monarx-agent.conf
-echo "user_base=/var/www/" >> monarx-agent.conf
+echo "user_base=/var/www/webroot/ROOT/" >> monarx-agent.conf
 echo "user_base=/usr/local/lsws/" >> monarx-agent.conf
 echo "user_base=/tmp/" >> monarx-agent.conf
+echo "user_base=/home/litespeed/" >> monarx-agent.conf
+echo "user_base=/root/" >> monarx-agent.conf
 
 echo "tags=$HOSTNAME" >> monarx-agent.conf
 echo "tags=$VZNODEID" >> monarx-agent.conf
@@ -144,48 +138,65 @@ echo "# deployed: $now"  >> monarx-agent.conf
 
 echo "#########################################################################" >> monarx-agent.conf
 
-# Stop the agent before making changes
-sudo systemctl stop monarx-agent
+
 
 if grep -a 'AlmaLinux' /etc/system-release ; then
-  # AlmaLinux install commands
+  # work out what we need to do here for AlmaLinux 
+  cd ~
+  
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # install the repository repo and pgp key
   cd /tmp
-  sudo curl -fsS https://repository.monarx.com/repository/monarx-yum/monarx.repo | sudo tee /etc/yum.repos.d/monarx.repo
+  sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/9/x86_64/monarx.repo
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
   
-  # Install if not present, and upgrade if it is
-  sudo yum install -y monarx-protect-autodetect monarx-agent-auditd
-  sudo yum update -y 'monarx-*'
+  # install monarx
+  sudo yum install monarx-protect-autodetect -y
+
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # force update monarx
+  sudo yum update monarx-agent -y
+
+  # force restart 
+  sudo systemctl restart monarx-agent
   
 else
-  # CentOS 7 install commands
+  # assume this is the current Centos 7 based platform install
+  cd ~
+
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # install the repository repo and pgp key
   cd /tmp
   sudo curl -o /etc/yum.repos.d/monarx.repo https://repository.monarx.com/repository/monarx-yum/linux/yum/el/7/x86_64/monarx.repo
   sudo rpm --import https://repository.monarx.com/repository/monarx/publickey/monarxpub.gpg
-  
-  # Install if not present, and upgrade if it is
-  sudo yum install -y monarx-protect-autodetect monarx-agent-auditd
-  sudo yum update -y 'monarx-*'
+
+  # install monarx
+  sudo yum install monarx-protect-autodetect -y
+
+  # force stop monarx  if it happens to be running 
+  sudo systemctl stop monarx-agent
+
+  # force update monarx
+  sudo yum update monarx-agent -y
+
+  # force restart 
+  sudo systemctl restart monarx-agent
 
 fi
 
-# ==============================================================================
-# ===CODE BLOCK TO FIX THE NETWORK TIMING ISSUE ===
-# ==============================================================================
-# Create a systemd drop-in to ensure the network is online before starting Monarx.
-# This prevents startup failures in containers that are created or cloned quickly.
-
-SYSTEMD_DIR="/etc/systemd/system/monarx-agent.service.d"
-OVERRIDE_FILE="$SYSTEMD_DIR/override.conf"
-
-mkdir -p "$SYSTEMD_DIR"
-
-printf "[Unit]\nAfter=network-online.target\nWants=network-online.target\n" > "$OVERRIDE_FILE"
-
-# Reload the systemd configuration to apply the new changes.
-systemctl daemon-reload
-
-# force restart 
-sudo systemctl restart monarx-agent
 
 # end of monarx main deployer
+
+
+
+
+
+
+
+
