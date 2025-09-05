@@ -78,6 +78,7 @@ actions:
         
         mkdir -p /etc/rapyd/rapyd-keydb-files
         cd /etc/rapyd/rapyd-keydb-files;
+        
         rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
 
         if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
