@@ -47,52 +47,24 @@ onAfterRestartNode:
     user: root
 
 actions:
-
-  removeRedis:
-    - cmd[${targetNodes.nodeGroup:}]: |-
-
-        
-        if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
-
+  cleanupRedis:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        if grep -a 'AlmaLinux' /etc/system-release ; then
           if dnf list installed | grep -q "redis"; then
-
             /usr/bin/systemctl stop redis || true
             /usr/bin/systemctl disable redis || true
-
-            sleep 5
-
-            if pgrep redis > /dev/null; then
-              /usr/bin/killall -9 redis || true
-            fi
-            if pgrep redis-server > /dev/null; then
-                /usr/bin/killall -9 redis-server || true
-            fi
-
-            /usr/bin/dnf -y remove redis >> /var/log/redis_install.log 2>&1
+            /usr/bin/dnf -y remove redis >> /var/log/redis_cleanup.log 2>&1
           fi
-
-        else  # if centos.
-
-          # Stop and disable the Redis service
-          /usr/bin/systemctl stop redis || true
-          /usr/bin/systemctl disable redis || true
-
-          # Wait for 5 seconds
-          sleep 5
-
-          # Kill any running Redis processes
-          if pgrep redis > /dev/null; then
-              /usr/bin/killall -9 redis || true
+        else
+          if yum list installed | grep -q "redis"; then
+            /usr/bin/systemctl stop redis || true
+            /usr/bin/systemctl disable redis || true
+            /usr/bin/yum -y remove redis || true
           fi
-          if pgrep redis-server > /dev/null; then
-              /usr/bin/killall -9 redis-server || true
-          fi
-
-          # Remove Redis and log the output
-          /usr/bin/yum -y remove redis || true;
-      
         fi
-
+        if [ -f /usr/local/lsws/lsphp/etc/php.d/50-redis.ini ]; then
+          mv /usr/local/lsws/lsphp/etc/php.d/50-redis.ini /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled
+        fi
       user: root
 
   installKeyDB:
@@ -103,11 +75,10 @@ actions:
           vars: '{ "REDIS_ENABLED" : "false" }'
           
     - cmd[${targetNodes.nodeGroup:}]: |-
-    
-        mkdir -p /etc/rapyd/
+        
         mkdir -p /etc/rapyd/rapyd-keydb-files
-        cd /etc/rapyd/rapyd-keydb-files
-      
+        cd /etc/rapyd/rapyd-keydb-files;
+        
         rpm --import https://download.keydb.dev/pkg/open_source/rpm/RPM-GPG-KEY-keydb
 
         if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
@@ -119,7 +90,6 @@ actions:
         fi
 
         rm -f /tmp/keydb-latest.rpm
-
         curl -O ${baseUrl}/conf/config.sh
         chmod +x config.sh
         /usr/bin/bash config.sh ${baseUrl}
@@ -132,17 +102,6 @@ actions:
         /usr/bin/systemctl stop keydb || true
         /usr/bin/systemctl disable keydb || true
 
-        # Wait a few seconds for the service to stop
-        sleep 5
-
-        # Check if it's still running, and only then use killall
-        if pgrep keydb > /dev/null; then
-          /usr/bin/killall -9 keydb || true
-        fi
-        if pgrep keydb-server > /dev/null; then
-            /usr/bin/killall -9 keydb-server || true
-        fi
-
         if grep -a 'AlmaLinux' /etc/system-release ; then  # if almalinux
           /usr/bin/dnf remove keydb -y >> /var/log/keydb_uninstall.log 2>&1
         else  # if centos.
@@ -150,36 +109,42 @@ actions:
         fi
 
         rm -rf /etc/rapyd/rapyd-keydb-files
-
-        # Remove the correct PHP session config file
         rm -f /usr/local/lsws/lsphp/etc/php.d/90-keydb-session.ini
+        rm -f /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
 
       user: root
-    
-  optimizeRedis:
-    - cmd[${targetNodes.nodeGroup}]: |-
-
-        if [ -f /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled ]; then
-          cp -f /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
-        fi
-
-        if [ -f /usr/local/lsws/lsphp/etc/php.d/50-redis.ini ]; then
-          cp -f /usr/local/lsws/lsphp/etc/php.d/50-redis.ini /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini;
-          mv  /usr/local/lsws/lsphp/etc/php.d/50-redis.ini  /usr/local/lsws/lsphp/etc/php.d/50-redis.disabled;
-        fi
       
-      user: root
+  configureKeyDB:
+    - cmd[${targetNodes.nodeGroup}]: |-
+        echo "Configuring KeyDB as the active cache server..."
 
+        cat > /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini << 'EOFKEYDB'
+        extension = redis.so
+        EOFKEYDB
+        
+        chmod 644 /usr/local/lsws/lsphp/etc/php.d/50-keydb.ini
+        echo "KeyDB PHP extension enabled."
+
+        rm -f /usr/local/lsws/lsphp/etc/php.d/90-keydb-session.ini
+        echo "Removed conflicting session files."
+
+        systemctl enable keydb || true
+        systemctl start keydb || true
+        systemctl restart lsws || true
+        
+        echo "KeyDB configuration completed successfully."
+
+      user: root
 
   deployKeyDB:
-    - action: removeRedis
+    - action: cleanupRedis
     - action: removeKeyDB
     - action: installKeyDB
-    - action: optimizeRedis
+    - action: configureKeyDB
 
   InstallKeyDbAddon:
     install: ${baseUrl}manifest.jps
     envName: ${this.envName}
     nodeGroup: ${targetNodes.nodeGroup:}
 
-success: "Installed Successfully."
+success: "KeyDB installed and configured successfully!"
