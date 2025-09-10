@@ -1,7 +1,7 @@
-version: 5.1.1
+version: 5.1.2
 type: update
 id: rapyd-monarx-addon
-name: Rapyd Monarx Installer 5.1.1
+name: Rapyd Monarx Installer 5.1.2
 logo: icon.png
 
 description:
@@ -10,7 +10,7 @@ description:
 categories:
 - apps/dev-and-admin-tools
 
-baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/rapyd-monarx-addon/
+baseUrl: https://repo.rapydapps.cloud/2024v5/b/main/rapyd-monarx-addon/
 
 targetNodes:
   nodeType:
