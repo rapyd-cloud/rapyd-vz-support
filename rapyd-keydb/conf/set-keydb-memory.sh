@@ -25,7 +25,7 @@ if ! [[ "$TOTAL_MEM_KB" =~ ^[0-9]+$ ]]; then
 fi
 
 # Calculate 10% of total memory in MB
-MAX_MEM_MB=$(( (TOTAL_MEM_KB * MEM_PERCENTAGE) / 100 / 1024 ))
+MAX_MEM_MB=$(echo "($TOTAL_MEM_KB * $MEM_PERCENTAGE) / 100 / 1024" | bc | xargs printf "%.0f")
 
 echo "Total RAM: ${TOTAL_MEM_KB} KB"
 echo "Calculated maxmemory: ${MAX_MEM_MB} MB"
