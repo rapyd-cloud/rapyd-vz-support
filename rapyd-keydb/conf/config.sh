@@ -98,7 +98,8 @@ cat << EOF > "${KEYDB_OVERRIDE_FILE}"
 [Service]
 ExecStartPre=-${SET_MEMORY_SCRIPT}
 ExecStart=
-ExecStart=/usr/bin/keydb-server /etc/keydb/keydb.conf --supervised systemd --port 0 --unixsocket /var/run/redis/redis.sock --unixsocketperm 777
+# This generic line allows keydb.conf to control the network
+ExecStart=/usr/bin/keydb-server /etc/keydb/keydb.conf --supervised systemd
 Restart=on-failure
 EOF
 
