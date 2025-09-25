@@ -1,0 +1,69 @@
+version: 5.0.0
+type: update
+id: rapyd-enable-remote-ssl
+name: Enable Remote MariaDB SSL
+logo: icon.png
+
+description:
+  short: Enable remote MariaDB SSL and bind
+
+categories:
+- apps/dev-and-admin-tools
+
+targetNodes:
+  nodeType:
+  - llsmp
+
+onInstall:
+  - action: enableRemoteSSL
+
+onAfterRedeployContainer:
+  action: enableRemoteSSL
+
+onUninstall:
+  action: cleanup
+
+actions:
+  enableRemoteSSL:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        sshFolder="/var/www/webroot/db-remote-ssl/"
+        # Enable remote MariaDB and SSL
+        # Bind MariaDB to 0.0.0.0
+        if grep -q '^bind-address' /etc/my.cnf; then
+        sed -i 's/^bind-address.*/bind-address=0.0.0.0/' /etc/my.cnf
+        else
+        echo "bind-address=0.0.0.0" >> /etc/my.cnf
+        fi
+        # Create SSL directory
+        mkdir -p $sshFolder
+        # Generate server key and certificate if not exist
+        [ -f $sshFolder/server-key.pem ] || openssl genrsa 2048 > $sshFolder/server-key.pem
+        [ -f $sshFolder/server-cert.pem ] || openssl req -new -x509 -nodes -days 3650 \
+        -key $sshFolder/server-key.pem \
+        -out $sshFolder/server-cert.pem \
+        -subj "/CN=$(hostname)/O=MyOrg"
+        [ -f $sshFolder/ca-cert.pem ] || cp $sshFolder/server-cert.pem $sshFolder/ca-cert.pem
+        
+        # Add SSL configuration in my.cnf if not present
+        rm -f /etc/mysql/conf.d/rapyd-ssl.cnf;
+        echo "[mysqld]" > /etc/mysql/conf.d/rapyd-ssl.cnf
+        echo "ssl=ON" >> /etc/mysql/conf.d/rapyd-ssl.cnf
+        echo "ssl-ca=$sshFolder/ca-cert.pem" >> /etc/mysql/conf.d/rapyd-ssl.cnf
+        echo "ssl-cert=$sshFolder/server-cert.pem" >> /etc/mysql/conf.d/rapyd-ssl.cnf
+        echo "ssl-key=$sshFolder/server-key.pem" >> /etc/mysql/conf.d/rapyd-ssl.cnf
+
+        # Restart MariaDB
+        systemctl restart mariadb
+
+      user: root
+  cleanup:
+    - cmd[${targetNodes.nodeGroup}]: |-
+
+        # Disable remote MariaDB SSL (restore original state)
+        rm -f /etc/mysql/conf.d/rapyd-ssl.cnf;
+        sed -i 's/^bind-address.*/bind-address=127.0.0.1/' /etc/my.cnf
+        # Restart MariaDB
+        systemctl restart mariadb
+        
+      user: root
