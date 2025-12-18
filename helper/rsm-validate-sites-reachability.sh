@@ -23,7 +23,6 @@ while read -r site; do
     echo
     echo "Site: $siteSlug"
 
-    # Validate site
     if [[ -z "$webroot" || -z "$vanity_domain" || "$webroot" == "null" || "$vanity_domain" == "null" ]]; then
         echo "  ✖ Invalid site entry"
         failed=1
@@ -43,7 +42,6 @@ while read -r site; do
     url="http://$vanity_domain/$filename"
 
     echo "rapyd-access-check" > "$filepath" 2>/dev/null
-
     if [[ ! -f "$filepath" ]]; then
         echo "  ✖ Failed to create test file"
         failed=1
@@ -51,6 +49,26 @@ while read -r site; do
     fi
 
     echo "  Test file: OK"
+
+    # --- SAFE .htaccess handling (append + remove block only) ---
+    htaccess="$webroot/.htaccess"
+    hc_tag="RAPYD_HEALTHCHECK_${RANDOM}_${RANDOM}"
+    htaccess_modified=0
+
+    if [[ -f "$htaccess" ]]; then
+        {
+            echo
+            echo "# BEGIN $hc_tag"
+            echo "<Files \"$filename\">"
+            echo "  Require all granted"
+            echo "</Files>"
+            echo "# END $hc_tag"
+        } >> "$htaccess"
+
+        htaccess_modified=1
+        echo "  .htaccess: temporary allow rule added"
+    fi
+
     echo "  Domains:"
 
     while read -r domain; do
@@ -74,16 +92,23 @@ while read -r site; do
         jq -r --arg s "$siteSlug" '.[$s][]?'
     )
 
+    # Cleanup test file
     rm -f "$filepath"
+
+    # Remove ONLY our block from .htaccess
+    if [[ "$htaccess_modified" -eq 1 ]]; then
+        sed -i.bak "/# BEGIN $hc_tag/,/# END $hc_tag/d" "$htaccess"
+        rm -f "$htaccess.bak"
+        echo "  .htaccess: temporary rule removed"
+    fi
 
 done < <(rapyd site list --format json | jq -c '.[]')
 
+echo
 if [[ "$failed" -ne 0 ]]; then
-    echo
     echo "FAILED: One or more sites did not pass validation"
     exit 1
 fi
 
-echo
 echo "SUCCESS: All sites passed validation"
 exit 0
