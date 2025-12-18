@@ -5,57 +5,85 @@ set -o pipefail
 
 failed=0
 
+domains_by_site=$(
+  rapyd domain list --format json |
+  jq '
+    group_by(.site_slug) |
+    map({ (.[0].site_slug): map(.domain) }) |
+    add
+  '
+)
+
 while read -r site; do
+
     webroot=$(jq -r '.webroot' <<< "$site")
-    domain=$(jq -r '.domain' <<< "$site")
+    vanity_domain=$(jq -r '.domain' <<< "$site")
+    siteSlug=$(jq -r '.slug' <<< "$site")
 
-    echo "Checking $domain"
+    echo
+    echo "Site: $siteSlug"
 
-    # Validate inputs
-    if [[ -z "$webroot" || -z "$domain" || "$webroot" == "null" || "$domain" == "null" ]]; then
-        echo "❌ Invalid site entry"
+    # Validate site
+    if [[ -z "$webroot" || -z "$vanity_domain" || "$webroot" == "null" || "$vanity_domain" == "null" ]]; then
+        echo "  ✖ Invalid site entry"
         failed=1
         continue
     fi
 
     if [[ ! -d "$webroot" || ! -w "$webroot" ]]; then
-        echo "❌ Webroot not writable: $webroot"
+        echo "  ✖ Webroot not writable: $webroot"
         failed=1
         continue
     fi
+
+    echo "  Webroot: $webroot"
 
     filename="healthcheck-$RANDOM.txt"
     filepath="$webroot/$filename"
-    url="http://$domain/$filename"
+    url="http://$vanity_domain/$filename"
 
-    # Create test file
     echo "rapyd-access-check" > "$filepath" 2>/dev/null
 
-    # HARD verification (this is the key fix)
     if [[ ! -f "$filepath" ]]; then
-        echo "❌ Failed to create file in $webroot"
+        echo "  ✖ Failed to create test file"
         failed=1
         continue
     fi
 
-    # Curl test
-    http_code=$(curl -s --max-time 5 -o /dev/null -w "%{http_code}" "$url" || true)
+    echo "  Test file: OK"
+    echo "  Domains:"
 
-    if [[ "$http_code" != "200" ]]; then
-        echo "❌ $domain not accessible (HTTP $http_code)"
-        failed=1
-    else
-        echo "✅ $domain OK"
-    fi
+    while read -r domain; do
+        [[ -z "$domain" ]] && continue
+
+        http_code=$(curl -s --max-time 5 \
+            -H "Host: $domain" \
+            -o /dev/null \
+            -w "%{http_code}" \
+            "$url" || true)
+
+        if [[ "$http_code" != "200" ]]; then
+            echo "    ✖ $domain (HTTP $http_code)"
+            failed=1
+        else
+            echo "    ✔ $domain"
+        fi
+
+    done < <(
+        echo "$domains_by_site" |
+        jq -r --arg s "$siteSlug" '.[$s][]?'
+    )
 
     rm -f "$filepath"
 
 done < <(rapyd site list --format json | jq -c '.[]')
 
 if [[ "$failed" -ne 0 ]]; then
-    echo "❌ One or more sites FAILED"
+    echo
+    echo "FAILED: One or more sites did not pass validation"
     exit 1
 fi
 
-echo "✅ All sites passed"
+echo
+echo "SUCCESS: All sites passed validation"
 exit 0
