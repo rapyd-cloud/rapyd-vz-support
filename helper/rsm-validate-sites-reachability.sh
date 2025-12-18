@@ -50,12 +50,18 @@ while read -r site; do
 
     echo "  Test file: OK"
 
-    # --- SAFE .htaccess handling (append + remove block only) ---
+    # ---------- SAFE .htaccess handling ----------
     htaccess="$webroot/.htaccess"
     hc_tag="RAPYD_HEALTHCHECK_${RANDOM}_${RANDOM}"
     htaccess_modified=0
 
     if [[ -f "$htaccess" ]]; then
+        timestamp=$(date +"%Y%m%d-%H%M%S")
+        backup="${htaccess}.rapyd-backup-${timestamp}"
+
+        cp "$htaccess" "$backup"
+        echo "  .htaccess: backup created ($(basename "$backup"))"
+
         {
             echo
             echo "# BEGIN $hc_tag"
@@ -68,6 +74,7 @@ while read -r site; do
         htaccess_modified=1
         echo "  .htaccess: temporary allow rule added"
     fi
+    # --------------------------------------------
 
     echo "  Domains:"
 
