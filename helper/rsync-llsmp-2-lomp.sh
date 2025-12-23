@@ -15,6 +15,7 @@ rsync -a --delete \
 
 echo "Copying /mnt/llsmp-rapyd-rsm/ to /etc/rapyd-rsm";
 rsync -a --delete \
+  --exclude='rapyd-rsm.conf' \
   /mnt/llsmp-rapyd-rsm/ /etc/rapyd-rsm
 
 echo "Copying /mnt/llsmp-mysql/ to /var/lib/mysql";
