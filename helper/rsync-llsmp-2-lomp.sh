@@ -3,11 +3,11 @@ set -Eeuo pipefail
 
 trap 'echo "❌ Error at line $LINENO. Exiting."; exit 1' ERR
 
-echo "Copying /mnt/home/ to /home/";
+echo "Copying /mnt/llsmp-home to /home/";
 rsync -a --delete \
   --exclude='litespeed/' \
   --exclude='jelastic/' \
-  /mnt/home/ /home/
+  /mnt/llsmp-home/ /home/
 
 echo "Copying /mnt/llsmp-acme.sh to /root/.acme.sh";
 rsync -a --delete \
