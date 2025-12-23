@@ -29,4 +29,7 @@ echo "Copying /mnt/llsmp-www/conf/httpd_config.xml to /var/www/conf/httpd_config
 rsync -a \
 /mnt/llsmp-www/conf/httpd_config.xml /var/www/conf/httpd_config.xml
 
+sleep 10;
+
 echo "{{SUCCESS}}";
+
