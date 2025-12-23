@@ -32,7 +32,7 @@ rsync -a \
 sleep 10;
 
 # Fix the MariaDB permission
-chown -R lsadm:mysql /var/lib/mysql && chmod 750 /var/lib/mysql;
+chown -R mysql:mysql /var/lib/mysql && chmod 750 /var/lib/mysql;
 
 echo "{{SUCCESS}}";
 
