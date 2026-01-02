@@ -83,7 +83,8 @@ get_html() {
 EOF
 }
 
-htaccess=$(cat <<EOF
+get_htaccess() {
+    cat <<'EOF'
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -91,7 +92,8 @@ htaccess=$(cat <<EOF
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.html [L]
 </IfModule>
-EOF;
+EOF
+}
 
 failed=0
 
@@ -103,7 +105,7 @@ mkdir -p $maintenanceModeDocRoot
 
 index_html="$maintenanceModeDocRoot/index.html"
 get_html > "$index_html"
-$htaccess > "$maintenanceModeDocRoot/.htaccess"
+get_htaccess > "$maintenanceModeDocRoot/.htaccess"
 
 echo "Stored Maintenance content in $index_html"
 
