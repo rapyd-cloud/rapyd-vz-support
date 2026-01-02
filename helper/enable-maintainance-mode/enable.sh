@@ -96,7 +96,6 @@ get_html > "$index_html"
 
 echo "Stored Maintenance content in $index_html"
 
-
 echo "Site: PhpMyAdmin"
 
 pmaXmlPath="/usr/share/phpMyAdmin/vhost.conf"
@@ -146,6 +145,7 @@ while read -r site; do
 
 done < <(rapyd site list --format json | jq -c '.[]')
 
+killall -9 lsphp;
 service lsws restart;
 
 echo "SUCCESS: Enabled Maintenance Mode to all sites"
