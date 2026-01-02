@@ -83,6 +83,16 @@ get_html() {
 EOF
 }
 
+htaccess=$(cat <<EOF
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.html [L]
+</IfModule>
+EOF;
+
 failed=0
 
 echo "Enabling Maintenance Mode to all sites"
@@ -93,6 +103,7 @@ mkdir -p $maintenanceModeDocRoot
 
 index_html="$maintenanceModeDocRoot/index.html"
 get_html > "$index_html"
+$htaccess > "$maintenanceModeDocRoot/.htaccess"
 
 echo "Stored Maintenance content in $index_html"
 
