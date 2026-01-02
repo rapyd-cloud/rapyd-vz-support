@@ -9,7 +9,7 @@ echo "Disabling Maintenance Mode to all sites"
 
 maintenanceModeDocRoot="/var/www/webroot/maintenance-mode"
 rm -rf $maintenanceModeDocRoot
-echo "Removed Maintenance content in $index_html"
+echo "Removed Maintenance content in $maintenanceModeDocRoot"
 
 echo "Site: PhpMyAdmin"
 
@@ -19,6 +19,7 @@ if [[ -f "$pmaXmlPathBackup" ]]; then
    
     echo "  Recovering Original phpmyadmin configuration."
     cp -f "$pmaXmlPathBackup" "$pmaXmlPath"
+    rm -f $pmaXmlPathBackup;
     echo "  Disabled"
 
 else
@@ -46,6 +47,7 @@ while read -r site; do
     if [[ -f "$backup" ]]; then
         timestamp=$(date +"%Y%m%d-%H%M%S")
         cp -f $backup $xmlPath;
+        rm -f $backup;
         echo "  Disabled"
     else
         echo "  No conf file found at $webroot/conf/vhconf.xml. Exiting."
