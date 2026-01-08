@@ -17,6 +17,8 @@ echo "---"
 
 TOTAL_COUNT=0
 
+echo "Processing site database replaces..."
+
 while read -r site; do
 
     webroot=$(jq -r '.webroot' <<< "$site")
@@ -62,7 +64,6 @@ while read -r site; do
         # Perform search and replace using WP CLI (skip non-recommended columns like guid)
         if su - "$siteUser" -c "cd $webroot && wp search-replace \"$searchURL\" \"$replaceURL\" --skip-plugins --skip-themes --skip-columns=guid --quiet"; then
             echo "[[SUCCESS]] Replacement completed"
-            exit 0
         else
             echo "[[ERROR]] Replacement failed"
             exit 1
@@ -74,3 +75,42 @@ while read -r site; do
     fi
 
 done < <(rapyd site list --format json | jq -c '.[]')
+
+echo ""
+echo "Processing cron replaces..."
+echo "---"
+
+while read -r cronFile; do
+    if [[ ! -f "$cronFile" ]]; then
+        continue
+    fi
+
+    userName=$(basename "$cronFile")
+    echo "[ $userName ]"
+
+    # Check if search text exists in cron file
+    if ! grep -q "$searchURL" "$cronFile" 2>/dev/null; then
+        echo "Skipping - Search text not found in cron file"
+        continue;
+    fi
+
+    matchCount=$(grep -c "$searchURL" "$cronFile" || echo "0")
+    echo "  Matches: $matchCount"
+
+    # Perform search and replace in cron file
+    if sed -i "s|$searchURL|$replaceURL|g" "$cronFile" 2>/dev/null; then
+        # Verify permissions after modification
+        if chown "$userName:$(id -gn "$userName")" "$cronFile" && chmod 600 "$cronFile"; then
+            echo "  Permissions: OK"
+            echo "[[SUCCESS]] Replacement completed"
+        else
+            echo "[[ERROR]] Failed to set permissions"
+            exit 1
+        fi
+    else
+        echo "[[ERROR]] Replacement failed"
+        exit 1
+    fi
+
+done < <(find /var/spool/cron -type f -printf '%p\n')
+
