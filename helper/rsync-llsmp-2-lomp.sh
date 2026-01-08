@@ -4,13 +4,13 @@ set -Eeuo pipefail
 trap 'echo "❌ Error at line $LINENO. Exiting."; exit 1' ERR
 
 echo "Copying /mnt/llsmp-home/ to /home/";
-rsync -a --delete \
+rsync -a --delete --no-links \
   --exclude='litespeed/' \
   --exclude='jelastic/' \
   /mnt/llsmp-home/ /home/
 
 echo "Copying /mnt/llsmp-acme.sh/ to /root/.acme.sh";
-rsync -a --delete \
+rsync -a --delete  \
   /mnt/llsmp-acme.sh/ /root/.acme.sh/
 
 echo "Copying /mnt/llsmp-rapyd-rsm/ to /etc/rapyd-rsm";
