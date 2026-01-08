@@ -69,7 +69,7 @@ while read -r site; do
         fi
 
     else
-        echo "[[ERROR]] URL not found in database"
+        echo "[[SUCCESS]] URL not found in database"
         exit 1
     fi
 
