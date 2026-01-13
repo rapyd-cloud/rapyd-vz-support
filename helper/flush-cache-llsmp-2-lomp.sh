@@ -5,15 +5,6 @@ set -o pipefail
 
 failed=0
 
-domains_by_site=$(
-  rapyd domain list --format json |
-  jq '
-    group_by(.site_slug) |
-    map({ (.[0].site_slug): map(.domain) }) |
-    add
-  '
-)
-
 while read -r site; do
 
     webroot=$(jq -r '.webroot' <<< "$site")
