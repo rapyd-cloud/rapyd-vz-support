@@ -13,57 +13,65 @@ while read -r site; do
     user=$(jq -r '.user' <<< "$site")
 
     echo
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "Site: $siteSlug"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     if [[ -z "$webroot" || -z "$vanity_domain" || "$webroot" == "null" || "$vanity_domain" == "null" ]]; then
-        echo "  ✖ Invalid site entry"
+        echo "✖ Invalid site entry"
         failed=1
         continue
     fi
 
     if [[ ! -d "$webroot" || ! -w "$webroot" ]]; then
-        echo "  ✖ Webroot not writable: $webroot"
+        echo "✖ Webroot not writable: $webroot"
         failed=1
         continue
     fi
 
-    echo "  Webroot: $webroot"
+    echo "Webroot: $webroot"
+    echo "User:    $user"
+    echo
 
     # Flush cache
-    echo "  Flushing cache..."
-    if sudo -u "$user" wp --path="$webroot" cache flush &>/dev/null; then
-        echo "    ✔ Cache flushed"
+    echo "[1/4] Flushing cache (as $user)..."
+    if sudo -u "$user" /usr/local/bin/wp --path="$webroot" cache flush; then
+        echo "      ✔ Cache flushed"
     else
-        echo "    ✖ Failed to flush cache"
+        echo "      ✖ Failed to flush cache"
         failed=1
     fi
+    echo
 
     # Flush permalinks
-    echo "  Flushing permalinks..."
-    if sudo -u "$user" wp --path="$webroot" rewrite flush &>/dev/null; then
-        echo "    ✔ Permalinks flushed"
+    echo "[2/4] Flushing permalinks (as $user)..."
+    if sudo -u "$user" /usr/local/bin/wp --path="$webroot" rewrite flush; then
+        echo "      ✔ Permalinks flushed"
     else
-        echo "    ✖ Failed to flush permalinks"
+        echo "      ✖ Failed to flush permalinks"
         failed=1
     fi
+    echo
 
     # Flush LiteSpeed cache
-    echo "  Flushing LiteSpeed cache..."
-    if sudo -u "$user" wp --path="$webroot" litespeed-purge all &>/dev/null; then
-        echo "    ✔ LiteSpeed cache flushed"
+    echo "[3/4] Flushing LiteSpeed cache (as $user)..."
+    if sudo -u "$user" /usr/local/bin/wp --path="$webroot" litespeed-purge all; then
+        echo "      ✔ LiteSpeed cache flushed"
     else
-        echo "    ✖ Failed to flush LiteSpeed cache"
+        echo "      ✖ Failed to flush LiteSpeed cache"
         failed=1
     fi
+    echo
 
     # Flush object cache
-    echo "  Flushing object cache..."
-    if sudo -u "$user" wp --path="$webroot" object-cache flush &>/dev/null; then
-        echo "    ✔ Object cache flushed"
+    echo "[4/4] Flushing object cache (as $user)..."
+    if sudo -u "$user" /usr/local/bin/wp --path="$webroot" object-cache flush; then
+        echo "      ✔ Object cache flushed"
     else
-        echo "    ✖ Failed to flush object cache"
+        echo "      ✖ Failed to flush object cache"
         failed=1
     fi
+    echo
 
 done < <(rapyd site list --format json | jq -c '.[]')
 
