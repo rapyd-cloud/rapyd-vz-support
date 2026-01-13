@@ -10,6 +10,7 @@ while read -r site; do
     webroot=$(jq -r '.webroot' <<< "$site")
     vanity_domain=$(jq -r '.domain' <<< "$site")
     siteSlug=$(jq -r '.slug' <<< "$site")
+    user=$(jq -r '.user' <<< "$site")
 
     echo
     echo "Site: $siteSlug"
@@ -30,7 +31,7 @@ while read -r site; do
 
     # Flush cache
     echo "  Flushing cache..."
-    if wp --path="$webroot" cache flush &>/dev/null; then
+    if sudo -u "$user" wp --path="$webroot" cache flush &>/dev/null; then
         echo "    ✔ Cache flushed"
     else
         echo "    ✖ Failed to flush cache"
@@ -39,7 +40,7 @@ while read -r site; do
 
     # Flush permalinks
     echo "  Flushing permalinks..."
-    if wp --path="$webroot" rewrite flush &>/dev/null; then
+    if sudo -u "$user" wp --path="$webroot" rewrite flush &>/dev/null; then
         echo "    ✔ Permalinks flushed"
     else
         echo "    ✖ Failed to flush permalinks"
@@ -48,7 +49,7 @@ while read -r site; do
 
     # Flush LiteSpeed cache
     echo "  Flushing LiteSpeed cache..."
-    if wp --path="$webroot" litespeed-purge all &>/dev/null; then
+    if sudo -u "$user" wp --path="$webroot" litespeed-purge all &>/dev/null; then
         echo "    ✔ LiteSpeed cache flushed"
     else
         echo "    ✖ Failed to flush LiteSpeed cache"
@@ -57,7 +58,7 @@ while read -r site; do
 
     # Flush object cache
     echo "  Flushing object cache..."
-    if wp --path="$webroot" object-cache flush &>/dev/null; then
+    if sudo -u "$user" wp --path="$webroot" object-cache flush &>/dev/null; then
         echo "    ✔ Object cache flushed"
     else
         echo "    ✖ Failed to flush object cache"
