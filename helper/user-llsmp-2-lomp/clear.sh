@@ -55,18 +55,28 @@ while IFS= read -r user_entry; do
         continue
     fi
 
-    echo "Deleting WordPress user..."
-    delete_cmd="cd '$webroot' && /usr/local/bin/wp user delete \$(/usr/local/bin/wp user get '$username' --field=ID --skip-plugins --skip-themes --skip-packages --quiet 2>/dev/null) --yes --skip-plugins --skip-themes --skip-packages --quiet"
+    # Check if user exists
+    check_cmd="cd '$webroot' && /usr/local/bin/wp user get '$username' --field=ID --skip-plugins --skip-themes --skip-packages 2>/dev/null"
+    user_id=$(su - "$site_user" -c "$check_cmd" 2>/dev/null)
 
-    error_output=$(su - "$site_user" -c "$delete_cmd" 2>&1)
-    if [[ $? -eq 0 ]]; then
-        echo "✓ User deleted from WordPress"
+    if [[ -z "$user_id" || "$user_id" == "null" ]]; then
+        echo "⚠ User does not exist in WordPress"
         echo "  Removing from JSON..."
         USERS_JSON=$(echo "$USERS_JSON" | jq --arg slug "$site_slug" --arg user "$username" 'map(select((.site_slug != $slug or .username != $user)))')
     else
-        echo "✖ Failed to delete user"
-        [[ -n "$error_output" ]] && echo "  Error: $error_output"
-        failed=1
+        echo "Deleting WordPress user (ID: $user_id)..."
+        delete_cmd="cd '$webroot' && /usr/local/bin/wp user delete '$user_id' --yes --skip-plugins --skip-themes --skip-packages --quiet"
+
+        error_output=$(su - "$site_user" -c "$delete_cmd" 2>&1)
+        if [[ $? -eq 0 ]]; then
+            echo "✓ User deleted from WordPress"
+            echo "  Removing from JSON..."
+            USERS_JSON=$(echo "$USERS_JSON" | jq --arg slug "$site_slug" --arg user "$username" 'map(select((.site_slug != $slug or .username != $user)))')
+        else
+            echo "✖ Failed to delete user"
+            [[ -n "$error_output" ]] && echo "  Error: $error_output"
+            failed=1
+        fi
     fi
 
 done < <(echo "$USERS_JSON" | jq -c '.[]')
@@ -87,7 +97,7 @@ echo
 
 if [[ "$failed" -ne 0 ]]; then
     echo "⚠ Some users could not be deleted"
-    exit 1
+    echo "{{ONE_OR_MORE_FAILED}}"
 else
     echo "✓ All users processed successfully"
     echo "{{CLEAR_SUCCESS}}"
