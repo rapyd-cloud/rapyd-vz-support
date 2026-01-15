@@ -39,13 +39,15 @@ add_user_to_json() {
     local password=$4
     local webroot=$5
     local site_user=$6
+    local site_url=$7
 
-    USERS_JSON=$(echo "$USERS_JSON" | jq --arg slug "$site_slug" --arg user "$username" --arg em "$email" --arg root "$webroot" --arg suser "$site_user" '. += [{
+    USERS_JSON=$(echo "$USERS_JSON" | jq --arg slug "$site_slug" --arg user "$username" --arg em "$email" --arg root "$webroot" --arg suser "$site_user" --arg url "$site_url" '. += [{
         "site_slug": $slug,
         "username": $user,
         "email": $em,
         "webroot": $root,
-        "site_user": $suser
+        "site_user": $suser,
+        "site_url": $url
     }]')
 }
 
@@ -79,8 +81,14 @@ while read -r site; do
         continue
     fi
 
+    # Fetch site URL from WordPress
+    site_url=$(su - "$site_user" -c "cd '$webroot' && /usr/local/bin/wp option get home --skip-plugins --skip-themes --skip-packages 2>/dev/null" || echo "")
+
     echo "Webroot: $webroot"
     echo "User:    $site_user"
+    if [[ -n "$site_url" && "$site_url" != "null" ]]; then
+        echo "URL:     $site_url"
+    fi
 
     # Create WordPress user
     username="rapyd-$TIMESTAMP"
@@ -92,6 +100,7 @@ while read -r site; do
     # Check if username already exists for this site in JSON
     if user_exists_for_site "$siteSlug" "$username"; then
         echo "⚠ User already generated (previously created)"
+        echo "  Email: $email"
         echo "  Username: $username"
         echo "  Password: xxxx"
     else
@@ -102,7 +111,10 @@ while read -r site; do
             echo "✓ User created."
             echo "  Username: $username"
             echo "  Password: $password"
-            add_user_to_json "$siteSlug" "$username" "$email" "$password" "$webroot" "$site_user"
+            if [[ -n "$site_url" && "$site_url" != "null" ]]; then
+                echo "  URL:      $site_url"
+            fi
+            add_user_to_json "$siteSlug" "$username" "$email" "$password" "$webroot" "$site_user" "$site_url"
         else
             echo "✖ Failed to create user in site: $siteSlug"
             failed=1
