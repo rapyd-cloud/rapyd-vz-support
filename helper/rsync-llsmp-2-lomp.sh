@@ -7,6 +7,8 @@ echo "Copying /mnt/llsmp-home/ to /home/";
 rsync -a --delete --info=progress2 --no-v --exclude wp-content/uploads/bb-platform-previews/ \
   --exclude='litespeed/' \
   --exclude='jelastic/' \
+  --exclude='/var/www/cachedata' \
+  --exclude='*/.lscache/' \
   /mnt/llsmp-home/ /home/
 
 echo "Copying /mnt/llsmp-acme.sh/ to /root/.acme.sh";
