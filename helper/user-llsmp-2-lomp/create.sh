@@ -91,7 +91,7 @@ while read -r site; do
     fi
 
     # Create WordPress user
-    username="rapyd-$TIMESTAMP"
+    username="rapyd$TIMESTAMP"
     email="${EMAIL_PREFIX}+${TIMESTAMP}@rapyd.cloud"
     password=$(generate_password)
 
