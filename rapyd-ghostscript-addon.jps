@@ -12,6 +12,7 @@ categories:
 targetNodes:
   nodeType:
   - llsmp
+  - levamo-lomp
 
 baseUrl: https://raw.githubusercontent.com/rapyd-cloud/rapyd-vz-support/main/
 
