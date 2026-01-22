@@ -49,6 +49,8 @@ while read -r site; do
     fi
 
     echo "  Test file: OK"
+    echo "  Testing file: $filename"
+    echo "  Test URL: $url"
 
     # ---------- SAFE .htaccess handling ----------
     htaccess="$webroot/.htaccess"
@@ -64,6 +66,11 @@ while read -r site; do
 
         # Escape dots in filename for regex pattern
         escaped_filename=$(echo "$filename" | sed 's/\./\\./g')
+
+        echo "  .htaccess: adding rules:"
+        echo "    RewriteEngine On"
+        echo "    RewriteRule ^$escaped_filename$ /$filename [L,END]"
+        echo "    Allow from all"
 
         {
             echo
