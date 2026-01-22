@@ -50,6 +50,7 @@ while read -r site; do
 
     echo "  Test file: OK"
     echo "  Testing file: $filename"
+    echo "  Testing path: $filepath"
     echo "  Test URL: $url"
 
     # ---------- SAFE .htaccess handling ----------
@@ -72,6 +73,7 @@ while read -r site; do
         echo "    RewriteRule ^$escaped_filename$ /$filename [L,END]"
         echo "    Allow from all"
 
+        # Prepend rules to start of .htaccess file
         {
             echo
             echo "# BEGIN $hc_tag"
@@ -79,10 +81,13 @@ while read -r site; do
             echo "  RewriteRule ^$escaped_filename$ /$filename [L,END]"
             echo "  Allow from all"
             echo "# END $hc_tag"
-        } >> "$htaccess"
+            echo
+            cat "$htaccess"
+        } > "$htaccess.tmp"
+        mv "$htaccess.tmp" "$htaccess"
 
         htaccess_modified=1
-        echo "  .htaccess: rewrite bypass added for test file"
+        echo "  .htaccess: rewrite bypass added to start of file"
     fi
     # --------------------------------------------
 
