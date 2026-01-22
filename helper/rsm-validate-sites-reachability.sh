@@ -62,12 +62,14 @@ while read -r site; do
         cp "$htaccess" "$backup"
         echo "  .htaccess: backup created ($(basename "$backup"))"
 
+        # Escape dots in filename for regex pattern
+        escaped_filename=$(echo "$filename" | sed 's/\./\\./g')
+
         {
-          
             echo
             echo "# BEGIN $hc_tag"
             echo "  RewriteEngine On"
-            echo "  RewriteRule ^$filename$ /$filename [L,END]"
+            echo "  RewriteRule ^$escaped_filename$ /$filename [L,END]"
             echo "  Allow from all"
             echo "# END $hc_tag"
         } >> "$htaccess"
