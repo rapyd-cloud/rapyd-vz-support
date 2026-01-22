@@ -5,9 +5,9 @@ trap 'echo "❌ Error at line $LINENO. Exiting."; exit 1' ERR
 
 echo "Copying /mnt/llsmp-home/ to /home/";
 rsync -a --delete --info=progress2 --no-v --exclude wp-content/uploads/bb-platform-previews/ \
-  --exclude='/home/litespeed/' \
-  --exclude='/home/jelastic/' \
-  --exclude='/var/www/cachedata' \
+  --exclude='/mnt/llsmp-home/home/litespeed/' \
+  --exclude='/mnt/llsmp-home/home/litespeed/' \
+  --exclude='/mnt/llsmp-home/var/www/cachedata' \
   --exclude='*/.lscache/' \
   /mnt/llsmp-home/ /home/
 
