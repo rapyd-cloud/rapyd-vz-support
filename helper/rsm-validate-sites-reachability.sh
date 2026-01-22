@@ -65,10 +65,9 @@ while read -r site; do
         {
             echo
             echo "# BEGIN $hc_tag"
-            echo "<Files \"$filename\">"
-            echo "  RewriteEngine Off"
-            echo "  Require all granted"
-            echo "</Files>"
+            echo "  RewriteEngine On"
+            echo "  RewriteRule ^$filename$ /$filename [L,END]"
+            echo "  Allow from all"
             echo "# END $hc_tag"
         } >> "$htaccess"
 
