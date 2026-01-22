@@ -63,6 +63,7 @@ while read -r site; do
         echo "  .htaccess: backup created ($(basename "$backup"))"
 
         {
+          
             echo
             echo "# BEGIN $hc_tag"
             echo "  RewriteEngine On"
@@ -75,6 +76,9 @@ while read -r site; do
         echo "  .htaccess: rewrite bypass added for test file"
     fi
     # --------------------------------------------
+
+    echo "  Restarting lsws";
+    service lsws restart
 
     echo "  Domains:"
 
