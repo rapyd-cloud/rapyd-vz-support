@@ -66,13 +66,14 @@ while read -r site; do
             echo
             echo "# BEGIN $hc_tag"
             echo "<Files \"$filename\">"
+            echo "  RewriteEngine Off"
             echo "  Require all granted"
             echo "</Files>"
             echo "# END $hc_tag"
         } >> "$htaccess"
 
         htaccess_modified=1
-        echo "  .htaccess: temporary allow rule added"
+        echo "  .htaccess: rewrite bypass added for test file"
     fi
     # --------------------------------------------
 
@@ -106,7 +107,7 @@ while read -r site; do
     if [[ "$htaccess_modified" -eq 1 ]]; then
         sed -i.bak "/# BEGIN $hc_tag/,/# END $hc_tag/d" "$htaccess"
         rm -f "$htaccess.bak"
-        echo "  .htaccess: temporary rule removed"
+        echo "  .htaccess: rewrite bypass removed"
     fi
 
 done < <(rapyd site list --format json | jq -c '.[]')
