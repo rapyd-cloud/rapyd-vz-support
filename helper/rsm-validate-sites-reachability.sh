@@ -89,6 +89,8 @@ while read -r site; do
     echo "  Restarting lsws";
     service lsws restart
 
+    sleep 10
+
     echo "  Domains:"
 
     while read -r domain; do
