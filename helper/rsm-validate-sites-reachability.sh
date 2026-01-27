@@ -65,8 +65,9 @@ while read -r site; do
         cp "$htaccess" "$backup"
         echo "  .htaccess: backup created ($(basename "$backup"))"
 
-        # Preserve original file permissions
-        original_perms=$(stat -f "%OLp" "$htaccess" 2>/dev/null || stat -c "%a" "$htaccess" 2>/dev/null)
+        # Preserve original file owner
+        original_user=$(stat -c "%U" "$htaccess" 2>/dev/null || stat -f "%Su" "$htaccess" 2>/dev/null)
+        original_group=$(stat -c "%G" "$htaccess" 2>/dev/null || stat -f "%Sg" "$htaccess" 2>/dev/null)
 
         # Escape dots in filename for regex pattern
         escaped_filename=$(echo "$filename" | sed 's/\./\\./g')
@@ -89,10 +90,11 @@ while read -r site; do
         } > "$htaccess.tmp"
         mv "$htaccess.tmp" "$htaccess"
 
-        # Restore original permissions
-        if [[ -n "$original_perms" ]]; then
-            chmod "$original_perms" "$htaccess"
+        # Restore original owner and set permissions to 644
+        if [[ -n "$original_user" && -n "$original_group" ]]; then
+            chown "$original_user:$original_group" "$htaccess"
         fi
+        chmod 644 "$htaccess"
 
         htaccess_modified=1
         echo "  .htaccess: rewrite bypass added to start of file"
