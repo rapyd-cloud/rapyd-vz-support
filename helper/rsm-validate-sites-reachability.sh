@@ -65,9 +65,10 @@ while read -r site; do
         cp "$htaccess" "$backup"
         echo "  .htaccess: backup created ($(basename "$backup"))"
 
-        # Preserve original file owner
-        original_user=$(stat -c "%U" "$htaccess" 2>/dev/null || stat -f "%Su" "$htaccess" 2>/dev/null)
-        original_group=$(stat -c "%G" "$htaccess" 2>/dev/null || stat -f "%Sg" "$htaccess" 2>/dev/null)
+        # Preserve original file owner from index.php
+        index_php="$webroot/index.php"
+        original_user=$(stat -c "%U" "$index_php" 2>/dev/null || stat -f "%Su" "$index_php" 2>/dev/null)
+        original_group=$(stat -c "%G" "$index_php" 2>/dev/null || stat -f "%Sg" "$index_php" 2>/dev/null)
 
         # Escape dots in filename for regex pattern
         escaped_filename=$(echo "$filename" | sed 's/\./\\./g')
