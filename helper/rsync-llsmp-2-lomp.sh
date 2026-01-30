@@ -15,9 +15,26 @@ rsync -a --delete \
   /mnt/llsmp-acme.sh/ /root/.acme.sh/
 
 echo "Copying /mnt/llsmp-rapyd-rsm/ to /etc/rapyd-rsm";
+# Backup exec.key and exec.pub if available
+tmp_folder=$(mktemp -d)
+if [[ -f /etc/rapyd-rsm/exec.key ]]; then
+    cp /etc/rapyd-rsm/exec.key "$tmp_folder/exec.key.rsync-backup"
+fi
+if [[ -f /etc/rapyd-rsm/exec.pub ]]; then
+    cp /etc/rapyd-rsm/exec.pub "$tmp_folder/exec.pub.rsync-backup"
+fi
+
 rsync -a --delete \
   --exclude='rapyd-rsm.conf' \
   /mnt/llsmp-rapyd-rsm/ /etc/rapyd-rsm
+
+# Restore exec.key and exec.pub if available
+if [[ -f "$tmp_folder/exec.key.rsync-backup" ]]; then
+    mv "$tmp_folder/exec.key.rsync-backup" /etc/rapyd-rsm/exec.key
+fi
+if [[ -f "$tmp_folder/exec.pub.rsync-backup" ]]; then
+    mv "$tmp_folder/exec.pub.rsync-backup" /etc/rapyd-rsm/exec.pub
+fi
 
 echo "Copying /mnt/llsmp-mysql/ to /var/lib/mysql";
 rsync -a --delete \
