@@ -105,7 +105,7 @@ while read -r site; do
     echo "  Restarting lsws";
     service lsws reload;
 
-    sleep 10
+    sleep 2;
 
     echo "  Domains:"
 
