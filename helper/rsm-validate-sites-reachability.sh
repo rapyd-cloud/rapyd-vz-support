@@ -103,7 +103,7 @@ while read -r site; do
     # --------------------------------------------
 
     echo "  Restarting lsws";
-    service lsws restart
+    service lsws reload;
 
     sleep 10
 
