@@ -28,6 +28,12 @@ while read -r site; do
 
     echo "[ $siteSlug ]"
 
+    # Check if WordPress is installed
+    if ! su - "$siteUser" -c "cd $webroot && wp core is-installed --allow-root --quiet" 2>/dev/null; then
+        echo "WordPress not installed - skipping"
+        continue
+    fi
+
     # Get the database table prefix
     if ! TABLE_PREFIX=$(su - "$siteUser" -c "cd $webroot && wp eval 'echo \$GLOBALS[\"table_prefix\"];' --skip-plugins --skip-themes --quiet"); then
         echo "[[ERROR]] Failed to get database table prefix"
