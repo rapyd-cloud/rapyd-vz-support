@@ -5,6 +5,7 @@ set -o pipefail
 
 EMAIL_PREFIX="$1"
 failed=0
+SITES_PROCESSED=0
 TIMESTAMP=$(date +%s)
 USERS_JSON="[]"
 OUTPUT_FILE="/var/www/webroot/rapyd-usr.json"
@@ -52,6 +53,7 @@ add_user_to_json() {
 }
 
 while read -r site; do
+    SITES_PROCESSED=$((SITES_PROCESSED + 1))
 
     webroot=$(jq -r '.webroot' <<< "$site")
     vanity_domain=$(jq -r '.domain' <<< "$site")
@@ -142,6 +144,10 @@ else
 fi
 
 echo
-echo "All sites processed"
-echo "{{SUCCESS}}"
+if [[ $SITES_PROCESSED -eq 0 ]]; then
+    echo "{{SUCCESS}} No sites found"
+else
+    echo "All sites processed"
+    echo "{{SUCCESS}}"
+fi
 exit 0
