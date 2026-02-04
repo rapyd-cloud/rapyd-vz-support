@@ -68,11 +68,11 @@ while read -r site; do
         echo "  Found in database - replacing..."
 
         # Perform search and replace using WP CLI (skip non-recommended columns like guid)
-        if su - "$siteUser" -c "cd $webroot && wp search-replace \"$searchURL\" \"$replaceURL\" --precise --skip-plugins --skip-themes --skip-columns=guid --quiet"; then
+        if ERROR_OUTPUT=$(su - "$siteUser" -c "cd $webroot && wp search-replace \"$searchURL\" \"$replaceURL\" --precise --skip-plugins --skip-themes --skip-columns=guid --quiet" 2>&1); then
             echo "[[SUCCESS]] Replacement completed"
         else
             echo "[[ERROR]] Replacement failed"
-            exit 1
+            echo "$ERROR_OUTPUT"
         fi
 
     else
