@@ -1,28 +1,6 @@
   #!/usr/bin/env bash
 set -euo pipefail
 
-WPCLIFLAGS_BASE="--skip-themes"
-get_skip_plugins_except() {
-    local keep_plugin="$1"
-    local plugins_to_skip
-    plugins_to_skip=$(wp plugin list --field=name --skip-plugins --skip-themes $WPCLIFLAGS_BASE 2>/dev/null | grep -v "^${keep_plugin}$" | paste -sd, -)
-    if [ -n "$plugins_to_skip" ]; then
-        echo "--skip-plugins=${plugins_to_skip}"
-    else
-        echo "--skip-plugins"
-    fi
-}
-
-# Get WP CLI flags for LiteSpeed commands (keeps only litespeed-cache active)
-get_wpcli_flags_ls() {
-    echo "$WPCLIFLAGS_BASE $(get_skip_plugins_except 'litespeed-cache')"
-}
-
-# Get WP CLI flags for Redis commands (keeps only redis-cache active)
-get_wpcli_flags_redis() {
-    echo "$WPCLIFLAGS_BASE $(get_skip_plugins_except 'redis-cache')"
-}
-
 
 # Usage: script.sh <search_url> <replace_url>
 if [[ $# -lt 2 ]]; then
@@ -96,9 +74,10 @@ while read -r site; do
 
             echo "Purging Cache";
 
-            WPCLIFLAGS_LS=$(get_wpcli_flags_ls)
-
-            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all $WPCLIFLAGS_LS"
+            SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
+            SKIPLIST=$(su - "$siteUser" -c "cd $webroot && wp --skip-plugins --skip-themes --skip-packages --quiet  plugin list --field=name   2>/dev/null   | grep -v $SKIPPLUGINS | tr '\n' ','" )
+        
+            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all --skip-plugins="$SKIPLIST" --skip-themes --skip-packages "
 
         else
             echo "[[ERROR]] Replacement failed"
