@@ -1,6 +1,28 @@
   #!/usr/bin/env bash
 set -euo pipefail
 
+get_skip_plugins_except() {
+    local keep_plugin="$1"
+    local plugins_to_skip
+    plugins_to_skip=$(wp plugin list --field=name --skip-plugins --skip-themes $WPCLIFLAGS_BASE 2>/dev/null | grep -v "^${keep_plugin}$" | paste -sd, -)
+    if [ -n "$plugins_to_skip" ]; then
+        echo "--skip-plugins=${plugins_to_skip}"
+    else
+        echo "--skip-plugins"
+    fi
+}
+
+# Get WP CLI flags for LiteSpeed commands (keeps only litespeed-cache active)
+get_wpcli_flags_ls() {
+    echo "$WPCLIFLAGS_BASE $(get_skip_plugins_except 'litespeed-cache')"
+}
+
+# Get WP CLI flags for Redis commands (keeps only redis-cache active)
+get_wpcli_flags_redis() {
+    echo "$WPCLIFLAGS_BASE $(get_skip_plugins_except 'redis-cache')"
+}
+
+
 # Usage: script.sh <search_url> <replace_url>
 if [[ $# -lt 2 ]]; then
     echo "Usage: $0 <search_url> <replace_url>"
@@ -68,11 +90,14 @@ while read -r site; do
         echo "  Found in database - replacing..."
 
         # Perform search and replace using WP CLI (skip non-recommended columns like guid)
-        if su - "$siteUser" -c "cd $webroot && wp search-replace \"$searchURL\" \"$replaceURL\" --skip-plugins --skip-themes --skip-columns=guid --quiet"; then
+        if su - "$siteUser" -c "cd $webroot && wp search-replace \"$searchURL\" \"$replaceURL\" --precise --skip-plugins --skip-themes --skip-columns=guid --quiet"; then
             echo "[[SUCCESS]] Replacement completed"
 
             echo "Purging Cache";
-            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all"
+
+            WPCLIFLAGS_LS=$(get_wpcli_flags_ls)
+
+            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all $WPCLIFLAGS_LS --skip-themes"
 
         else
             echo "[[ERROR]] Replacement failed"
