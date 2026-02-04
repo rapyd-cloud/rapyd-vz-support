@@ -77,7 +77,7 @@ while read -r site; do
             SKIPPLUGINS='^litespeed-cache$\|^object-cache-pro$\|^redis-cache$'
             SKIPLIST=$(su - "$siteUser" -c "cd $webroot && wp --skip-plugins --skip-themes --skip-packages --quiet  plugin list --field=name   2>/dev/null   | grep -v $SKIPPLUGINS | tr '\n' ','" )
         
-            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all --skip-plugins="$SKIPLIST" --skip-themes --skip-packages "
+            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all $SKIPLIST"
 
         else
             echo "[[ERROR]] Replacement failed"
