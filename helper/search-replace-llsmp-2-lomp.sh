@@ -16,10 +16,12 @@ echo "Replace URL: $replaceURL"
 echo "---"
 
 TOTAL_COUNT=0
+SITES_PROCESSED=0
 
 echo "Processing site database replaces..."
 
 while read -r site; do
+    SITES_PROCESSED=$((SITES_PROCESSED + 1))
 
     webroot=$(jq -r '.webroot' <<< "$site")
     vanity_domain=$(jq -r '.domain' <<< "$site")
@@ -27,6 +29,7 @@ while read -r site; do
     siteUser=$(jq -r '.user' <<< "$site")
 
     echo "[ $siteSlug ]"
+
 
     # Check if WordPress is installed
     if ! su - "$siteUser" -c "cd $webroot && wp core is-installed --allow-root --quiet" 2>/dev/null; then
@@ -80,6 +83,10 @@ while read -r site; do
     fi
 
 done < <(rapyd site list --format json | jq -c '.[]')
+
+if [[ $SITES_PROCESSED -eq 0 ]]; then
+    echo "[[SUCCESS]] No sites found to process"
+fi
 
 echo ""
 echo "Processing cron replaces..."
