@@ -77,7 +77,6 @@ while read -r site; do
 
     else
         echo "[[SUCCESS]] URL not found in database"
-        exit 1
     fi
 
 done < <(rapyd site list --format json | jq -c '.[]')
