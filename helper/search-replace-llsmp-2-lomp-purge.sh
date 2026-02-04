@@ -1,6 +1,7 @@
   #!/usr/bin/env bash
 set -euo pipefail
 
+WPCLIFLAGS_BASE="--skip-themes"
 get_skip_plugins_except() {
     local keep_plugin="$1"
     local plugins_to_skip
@@ -97,7 +98,7 @@ while read -r site; do
 
             WPCLIFLAGS_LS=$(get_wpcli_flags_ls)
 
-            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all $WPCLIFLAGS_LS --skip-themes"
+            su - "$siteUser" -c "cd $webroot && wp cache flush --skip-plugins --skip-themes &&  wp litespeed-purge all $WPCLIFLAGS_LS"
 
         else
             echo "[[ERROR]] Replacement failed"
