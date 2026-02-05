@@ -29,10 +29,6 @@ if [[ -f "$tmp_folder/exec.pub.rsync-backup" ]]; then
     mv "$tmp_folder/exec.pub.rsync-backup" /etc/rapyd-rsm/exec.pub
 fi
 
-echo "Copying /mnt/llsmp-mysql/ to /var/lib/mysql";
-rsync -a --delete \
-  /mnt/llsmp-mysql/ /var/lib/mysql
-
 echo "Copying /mnt/llsmp-cron to /var/spool/cron";
 rsync -a --delete \
   /mnt/llsmp-cron/ /var/spool/cron
