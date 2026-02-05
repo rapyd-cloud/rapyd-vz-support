@@ -39,8 +39,13 @@ rsync -a \
 
 sleep 10;
 
+echo "Copying /mnt/llsmp-mysql/ to /var/lib/mysql";
+rsync -a --delete \
+  /mnt/llsmp-mysql/ /var/lib/mysql
+  
 # Fix the MariaDB permission
 chown -R mysql:mysql /var/lib/mysql && chmod 750 /var/lib/mysql;
+
 
 echo "{{SUCCESS}}";
 
