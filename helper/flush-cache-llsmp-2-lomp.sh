@@ -88,9 +88,9 @@ done < <(rapyd site list --format json | jq -c '.[]')
 
 echo
 if [[ "$failed" -ne 0 ]]; then
-    echo "FAILED: One or more sites did not pass validation"
+    echo "FAILED: One or more sites did not pass validation {{PASSED}}"
     exit 0
 fi
 
-echo "SUCCESS: All sites passed validation"
+echo "SUCCESS: All sites passed validation {{PASSED}}"
 exit 0
