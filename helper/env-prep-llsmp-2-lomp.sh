@@ -342,8 +342,8 @@ run_pre_migration() {
 
         # Clear files inside /home/web_esgnv3/web/stats/
         print_info "Clearing files inside /home/$user/web/stats/"
-        rm -rf "/home/$user/web/stats/2025*";
-        rm -rf "/home/$user/web/stats/2026*";
+        rm -rf /home/$user/web/stats/2025*;
+        rm -rf /home/$user/web/stats/2026*;
 
         # Step 1: Handle LiteSpeed Cache plugin
         if ! handle_litespeed_cache "$user"; then
