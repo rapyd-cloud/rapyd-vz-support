@@ -1,11 +1,11 @@
 version: 5.0.0
 type: update
-id: rapyd-enable-remote-ssl
-name: Enable Remote MariaDB SSL
+id: rapyd-enable-remote-db
+name: Rapyd2 - Enable Remote MariaDB with SSL
 logo: icon.png
 
 description:
-  short: Enable remote MariaDB SSL and bind
+  short: Enable remote MariaDB with SSL 
 
 categories:
 - apps/dev-and-admin-tools
@@ -13,6 +13,7 @@ categories:
 targetNodes:
   nodeType:
   - llsmp
+  - levamo-lomp
 
 onInstall:
   - action: enableRemoteSSL
@@ -33,7 +34,19 @@ actions:
   addPortForwarding:
     - cmd[${targetNodes.nodeGroup}]: |-
 
-        iptables -t nat -A PREROUTING -p tcp --dport 8823 -j REDIRECT --to-port 3306
+        nftFile="/etc/nftables/user-defined.nft"
+        natRule='add rule ip nat PREROUTING tcp dport 8823 counter packets 0 bytes 0 redirect to :3306 comment "rapyd-enable-remote-db"'
+        filterRule='add rule ip filter INPUT tcp dport 3306 counter packets 0 bytes 0 accept comment "rapyd-enable-remote-db"'
+
+        mkdir -p "$(dirname "$nftFile")"
+        touch "$nftFile"
+
+        # Persist the rules so they are reloaded automatically when the firewall restarts
+        grep -q "dport 8823" "$nftFile" || echo "$natRule" >> "$nftFile"
+        grep -q "dport 3306" "$nftFile" || echo "$filterRule" >> "$nftFile"
+
+        # Reload the firewall so the persisted rules are applied immediately too
+        sudo /usr/bin/jem firewall fwstart
 
       user: root
 
@@ -73,7 +86,7 @@ actions:
 
     - addPortForwarding
     
-  cleanup:
+  cleanup: 
     - cmd[${targetNodes.nodeGroup}]: |-
 
         # Disable remote MariaDB SSL (restore original state)
@@ -81,5 +94,14 @@ actions:
         sed -i 's/^bind-address.*/bind-address=127.0.0.1/' /etc/my.cnf
         # Restart MariaDB
         systemctl restart mariadb
-        
+
+        # Remove only the nftables rules added by this plugin, identified by their comment tag
+        tag="rapyd-enable-remote-db"
+        nftFile="/etc/nftables/user-defined.nft"
+
+        [ -f "$nftFile" ] && sed -i "/comment \"$tag\"/d" "$nftFile"
+
+        # Reload the firewall so the removal takes effect immediately too
+        sudo /usr/bin/jem firewall fwstart
+
       user: root
