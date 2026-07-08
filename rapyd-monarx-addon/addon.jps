@@ -79,7 +79,7 @@ actions:
         /usr/bin/bash rapyd-monarx-installer.sh "$VZENVNAME" "$VZUID" "$VZNODEID" 
 
         # Link the monarx php extension to the installed php script.
-        /usr/bin/bash rapyd-monarx-php-extention.sh
+        #/usr/bin/bash rapyd-monarx-php-extention.sh
 
       user: root
 
