@@ -161,3 +161,13 @@ systemctl daemon-reload
 sudo systemctl restart monarx-agent
 
 # end of monarx main deployer
+
+# Create daily auto-update cron job for Monarx
+cat > /etc/cron.d/monarx-auto-update << 'EOF'
+SHELL=/bin/bash
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+0 3 * * * root yum -y update 'monarx-*'
+EOF
+
+chmod 644 /etc/cron.d/monarx-auto-update
