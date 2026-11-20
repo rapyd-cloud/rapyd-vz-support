@@ -165,6 +165,19 @@ now() {   # wall clock with sub-second precision where possible
 mbps() { awk -v b="$1" 'BEGIN{printf "%.1f", b*8/1000000}'; }   # bytes/s -> Mbit/s
 ms()   { awk -v s="$1" 'BEGIN{printf "%.0f", s*1000}'; }          # s -> ms
 
+curl_reason() {   # human-readable reason for common curl exit codes
+    case "$1" in
+        5)  echo "proxy could not be resolved" ;;
+        6)  echo "DNS lookup failed" ;;
+        7)  echo "connection refused/blocked (outbound port closed or firewall?)" ;;
+        28) echo "timed out" ;;
+        35) echo "TLS handshake failed" ;;
+        52) echo "server sent empty reply" ;;
+        56) echo "connection reset while receiving" ;;
+        *)  echo "curl exit $1" ;;
+    esac
+}
+
 status_for() {   # status_for value warn fail [lower_is_worse]
     local v=$1 w=$2 f=$3 inv=${4:-0}
     if [ "$inv" -eq 1 ]; then
@@ -329,6 +342,21 @@ section_download() {
     for o in $ORIGINS; do
         local name=${o%%=*} base=${o#*=} row="" sum=0 n=0 conn="-" ttfb="-" st=OK big="" par=""
         case "$base" in */) ;; *) base="$base/" ;; esac
+
+        # quick reachability check (first 1 KB) so an unreachable server fails fast with a reason
+        progress "$name: checking reachability"
+        local pc prc
+        pc=$(curl -s -o /dev/null -m 15 -r 0-1023 -w '%{http_code}' "${base}${PARALLEL_SIZE}.bin" 2>/dev/null); prc=$?
+        clearp
+        if [ $prc -ne 0 ] || [ "$pc" = 000 ]; then
+            local why; why=$(curl_reason $prc)
+            out "$(printf '  %-6s %8s %8s' "$name" - -)  UNREACHABLE: $why"
+            issue 2 "$name unreachable: $why (${base})"
+            json_add "{\"test\":\"download\",\"server\":\"$name\",\"reachable\":false,\"curl_exit\":$prc,\"reason\":\"$why\"}"
+            DOWN_SUMMARY="$DOWN_SUMMARY  Download  $name  unreachable ($why)"$'\n'
+            continue
+        fi
+
         for s in $sizes; do
             local to=$SMALL_TIMEOUT r rc code cell
             [ $QUICK -eq 0 ] && [ "$s" = "$BIG_SIZE" ] && to=$BIG_TIMEOUT
@@ -341,7 +369,9 @@ section_download() {
             if [ "$code" = 404 ]; then
                 cell="n/a"
             elif { [ $rc -ne 0 ] && [ $rc -ne 28 ]; } || [ "$code" != 200 ]; then
-                cell="ERR"; st=FAIL; issue 2 "$name: $s download failed (curl exit $rc, HTTP $code)"
+                cell="ERR"; st=FAIL
+                if [ "$code" = 000 ]; then issue 2 "$name: $s download failed ($(curl_reason $rc))"
+                else issue 2 "$name: $s download failed (HTTP $code)"; fi
             else
                 cell=$(mbps "$3"); [ $rc -eq 28 ] && cell="$cell*"
                 if [ $QUICK -eq 0 ] && [ "$s" = "$BIG_SIZE" ]; then big=$(mbps "$3")
