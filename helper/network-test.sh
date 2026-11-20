@@ -42,7 +42,11 @@ UPLOAD_METHOD="POST"
 S3_BUCKET=""
 # Download servers: NAME=BASE_URL, serving <size>.bin (10M.bin 25M.bin 50M.bin 100M.bin 1G.bin).
 # Files live in /var/www/webroot/ROOT/nettest/ on each node.
-ORIGINS="EW1=http://speedtest-ew1.ew1.rapyd.cloud/nettest/ UE1=http://speedtest-ue1.ue1.rapyd.cloud/nettest/ UW2=http://speedtest-uw2.uw2.rapyd.cloud/nettest/"
+# Hostnames (via platform load balancer):
+#   EW1=http://speedtest-ew1.ew1.rapyd.cloud/nettest/
+#   UE1=http://speedtest-ue1.ue1.rapyd.cloud/nettest/
+#   UW2=http://speedtest-uw2.uw2.rapyd.cloud/nettest/
+ORIGINS="EW1=http://181.214.110.225/nettest/ UE1=http://64.50.161.111/nettest/ UW2=http://67.210.104.6/nettest/"
 ORIGINS_CUSTOM=0
 JSON_OUT=""
 REPORT_OUT=""
