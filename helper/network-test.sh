@@ -10,12 +10,12 @@
 #   2. Latency          packet loss / RTT / jitter (ICMP, falls back to TCP connect)
 #   3. DNS + HTTPS      DNS, TCP connect, TLS and TTFB timings to common endpoints
 #   4. Download         plain HTTP download of test files hosted on the Rapyd LOMP
-#                       speed-test sites (EW1 / UE1 / UW2): 10–100 MB, 1 GB, parallel
+#                       speed-test sites (EW1 / UE1 / UW2): 10–100 MB, 1/2/5/10 GB, parallel
 #   5. Upload           small files (10–100 MB) + big file (1 GB) to Cloudflare / S3
 #
 # Usage:
 #   ./network-test.sh                  # full test
-#   ./network-test.sh --quick          # skip the 1 GB tests
+#   ./network-test.sh --quick          # skip the 1/2/5/10 GB tests
 #   ./network-test.sh --json out.json  # also write JSON results
 #   ./network-test.sh --help
 #
@@ -31,12 +31,13 @@ set -o pipefail
 # Defaults (override with flags)
 # --------------------------------------------------------------------------
 SMALL_SIZES="10M 25M 50M 100M"
-BIG_SIZE="1G"
+BIG_SIZE="1G"              # big upload size
+BIG_DOWN_SIZES="1G 2G 5G 10G" # big download sizes (files must exist on the servers)
 PARALLEL_STREAMS=4
 PARALLEL_SIZE="100M"
 PING_COUNT=10
 SMALL_TIMEOUT=120          # seconds per small transfer
-BIG_TIMEOUT=600            # seconds per big transfer
+BIG_TIMEOUT=600            # min seconds per big transfer (download: 90 s per GB, at least this)
 UPLOAD_URL="https://speed.cloudflare.com/__up"
 UPLOAD_METHOD="POST"
 S3_BUCKET=""
@@ -51,6 +52,7 @@ ORIGINS_CUSTOM=0
 JSON_OUT=""
 REPORT_OUT=""
 QUICK=0
+MAX_TIME=""
 SKIP_UPLOAD=0
 SKIP_DOWNLOAD=0
 TMP_DIR="${TMPDIR:-/tmp}"
@@ -75,9 +77,11 @@ usage() {
     cat <<EOF
 
 Options:
-  --quick                 Skip the big (1 GB) download/upload tests
+  --quick                 Skip the big (1/2/5/10 GB) download and 1 GB upload tests
   --small "10M 50M"       Small file sizes (default: "$SMALL_SIZES"; K/M/G suffixes)
-  --big 1G                Big file size (default: $BIG_SIZE)
+  --big 1G                Big upload size (default: $BIG_SIZE)
+  --big-download "1G 10G" Big download sizes (default: "$BIG_DOWN_SIZES")
+  --max-time SECONDS      Time limit for each big transfer (default: 90 s per GB, min $BIG_TIMEOUT s)
   --streams N             Parallel download streams of $PARALLEL_SIZE (default: $PARALLEL_STREAMS, 0 = skip)
   --upload-url URL        Upload with HTTP PUT to this URL instead of Cloudflare
   --s3-bucket NAME        Upload to s3://NAME/network-test/ using aws cli (objects removed after)
@@ -97,6 +101,8 @@ while [ $# -gt 0 ]; do
         --quick)        QUICK=1 ;;
         --small)        SMALL_SIZES="$2"; shift ;;
         --big)          BIG_SIZE="$2"; shift ;;
+        --big-download) BIG_DOWN_SIZES="$2"; shift ;;
+        --max-time)     MAX_TIME="$2"; shift ;;
         --streams)      PARALLEL_STREAMS="$2"; shift ;;
         --upload-url)   UPLOAD_URL="$2"; UPLOAD_METHOD="PUT"; shift ;;
         --s3-bucket)    S3_BUCKET="$2"; shift ;;
@@ -168,6 +174,11 @@ now() {   # wall clock with sub-second precision where possible
 
 mbps() { awk -v b="$1" 'BEGIN{printf "%.1f", b*8/1000000}'; }   # bytes/s -> Mbit/s
 ms()   { awk -v s="$1" 'BEGIN{printf "%.0f", s*1000}'; }          # s -> ms
+
+big_timeout() {   # big_timeout SIZE -> seconds (90 s per GB, at least BIG_TIMEOUT, or --max-time)
+    [ -n "$MAX_TIME" ] && { echo "$MAX_TIME"; return; }
+    awk -v b="$(to_bytes "$1")" -v m=$BIG_TIMEOUT 'BEGIN{t=int(b/1073741824*90); print (t>m)?t:m}'
+}
 
 curl_reason() {   # human-readable reason for common curl exit codes
     case "$1" in
@@ -335,7 +346,7 @@ transfer_row() {   # transfer_row label bytes time speed rc
 
 section_download() {
     local sizes="$SMALL_SIZES" o s
-    [ $QUICK -eq 0 ] && sizes="$sizes $BIG_SIZE"
+    [ $QUICK -eq 0 ] && sizes="$sizes $BIG_DOWN_SIZES"
     out ""
     out "[ Download ]  plain HTTP, Mbit/s per file"
     local hdr; hdr=$(printf '  %-6s %8s %8s' Server Connect TTFB)
@@ -344,7 +355,7 @@ section_download() {
     out "$hdr$(printf '  %s' Status)"
 
     for o in $ORIGINS; do
-        local name=${o%%=*} base=${o#*=} row="" sum=0 n=0 conn="-" ttfb="-" st=OK big="" par=""
+        local name=${o%%=*} base=${o#*=} row="" sum=0 n=0 conn="-" ttfb="-" st=OK big="" bigs="" par=""
         case "$base" in */) ;; *) base="$base/" ;; esac
 
         # quick reachability check (first 1 KB) so an unreachable server fails fast with a reason
@@ -362,8 +373,9 @@ section_download() {
         fi
 
         for s in $sizes; do
-            local to=$SMALL_TIMEOUT r rc code cell
-            [ $QUICK -eq 0 ] && [ "$s" = "$BIG_SIZE" ] && to=$BIG_TIMEOUT
+            local to=$SMALL_TIMEOUT r rc code cell isbig=0
+            case " $BIG_DOWN_SIZES " in *" $s "*) [ $QUICK -eq 0 ] && isbig=1 ;; esac
+            [ $isbig -eq 1 ] && to=$(big_timeout "$s")
             progress "$name: downloading $s"
             r=$(curl -s -o /dev/null -m "$to" -w '%{size_download} %{time_total} %{speed_download} %{http_code} %{time_connect} %{time_starttransfer}' "${base}${s}.bin" 2>/dev/null)
             rc=$?; clearp
@@ -378,7 +390,7 @@ section_download() {
                 else issue 2 "$name: $s download failed (HTTP $code)"; fi
             else
                 cell=$(mbps "$3"); [ $rc -eq 28 ] && cell="$cell*"
-                if [ $QUICK -eq 0 ] && [ "$s" = "$BIG_SIZE" ]; then big=$(mbps "$3")
+                if [ $isbig -eq 1 ]; then big="$big $(mbps "$3")"; bigs="${bigs:+$bigs | }$s: $cell"
                 else sum=$(awk -v a=$sum -v b="$3" 'BEGIN{print a+b}'); n=$((n+1)); fi
             fi
             row="$row$(printf ' %8s' "$cell")"
@@ -403,7 +415,7 @@ section_download() {
 
         local avg=""
         [ $n -gt 0 ] && avg=$(awk -v s=$sum -v n=$n 'BEGIN{printf "%.1f", s/n*8/1000000}')
-        local best; best=$(printf '%s\n' "$avg" "$big" "$par" | awk 'NF && $1>m{m=$1} END{print m+0}')
+        local best; best=$(printf '%s\n' "$avg" $big "$par" | awk 'NF && $1>m{m=$1} END{print m+0}')
         gt "$best" "$BEST_DOWN" && BEST_DOWN=$best
         if [ "$st" = OK ]; then
             gt $WARN_DOWN "$best" && { st=WARN; issue 1 "$name: download only ${best} Mbit/s at best (< ${WARN_DOWN})"; }
@@ -414,7 +426,7 @@ section_download() {
             fi
         fi
         out "$(printf '  %-6s %8s %8s' "$name" "$conn" "$ttfb")$row  $st"
-        DOWN_SUMMARY="$DOWN_SUMMARY  Download  $name  small avg: ${avg:--} Mbit/s${big:+ | big: $big Mbit/s}${par:+ | parallel: $par Mbit/s}"$'\n'
+        DOWN_SUMMARY="$DOWN_SUMMARY  Download  $name  small avg: ${avg:--}${bigs:+ | $bigs}${par:+ | ${PARALLEL_STREAMS}x: $par} Mbit/s"$'\n'
     done
     out "  (* = hit time limit, partial transfer; n/a = file not on server)"
 }
